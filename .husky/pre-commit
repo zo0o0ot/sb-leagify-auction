@@ -1,0 +1,8 @@
+# Run unit tests
+npm run test:unit -- --run
+
+# Type check
+npm run type-check
+
+# Lint
+npm run lint

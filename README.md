@@ -4,7 +4,7 @@ A real-time fantasy auction draft application for sports leagues. Users join via
 
 ## Project Status
 
-**Phase: Planning Complete, Implementation Not Started**
+**Phase: Implementation In Progress (Phase 1 - Foundation)**
 
 This project is a rebuild of an [earlier Azure-based implementation](https://github.com/zo0o0ot/cl-leagify-fantasy-auction) that proved too expensive and complex. The new version uses Supabase for a simpler, more cost-effective architecture.
 
@@ -27,6 +27,7 @@ These documents define the current implementation:
 | [DATABASE-SCHEMA.md](./DATABASE-SCHEMA.md) | PostgreSQL schema, RLS policies, functions |
 | [DEVELOPMENT-TASKS.md](./DEVELOPMENT-TASKS.md) | Phased implementation plan with 32 tasks |
 | [TESTING-STRATEGY.md](./TESTING-STRATEGY.md) | Test-first approach, critical path tests |
+| [UI-GENERATION-GUIDE.md](./UI-GENERATION-GUIDE.md) | Prompts for AI UI generation tools |
 
 ### Legacy Documentation
 
@@ -49,13 +50,11 @@ Reference materials from the previous Azure implementation:
 
 ## Getting Started
 
-> **Note:** Implementation has not started yet. These instructions will be updated as development progresses.
-
 ### Prerequisites
 
 - Node.js 18+
 - Docker Desktop (for Supabase local)
-- Supabase CLI
+- Supabase CLI (`npm install -g supabase`)
 
 ### Local Development
 
@@ -67,24 +66,32 @@ cd sb-leagify-auction
 # Install dependencies
 npm install
 
-# Start Supabase local stack
-supabase start
-
-# Apply migrations and seed data
-supabase db reset
-
-# Start dev server
+# Start Vue dev server
 npm run dev
 ```
 
-### Running Tests
+The app will be available at http://localhost:5173
+
+### Available Scripts
 
 ```bash
-npm run test:unit        # Unit tests (Vitest)
-npm run test:integration # Integration tests
-npm run test:e2e         # End-to-end tests (Playwright)
-supabase test db         # Database tests (pgTAP)
-npm test                 # All tests
+npm run dev          # Start dev server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run test:unit    # Run unit tests (Vitest)
+npm run test:e2e     # Run E2E tests (Playwright)
+npm run lint         # Lint and fix code
+npm run format       # Format code with Prettier
+npm run type-check   # TypeScript type checking
+```
+
+### Supabase Local (coming soon)
+
+```bash
+supabase start       # Start local Supabase stack
+supabase db reset    # Apply migrations and seed data
+supabase stop        # Stop local stack
+supabase test db     # Run database tests (pgTAP)
 ```
 
 ## Development Approach
