@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#690005",
+                    "surface-dim": "#10141a",
+                    "secondary-container": "#bf012c",
+                    "on-surface": "#dfe2eb",
+                    "surface-container-lowest": "#0a0e14",
+                    "surface-bright": "#353940",
+                    "primary": "#adc6ff",
+                    "primary-fixed": "#d8e2ff",
+                    "tertiary-fixed-dim": "#e9c400",
+                    "secondary": "#ffb3b2",
+                    "inverse-surface": "#dfe2eb",
+                    "on-secondary-container": "#ffcccb",
+                    "on-primary": "#002e69",
+                    "on-secondary-fixed-variant": "#92001f",
+                    "tertiary": "#e9c400",
+                    "outline-variant": "#43474e",
+                    "surface-container-low": "#181c22",
+                    "surface-container-high": "#262a31",
+                    "background": "#10141a",
+                    "error": "#ffb4ab",
+                    "inverse-on-surface": "#2d3137",
+                    "tertiary-fixed": "#ffe16d",
+                    "surface": "#10141a",
+                    "primary-container": "#00204d",
+                    "on-secondary": "#680013",
+                    "error-container": "#93000a",
+                    "secondary-fixed": "#ffdad9",
+                    "surface-tint": "#adc6ff",
+                    "on-tertiary-fixed": "#221b00",
+                    "on-secondary-fixed": "#410008",
+                    "on-primary-fixed": "#001a41",
+                    "on-background": "#dfe2eb",
+                    "outline": "#8d9199",
+                    "inverse-primary": "#005bc1",
+                    "on-tertiary": "#3a3000",
+                    "surface-variant": "#31353c",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "secondary-fixed-dim": "#ffb3b2",
+                    "surface-container": "#1c2026",
+                    "on-primary-fixed-variant": "#004493",
+                    "on-primary-container": "#3686ff",
+                    "primary-fixed-dim": "#adc6ff",
+                    "tertiary-container": "#c9a900",
+                    "on-tertiary-container": "#4c3f00",
+                    "on-surface-variant": "#c4c6cf",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#31353c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(28, 32, 38, 0.6);
+            backdrop-filter: blur(12px);
+        }
+        .skew-tag {
+            transform: skewX(-10deg);
+        }
+        .skew-tag > * {
+            transform: skewX(10deg);
+        }
+        /* Custom scrollbar for dark mode */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0e14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #31353c;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #43474e;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body min-h-screen">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/80 backdrop-blur-xl border-b border-white/10 shadow-[0_20px_40px_rgba(0,68,147,0.15)]">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black italic text-primary tracking-widest font-headline">LEAGIFY</span>
+<div class="hidden md:flex gap-6 items-center h-full">
+<a class="font-headline uppercase tracking-tighter text-slate-400 hover:text-slate-100 transition-colors" href="#">WAR ROOM</a>
+<a class="font-headline uppercase tracking-tighter text-primary border-b-2 border-blue-500 pb-1" href="#">MARKETPLACE</a>
+<a class="font-headline uppercase tracking-tighter text-slate-400 hover:text-slate-100 transition-colors" href="#">LOCKED IN</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-white/5 rounded-full transition-all active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 hover:bg-white/5 rounded-full transition-all active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/30">
+<img alt="User Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC24mUEeXjETOEGa2F62i2fyVBFb4XaxkCheLe00UAOY4xWCqKVHP6dig27QvA7kJJPvPPWCTHeNc-lF870orEEHPpB8WGYQ1mJolQBSJVof9WZIWTwLanH6xFfpcyvyAFLQsg-XEVgkg0kEZ4lzYu0KdTqVddhJ330AvxovUYdtvAYBlgk5ryTdloupzvKcgGIRESxDNvCvIORvFTsz9VOO1JYHvjOZ6Mp0JBUrX3DchyCEzBeVemty3nWsrdFYdDhIsCCZmEHQyE"/>
+</div>
+</div>
+</nav>
+<div class="flex pt-16 h-screen overflow-hidden">
+<!-- Side Navigation Bar -->
+<aside class="hidden lg:flex flex-col h-full w-64 bg-slate-900 border-r border-white/5 shadow-2xl shrink-0">
+<div class="p-6 border-b border-white/5 bg-gradient-to-r from-slate-800 to-slate-900">
+<p class="font-headline font-bold uppercase text-primary text-xs tracking-widest">SEASON 2024</p>
+<p class="font-headline font-black text-on-surface text-lg">LIVE AUCTION</p>
+</div>
+<div class="flex-1 py-4 flex flex-col gap-1">
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 hover:text-slate-200 transition-all duration-200 ease-in-out font-headline font-bold uppercase" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                DASHBOARD
+            </a>
+<a class="text-primary bg-primary/10 border-l-4 border-primary px-6 py-3 flex items-center gap-3 transition-all duration-200 ease-in-out font-headline font-bold uppercase" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+                SCHOOLS
+            </a>
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 hover:text-slate-200 transition-all duration-200 ease-in-out font-headline font-bold uppercase" href="#">
+<span class="material-symbols-outlined">gavel</span>
+                BID HISTORY
+            </a>
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 hover:text-slate-200 transition-all duration-200 ease-in-out font-headline font-bold uppercase" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+                STANDINGS
+            </a>
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 hover:text-slate-200 transition-all duration-200 ease-in-out font-headline font-bold uppercase" href="#">
+<span class="material-symbols-outlined">gavel</span>
+                RULES
+            </a>
+</div>
+<div class="p-6 mt-auto border-t border-white/5">
+<button class="w-full bg-gradient-to-br from-primary to-on-primary-container text-on-primary-fixed font-headline font-black py-3 skew-tag shadow-[0_0_15px_rgba(173,198,255,0.3)] hover:brightness-110 transition-all">
+<span>PLACE QUICK BID</span>
+</button>
+</div>
+<div class="p-4 flex flex-col gap-1">
+<a class="text-slate-500 px-4 py-2 flex items-center gap-3 text-xs hover:text-slate-200 transition-all font-headline font-bold uppercase" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+                HELP
+            </a>
+<a class="text-slate-500 px-4 py-2 flex items-center gap-3 text-xs hover:text-slate-200 transition-all font-headline font-bold uppercase" href="#">
+<span class="material-symbols-outlined text-sm">logout</span>
+                LOGOUT
+            </a>
+</div>
+</aside>
+<!-- Main Content Area: School Nomination Grid -->
+<main class="flex-1 overflow-y-auto bg-surface-container-lowest p-6 lg:p-10 relative pb-24">
+<!-- Broadcast Header -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<div class="h-2 w-10 bg-secondary skew-tag"></div>
+<span class="font-headline font-bold text-secondary uppercase tracking-[0.2em] text-sm">YOUR TURN TO NOMINATE</span>
+</div>
+<h1 class="text-5xl lg:text-6xl font-headline font-black uppercase tracking-tighter text-on-surface">SELECT YOUR <span class="text-primary">PROGRAM</span></h1>
+</div>
+<div class="bg-surface-container-high p-4 skew-tag border-l-4 border-tertiary">
+<div class="flex flex-col">
+<span class="font-headline text-[10px] tracking-widest text-tertiary uppercase">REMAINING BUDGET</span>
+<span class="text-3xl font-headline font-black text-on-surface">$185</span>
+</div>
+</div>
+</div>
+<!-- Search and Filter Bar -->
+<div class="glass-panel p-6 mb-8 rounded-lg border-t border-white/10 shadow-xl">
+<div class="flex flex-col lg:flex-row gap-6">
+<div class="relative flex-1 group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface font-headline font-medium py-4 pl-12 transition-all placeholder:text-outline uppercase text-sm" placeholder="SEARCH UNIVERSITY, NICKNAME, OR REGION..." type="text"/>
+<div class="absolute bottom-0 left-0 h-[2px] w-0 bg-primary group-focus-within:w-full transition-all duration-300"></div>
+</div>
+<div class="flex flex-wrap gap-2 items-center">
+<button class="px-6 py-2 bg-primary text-on-primary-fixed font-headline font-black text-xs skew-tag tracking-wider transition-all"><span>ALL</span></button>
+<button class="px-6 py-2 bg-surface-container-low text-on-surface-variant hover:text-on-surface font-headline font-black text-xs skew-tag border border-white/5 tracking-wider transition-all"><span>SEC</span></button>
+<button class="px-6 py-2 bg-surface-container-low text-on-surface-variant hover:text-on-surface font-headline font-black text-xs skew-tag border border-white/5 tracking-wider transition-all"><span>BIG TEN</span></button>
+<button class="px-6 py-2 bg-surface-container-low text-on-surface-variant hover:text-on-surface font-headline font-black text-xs skew-tag border border-white/5 tracking-wider transition-all"><span>BIG 12</span></button>
+<button class="px-6 py-2 bg-surface-container-low text-on-surface-variant hover:text-on-surface font-headline font-black text-xs skew-tag border border-white/5 tracking-wider transition-all"><span>ACC</span></button>
+<button class="px-6 py-2 bg-surface-container-low text-on-surface-variant hover:text-on-surface font-headline font-black text-xs skew-tag border border-white/5 tracking-wider transition-all"><span>PAC-12</span></button><button class="px-6.py-2 bg-surface-container-low text-on-surface-variant hover:text-on-surface font-headline font-black text-xs skew-tag border border-white/5 tracking-wider transition-all"><span>SMALL SCHOOL</span></button>
+</div>
+</div>
+</div>
+<!-- School Grid (Table-Inspired Structure) -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+<!-- School Card Component (Repeated) -->
+<div class="group relative bg-surface-container-high border border-white/5 hover:border-primary/50 transition-all duration-300 flex flex-col">
+<!-- Card Header: Identity -->
+<div class="p-4 border-b border-white/5 bg-gradient-to-br from-surface-container-highest/20 to-transparent flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-surface-container-low rounded p-1 flex items-center justify-center border border-white/5">
+<img alt="Georgia" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYdsxtupIeQPBP8vQFnPeo5d7QOclUbVIeDjz5A2fx2685YtyEtsAPKIiQMtETc4d9AtBUOPhOFZactGE8pc9IwPyXHNLWVEkDnr43fhXV_FiIW_XJRcn9a0vfuaJIyOmbs-2EJ2784efIhGWQVQeLA3iFGQvqBR9ZR8chmWJ74FJscdtkzCaov3it-dhRiGBMeHEBacdcoV8KXBK1uVKVdP5Ctd1X8h1iMLYOgFFKhwNGGPLMsAqhnWpDPXH7XF7ONcvlbaFe9Cc"/>
+</div>
+<div>
+<h3 class="text-xl font-headline font-black uppercase tracking-tighter text-on-surface leading-none mb-1 group-hover:text-primary transition-colors">GEORGIA</h3>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">BULLDOGS</p>
+</div>
+</div>
+<div class="px-2 py-0.5 bg-secondary-container/20 text-secondary font-headline font-black text-[9px] skew-tag border border-secondary/20">
+<span>SEC</span>
+</div>
+</div>
+<!-- Card Body: Stats Table -->
+<div class="p-4 grid grid-cols-2 gap-x-4 gap-y-3 flex-grow">
+<div class="border-l-2 border-primary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-primary uppercase tracking-widest leading-none mb-1">PROJ PTS</p>
+<p class="text-lg font-headline font-black text-on-surface">485</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">LY RANK</p>
+<p class="text-lg font-headline font-black text-on-surface">#2</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">SOS RK</p>
+<p class="text-lg font-headline font-black text-on-surface">#14</p>
+</div>
+<div class="border-l-2 border-tertiary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-tertiary uppercase tracking-widest leading-none mb-1">RECRUIT</p>
+<p class="text-lg font-headline font-black text-on-surface">98.4</p>
+</div>
+</div>
+<!-- Card Footer: Action -->
+<div class="p-1">
+<button class="w-full bg-surface-container-low hover:bg-primary hover:text-on-primary-fixed text-on-surface-variant font-headline font-black text-xs py-3 uppercase tracking-widest transition-all group-hover:bg-white/10">
+                        NOMINATE
+                    </button>
+</div>
+</div>
+<!-- Card 2: Michigan -->
+<div class="group relative bg-surface-container-high border border-white/5 hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="p-4 border-b border-white/5 bg-gradient-to-br from-surface-container-highest/20 to-transparent flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-surface-container-low rounded p-1 flex items-center justify-center border border-white/5">
+<img alt="Michigan" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-6Oz2y-gg5TZ0MG9XGCHm57ePQk_IuuJ2IRLi2CimHTTxlVx5ns_pCRt8exxFEAovOG6bviAWwfqCQ-9ksJbfS3ovyI2uvg64HZEKY1CoICIPb6LJRJSdSCoY7Tzhkn2GvFWQd8IoMD6jY2BpVKkhIN67uiWtmOxEgOchb2LtiO5fYrA557lk4mrhL4M7Kf0DRvV3JGEIgGAd0xd1x8Q3KTEEqPEtz3BTMprIQDDRVDXJR6CYaTYKWDkGV_eHvtvxugHvwjcraMc"/>
+</div>
+<div>
+<h3 class="text-xl font-headline font-black uppercase tracking-tighter text-on-surface leading-none mb-1 group-hover:text-primary transition-colors">MICHIGAN</h3>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">WOLVERINES</p>
+</div>
+</div>
+<div class="px-2 py-0.5 bg-primary-container/40 text-primary font-headline font-black text-[9px] skew-tag border border-primary/20">
+<span>BIG TEN</span>
+</div>
+</div>
+<div class="p-4 grid grid-cols-2 gap-x-4 gap-y-3 flex-grow">
+<div class="border-l-2 border-primary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-primary uppercase tracking-widest leading-none mb-1">PROJ PTS</p>
+<p class="text-lg font-headline font-black text-on-surface">452</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">LY RANK</p>
+<p class="text-lg font-headline font-black text-on-surface">#1</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">SOS RK</p>
+<p class="text-lg font-headline font-black text-on-surface">#22</p>
+</div>
+<div class="border-l-2 border-tertiary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-tertiary uppercase tracking-widest leading-none mb-1">RECRUIT</p>
+<p class="text-lg font-headline font-black text-on-surface">91.2</p>
+</div>
+</div>
+<div class="p-1">
+<button class="w-full bg-surface-container-low hover:bg-primary hover:text-on-primary-fixed text-on-surface-variant font-headline font-black text-xs py-3 uppercase tracking-widest transition-all group-hover:bg-white/10">
+                        NOMINATE
+                    </button>
+</div>
+</div>
+<!-- Card 3: Texas -->
+<div class="group relative bg-surface-container-high border border-white/5 hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="p-4 border-b border-white/5 bg-gradient-to-br from-surface-container-highest/20 to-transparent flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-surface-container-low rounded p-1 flex items-center justify-center border border-white/5">
+<img alt="Texas" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQTn4wUKUV0wmOTeBy9rEDbWwMEODqsj3rAz_kS73RxGmIBm0EWV95HWH_KMr8F3uFiea47Qy0WBZ-IgJz9yln90O3KWBepZ4gm0_RGDPQs9OfoPxPo6S-v0WnqmrSfAIAJD1tiK_3NVxjG4b7JTycZhKlkmeHDWUs8ReewNFU5Pq2CbMzSujHGkcvY3Sv96ggAJiK-OdVsJ7N3Pmd8zZw3du3aN2cylqMdp7QaWKkh6dUv4C86ntIsfU-jXZHhElmiVMNATy8-Rw"/>
+</div>
+<div>
+<h3 class="text-xl font-headline font-black uppercase tracking-tighter text-on-surface leading-none mb-1 group-hover:text-primary transition-colors">TEXAS</h3>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">LONGHORNS</p>
+</div>
+</div>
+<div class="px-2 py-0.5 bg-secondary-container/20 text-secondary font-headline font-black text-[9px] skew-tag border border-secondary/20">
+<span>SEC</span>
+</div>
+</div>
+<div class="p-4 grid grid-cols-2 gap-x-4 gap-y-3 flex-grow">
+<div class="border-l-2 border-primary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-primary uppercase tracking-widest leading-none mb-1">PROJ PTS</p>
+<p class="text-lg font-headline font-black text-on-surface">440</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">LY RANK</p>
+<p class="text-lg font-headline font-black text-on-surface">#4</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">SOS RK</p>
+<p class="text-lg font-headline font-black text-on-surface">#8</p>
+</div>
+<div class="border-l-2 border-tertiary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-tertiary uppercase tracking-widest leading-none mb-1">RECRUIT</p>
+<p class="text-lg font-headline font-black text-on-surface">96.8</p>
+</div>
+</div>
+<div class="p-1">
+<button class="w-full bg-surface-container-low hover:bg-primary hover:text-on-primary-fixed text-on-surface-variant font-headline font-black text-xs py-3 uppercase tracking-widest transition-all group-hover:bg-white/10">
+                        NOMINATE
+                    </button>
+</div>
+</div>
+<!-- Card 4: FSU -->
+<div class="group relative bg-surface-container-high border border-white/5 hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="p-4 border-b border-white/5 bg-gradient-to-br from-surface-container-highest/20 to-transparent flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-surface-container-low rounded p-1 flex items-center justify-center border border-white/5">
+<img alt="FSU" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQN71k82hW_lLK7WepqoR-J3NWka8AjEAFAuxsz1jJP_qZniROhR75R1QmW7svB5eZNXoJC0Cf5MqhjWPbL8Xg_7jNO1d_A5VEzRHN2U9tXqiWimebe1qMkri2LG6Wfci_-tjNW7ZRexbD6iTB9f9NDvKWrkL8m8nHqxXM22_l4IZyrFisbUB-e3Ttm0rSYi0Z44J9YVQnTN7iUmyO3BV31ICBpZbBryot7-nk-LOUJqQm92R-lVSg2HIvd7IjyJQBX_CQ9JIvYkU"/>
+</div>
+<div>
+<h3 class="text-xl font-headline font-black uppercase tracking-tighter text-on-surface leading-none mb-1 group-hover:text-primary transition-colors">FLORIDA ST</h3>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">SEMINOLES</p>
+</div>
+</div>
+<div class="px-2 py-0.5 bg-tertiary-container/20 text-tertiary font-headline font-black text-[9px] skew-tag border border-tertiary/20">
+<span>ACC</span>
+</div>
+</div>
+<div class="p-4 grid grid-cols-2 gap-x-4 gap-y-3 flex-grow">
+<div class="border-l-2 border-primary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-primary uppercase tracking-widest leading-none mb-1">PROJ PTS</p>
+<p class="text-lg font-headline font-black text-on-surface">418</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">LY RANK</p>
+<p class="text-lg font-headline font-black text-on-surface">#6</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">SOS RK</p>
+<p class="text-lg font-headline font-black text-on-surface">#45</p>
+</div>
+<div class="border-l-2 border-tertiary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-tertiary uppercase tracking-widest leading-none mb-1">RECRUIT</p>
+<p class="text-lg font-headline font-black text-on-surface">88.7</p>
+</div>
+</div>
+<div class="p-1">
+<button class="w-full bg-surface-container-low hover:bg-primary hover:text-on-primary-fixed text-on-surface-variant font-headline font-black text-xs py-3 uppercase tracking-widest transition-all group-hover:bg-white/10">
+                        NOMINATE
+                    </button>
+</div>
+</div>
+<!-- Card 5: Oregon -->
+<div class="group relative bg-surface-container-high border border-white/5 hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="p-4 border-b border-white/5 bg-gradient-to-br from-surface-container-highest/20 to-transparent flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-surface-container-low rounded p-1 flex items-center justify-center border border-white/5">
+<img alt="Oregon" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy7FRvo6Zo1PiMvJOlQjfMpVIdbVNWeeHDcY_RoSBy2nbJABQizy15ydwmohlQ_LRU4dzXKFeosgyQqKaRy89iLAI_jOI9iwxFW2qfIi4Jyi7OXukywf9Yr41diINMHcji1BnmNOeoz-tODpTlfYhI3Ta9NMectzkM8MTCX2cPVs8oV17Iwn8JDi8Gsp_2pgOcVqB40YNOqPFElAj7NMVSjgwJE1qnAx1pDTk1jZAmTLjA4m-onXnFBsPZI-JE8tiuv4dZBZJ8PBQ"/>
+</div>
+<div>
+<h3 class="text-xl font-headline font-black uppercase tracking-tighter text-on-surface leading-none mb-1 group-hover:text-primary transition-colors">OREGON</h3>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">DUCKS</p>
+</div>
+</div>
+<div class="px-2 py-0.5 bg-primary-container/40 text-primary font-headline font-black text-[9px] skew-tag border border-primary/20">
+<span>BIG TEN</span>
+</div>
+</div>
+<div class="p-4 grid grid-cols-2 gap-x-4 gap-y-3 flex-grow">
+<div class="border-l-2 border-primary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-primary uppercase tracking-widest leading-none mb-1">PROJ PTS</p>
+<p class="text-lg font-headline font-black text-on-surface">429</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">LY RANK</p>
+<p class="text-lg font-headline font-black text-on-surface">#9</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">SOS RK</p>
+<p class="text-lg font-headline font-black text-on-surface">#31</p>
+</div>
+<div class="border-l-2 border-tertiary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-tertiary uppercase tracking-widest leading-none mb-1">RECRUIT</p>
+<p class="text-lg font-headline font-black text-on-surface">94.1</p>
+</div>
+</div>
+<div class="p-1">
+<button class="w-full bg-surface-container-low hover:bg-primary hover:text-on-primary-fixed text-on-surface-variant font-headline font-black text-xs py-3 uppercase tracking-widest transition-all group-hover:bg-white/10">
+                        NOMINATE
+                    </button>
+</div>
+</div>
+<!-- Card 6: Ohio State -->
+<div class="group relative bg-surface-container-high border border-white/5 hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="p-4 border-b border-white/5 bg-gradient-to-br from-surface-container-highest/20 to-transparent flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-surface-container-low rounded p-1 flex items-center justify-center border border-white/5">
+<img alt="Ohio State" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVWXsxcJxtdZCV0J857cs5eQNeCjNM-0BoQpvj_1cAOfwU_vozYlvNYsO0HihHALUrqgU5hHd9B-nduTEQ-Kifz2e4t3yefYcpi5FTeAb21tN3VwN8jEYIoUGJbtVKJ8FQP15RlTxSdpEKH2cC8Q3PY1Mt7tDwRk3sY2cNEUO9XEuOC_GGACZ9tHjcVuRF0kNMZGP8GaZW437NC91AQP_4hyuBut527AwYSF8T1YmT7s0Su-Ud3oE2fPLqkZumQcKRhKw6whPbH3I"/>
+</div>
+<div>
+<h3 class="text-xl font-headline font-black uppercase tracking-tighter text-on-surface leading-none mb-1 group-hover:text-primary transition-colors">OHIO STATE</h3>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">BUCKEYES</p>
+</div>
+</div>
+<div class="px-2 py-0.5 bg-primary-container/40 text-primary font-headline font-black text-[9px] skew-tag border border-primary/20">
+<span>BIG TEN</span>
+</div>
+</div>
+<div class="p-4 grid grid-cols-2 gap-x-4 gap-y-3 flex-grow">
+<div class="border-l-2 border-primary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-primary uppercase tracking-widest leading-none mb-1">PROJ PTS</p>
+<p class="text-lg font-headline font-black text-on-surface">471</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">LY RANK</p>
+<p class="text-lg font-headline font-black text-on-surface">#10</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">SOS RK</p>
+<p class="text-lg font-headline font-black text-on-surface">#11</p>
+</div>
+<div class="border-l-2 border-tertiary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-tertiary uppercase tracking-widest leading-none mb-1">RECRUIT</p>
+<p class="text-lg font-headline font-black text-on-surface">97.5</p>
+</div>
+</div>
+<div class="p-1">
+<button class="w-full bg-surface-container-low hover:bg-primary hover:text-on-primary-fixed text-on-surface-variant font-headline font-black text-xs py-3 uppercase tracking-widest transition-all group-hover:bg-white/10">
+                        NOMINATE
+                    </button>
+</div>
+</div>
+<!-- Card 7: Alabama -->
+<div class="group relative bg-surface-container-high border border-white/5 hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="p-4 border-b border-white/5 bg-gradient-to-br from-surface-container-highest/20 to-transparent flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-surface-container-low rounded p-1 flex items-center justify-center border border-white/5">
+<img alt="Alabama" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_PtyctZP2ZNfAunBjZcQTMgx-PB2H0DH4mgAgpjZSl2tNJ3Cwy9GWUwkQFeVrZtgFWCWYqwYjaCZLeWjMdYt95dU-mVmdiYUPyvfCYkq6iijquj6xYqgIR_VGQPZ0IQzbf0b86NyiKh0wY8A0kCcFfeXT2OmBzN2LGavqQwSSw2vMFXqGRcvCToQTKZHWwTRENnux-SGZpp7x465GakNwz0VdQShDSmYps4TUCFf5W43vR1YLysCjEoFSZzQ_3ccncz_jZUQ2iG0"/>
+</div>
+<div>
+<h3 class="text-xl font-headline font-black uppercase tracking-tighter text-on-surface leading-none mb-1 group-hover:text-primary transition-colors">ALABAMA</h3>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">CRIMSON TIDE</p>
+</div>
+</div>
+<div class="px-2 py-0.5 bg-secondary-container/20 text-secondary font-headline font-black text-[9px] skew-tag border border-secondary/20">
+<span>SEC</span>
+</div>
+</div>
+<div class="p-4 grid grid-cols-2 gap-x-4 gap-y-3 flex-grow">
+<div class="border-l-2 border-primary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-primary uppercase tracking-widest leading-none mb-1">PROJ PTS</p>
+<p class="text-lg font-headline font-black text-on-surface">458</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">LY RANK</p>
+<p class="text-lg font-headline font-black text-on-surface">#5</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">SOS RK</p>
+<p class="text-lg font-headline font-black text-on-surface">#4</p>
+</div>
+<div class="border-l-2 border-tertiary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-tertiary uppercase tracking-widest leading-none mb-1">RECRUIT</p>
+<p class="text-lg font-headline font-black text-on-surface">95.9</p>
+</div>
+</div>
+<div class="p-1">
+<button class="w-full bg-surface-container-low hover:bg-primary hover:text-on-primary-fixed text-on-surface-variant font-headline font-black text-xs py-3 uppercase tracking-widest transition-all group-hover:bg-white/10">
+                        NOMINATE
+                    </button>
+</div>
+</div>
+<!-- Card 8: Utah -->
+<div class="group relative bg-surface-container-high border border-white/5 hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="p-4 border-b border-white/5 bg-gradient-to-br from-surface-container-highest/20 to-transparent flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-surface-container-low rounded p-1 flex items-center justify-center border border-white/5">
+<img alt="Utah" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhXV3-hkYDRTUZIRKh1w7jns5PUqK9HCq_6JXH5fgeqGK90kA7MMP6j-vRG1UmuEjlaYpKrn-IKu6LGR3T3yL5DzqX0Uv1xd9Ku8v_Y5j-CFlNgaH5JOEFVaV0Z0JIvinx9ulFPFx-OU2dXPkD3he3DkygM2paiZuxCtlrbdycVk_eDdEbq5wfrPYtW6WAFWyMaI-sZI2UgumFquOsVoxI6YGWKvytrFGjgD2RqO6t9K4dWtePxArVeFVDc1LvFr_ngMRr5KBFCOg"/>
+</div>
+<div>
+<h3 class="text-xl font-headline font-black uppercase tracking-tighter text-on-surface leading-none mb-1 group-hover:text-primary transition-colors">UTAH</h3>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">UTES</p>
+</div>
+</div>
+<div class="px-2 py-0.5 bg-tertiary-container/20 text-tertiary font-headline font-black text-[9px] skew-tag border border-tertiary/20">
+<span>BIG 12</span>
+</div>
+</div>
+<div class="p-4 grid grid-cols-2 gap-x-4 gap-y-3 flex-grow">
+<div class="border-l-2 border-primary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-primary uppercase tracking-widest leading-none mb-1">PROJ PTS</p>
+<p class="text-lg font-headline font-black text-on-surface">395</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">LY RANK</p>
+<p class="text-lg font-headline font-black text-on-surface">#25</p>
+</div>
+<div class="border-l-2 border-white/10 pl-2">
+<p class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest leading-none mb-1">SOS RK</p>
+<p class="text-lg font-headline font-black text-on-surface">#42</p>
+</div>
+<div class="border-l-2 border-tertiary/20 pl-2">
+<p class="text-[9px] font-headline font-bold text-tertiary uppercase tracking-widest leading-none mb-1">RECRUIT</p>
+<p class="text-lg font-headline font-black text-on-surface">84.2</p>
+</div>
+</div>
+<div class="p-1">
+<button class="w-full bg-surface-container-low hover:bg-primary hover:text-on-primary-fixed text-on-surface-variant font-headline font-black text-xs py-3 uppercase tracking-widest transition-all group-hover:bg-white/10">
+                        NOMINATE
+                    </button>
+</div>
+</div>
+</div>
+<!-- Scroll Ticker / Broadcast Chyron -->
+<div class="fixed bottom-0 left-0 lg:left-64 right-0 h-10 bg-surface-container-highest z-40 border-t border-white/5 overflow-hidden flex items-center">
+<div class="bg-secondary px-4 h-full flex items-center skew-tag ml-4 z-10">
+<span class="font-headline font-black text-on-secondary text-[10px] tracking-widest">LIVE UPDATES</span>
+</div>
+<div class="flex-1 px-8 whitespace-nowrap overflow-hidden">
+<div class="inline-flex gap-12 items-center">
+<span class="font-headline text-[11px] font-bold uppercase text-on-surface-variant tracking-wider"><span class="text-primary">LATEST NOMINATION:</span> PENN STATE BY 'QB_THREAT' FOR $42</span>
+<span class="font-headline text-[11px] font-bold uppercase text-on-surface-variant tracking-wider"><span class="text-primary">BIG BID:</span> LSU SOLD TO 'SEC_CHAMP' FOR $78</span>
+<span class="font-headline text-[11px] font-bold uppercase text-on-surface-variant tracking-wider"><span class="text-primary">ALERT:</span> 3 TEAMS AT MAX ROSTER CAPACITY</span>
+<span class="font-headline text-[11px] font-bold uppercase text-on-surface-variant tracking-wider"><span class="text-primary">LATEST NOMINATION:</span> PENN STATE BY 'QB_THREAT' FOR $42</span>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

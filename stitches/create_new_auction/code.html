@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GRIDIRON PRIME | Create Auction</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#ffcccb",
+                    "surface-tint": "#adc6ff",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "on-tertiary-fixed": "#221b00",
+                    "tertiary": "#e9c400",
+                    "background": "#10141a",
+                    "secondary-container": "#bf012c",
+                    "inverse-on-surface": "#2d3137",
+                    "on-secondary-fixed": "#410008",
+                    "outline": "#8d9199",
+                    "tertiary-container": "#c9a900",
+                    "primary-fixed-dim": "#adc6ff",
+                    "tertiary-fixed": "#ffe16d",
+                    "primary-container": "#00204d",
+                    "on-surface": "#dfe2eb",
+                    "surface-container-high": "#262a31",
+                    "outline-variant": "#43474e",
+                    "on-primary": "#002e69",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-low": "#181c22",
+                    "primary-fixed": "#d8e2ff",
+                    "inverse-primary": "#005bc1",
+                    "surface-container-lowest": "#0a0e14",
+                    "tertiary-fixed-dim": "#e9c400",
+                    "secondary-fixed": "#ffdad9",
+                    "error": "#ffb4ab",
+                    "surface-variant": "#31353c",
+                    "secondary-fixed-dim": "#ffb3b2",
+                    "primary": "#adc6ff",
+                    "on-primary-fixed": "#001a41",
+                    "on-secondary-fixed-variant": "#92001f",
+                    "on-error": "#690005",
+                    "on-primary-container": "#3686ff",
+                    "surface-container": "#1c2026",
+                    "surface-bright": "#353940",
+                    "secondary": "#ffb3b2",
+                    "on-background": "#dfe2eb",
+                    "on-primary-fixed-variant": "#004493",
+                    "error-container": "#93000a",
+                    "on-tertiary-container": "#4c3f00",
+                    "on-secondary": "#680013",
+                    "surface": "#10141a",
+                    "surface-dim": "#10141a",
+                    "surface-container-highest": "#31353c",
+                    "on-tertiary": "#3a3000",
+                    "inverse-surface": "#dfe2eb",
+                    "on-surface-variant": "#c4c6cf"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(28, 32, 38, 0.6);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(173, 198, 255, 0.15);
+        }
+        .metal-gradient {
+            background: linear-gradient(135deg, #adc6ff 0%, #3686ff 100%);
+        }
+        .skew-indicator {
+            transform: skewX(-10deg);
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 bg-[#0a0e14] dark:bg-[#0a0e14] border-b border-[#31353c]/30 shadow-[0_4px_20px_rgba(0,68,147,0.15)] flex justify-between items-center px-8 h-16 w-full max-w-full">
+<div class="flex items-center gap-6">
+<span class="text-2xl font-black italic tracking-tighter text-[#adc6ff] dark:text-[#adc6ff] font-['Space_Grotesk'] uppercase tracking-tighter">GRIDIRON PRIME</span>
+<nav class="hidden md:flex items-center gap-8 ml-8">
+<a class="font-['Space_Grotesk'] uppercase tracking-tighter text-[#c4c6cf] hover:text-[#adc6ff] transition-colors duration-300" href="#">WAR ROOM</a>
+<a class="font-['Space_Grotesk'] uppercase tracking-tighter text-[#e9c400] border-b-2 border-[#e9c400] pb-1" href="#">AUCTION</a>
+<a class="font-['Space_Grotesk'] uppercase tracking-tighter text-[#c4c6cf] hover:text-[#adc6ff] transition-colors duration-300" href="#">SCHOOLS</a>
+<a class="font-['Space_Grotesk'] uppercase tracking-tighter text-[#c4c6cf] hover:text-[#adc6ff] transition-colors duration-300" href="#">STANDINGS</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-[#1c2026] transition-colors duration-300 rounded-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[#adc6ff]">leaderboard</span>
+</button>
+<button class="p-2 hover:bg-[#1c2026] transition-colors duration-300 rounded-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[#adc6ff]">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center overflow-hidden">
+<img alt="User Profile Avatar" data-alt="close up headshot of a professional fantasy football scout wearing headphones in a dark tech studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-G2uBKxfThCDiIU9NiHt8NvIDVU7oafPzN2WQYW7lkjaU9KJMY-p0a01erSX1vmBEJ-kAz9hCNdGUYcE84IhtfOt800btcRDRTJaNydfzdN7Qp6w9v1JkpHKKOIma7OmWtwG4VpVBDjeq1Gtki59zK9SF85o4FBXiYTaKQgozx2vWk0ZOA4nMVy2LEBTm7d-_nPZEWBiBx0nKpi-smenmm13d236dEPB55QyWCC_dZfxfO3MkxvyloI9XQWRRQCcbz-JQQOwQWdA"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-4 md:px-8 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Settings & Setup -->
+<div class="lg:col-span-7 space-y-8">
+<section>
+<div class="flex items-center gap-3 mb-6">
+<div class="w-2 h-8 bg-tertiary skew-indicator"></div>
+<h1 class="text-3xl font-black font-headline uppercase tracking-tighter">Initialize New Auction</h1>
+</div>
+<div class="glass-panel p-8 rounded-xl shadow-2xl space-y-8">
+<!-- General Settings -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label text-xs font-bold text-tertiary uppercase tracking-wider">Auction Name</label>
+<input class="w-full bg-transparent border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-lg py-2 transition-all font-headline" placeholder="e.g. B1G COMMANDER 2026" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="font-label text-xs font-bold text-tertiary uppercase tracking-wider">Join Code</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 font-mono text-primary-fixed-dim" readonly="" type="text" value="XP882GRD"/>
+<span class="material-symbols-outlined absolute right-3 top-2 text-sm text-outline cursor-pointer hover:text-primary">content_copy</span>
+</div>
+</div>
+</div>
+<!-- Participant & Budget -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="bg-surface-container-low p-6 rounded-lg">
+<label class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block mb-4">Participant Limit</label>
+<div class="flex items-center justify-between">
+<button class="w-10 h-10 border border-outline-variant hover:border-primary flex items-center justify-center rounded-lg active:scale-90 transition-transform">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<span class="text-4xl font-black font-headline">06</span>
+<button class="w-10 h-10 border border-outline-variant hover:border-primary flex items-center justify-center rounded-lg active:scale-90 transition-transform">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-3 text-center uppercase tracking-widest font-bold">Standard Coaches</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg">
+<label class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block mb-4">Total Budget</label>
+<div class="flex items-center justify-between px-4 py-6">
+<span class="text-2xl font-bold text-outline-variant">$</span>
+<input class="bg-transparent border-none text-4xl font-black font-headline text-center focus:ring-0 w-32" step="1" type="number" value="200"/>
+<span class="text-xs font-bold text-outline uppercase">USD</span>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-3 text-center uppercase tracking-widest font-bold">Whole Dollars Only</p>
+</div>
+</div>
+</div>
+</section>
+<!-- School Pool Section -->
+<section>
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary">database</span>
+<h2 class="text-xl font-black font-headline uppercase tracking-tighter">School Database Selection</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<button class="group relative overflow-hidden bg-surface-container-high p-6 rounded-xl text-left border border-primary/20 hover:border-primary transition-all">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline font-bold text-lg mb-1">DEFAULT 2026 SET</h3>
+<p class="text-xs text-on-surface-variant leading-relaxed">Official collegiate rankings and roster pool for the upcoming season.</p>
+</div>
+<span class="material-symbols-outlined text-primary group-hover:scale-125 transition-transform" data-weight="fill">check_circle</span>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-1 bg-primary"></div>
+</button>
+<button class="group bg-surface-container p-6 rounded-xl text-left border border-outline-variant/30 hover:border-outline-variant transition-all">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline font-bold text-lg mb-1">UPLOAD CSV</h3>
+<p class="text-xs text-on-surface-variant leading-relaxed">Import custom player lists, salaries, and university groupings.</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface transition-colors">cloud_upload</span>
+</div>
+</button>
+</div>
+</section>
+</div>
+<!-- Right Column: Roster Architecture -->
+<div class="lg:col-span-5">
+<aside class="sticky top-24 space-y-6">
+<div class="bg-surface-container-highest p-1 skew-indicator">
+<div class="bg-surface-container-highest border-l-4 border-secondary px-4 py-2 flex items-center justify-between">
+<span class="font-headline font-black text-sm tracking-widest uppercase">Roster Architecture</span>
+<span class="material-symbols-outlined text-secondary text-sm">architecture</span>
+</div>
+</div>
+<div class="glass-panel rounded-xl p-6 space-y-4 shadow-xl">
+<div class="space-y-3">
+<!-- Slot Item -->
+<div class="flex items-center justify-between bg-surface-container-low p-3 rounded-lg group hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center font-black font-headline text-primary">02</div>
+<div>
+<h4 class="font-headline font-bold text-sm tracking-tight">BIG TEN</h4>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Conference Primary</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+</div>
+</div>
+<div class="flex items-center justify-between bg-surface-container-low p-3 rounded-lg group hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center font-black font-headline text-primary">02</div>
+<div>
+<h4 class="font-headline font-bold text-sm tracking-tight">SEC</h4>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Conference Primary</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+</div>
+</div>
+<div class="flex items-center justify-between bg-surface-container-low p-3 rounded-lg group hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center font-black font-headline text-primary">01</div>
+<div>
+<h4 class="font-headline font-bold text-sm tracking-tight">ACC</h4>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Conference Primary</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+</div>
+</div>
+<div class="flex items-center justify-between bg-surface-container-low p-3 rounded-lg group hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center font-black font-headline text-primary">01</div>
+<div>
+<h4 class="font-headline font-bold text-sm tracking-tight">BIG 12</h4>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Conference Primary</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+</div>
+</div>
+<div class="flex items-center justify-between bg-surface-container-low p-3 rounded-lg group hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center font-black font-headline text-primary">01</div>
+<div>
+<h4 class="font-headline font-bold text-sm tracking-tight">SMALL SCHOOL</h4>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">G5 / Independent</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+</div>
+</div>
+<div class="flex items-center justify-between bg-surface-container-high p-3 rounded-lg border-l-2 border-tertiary">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-tertiary/20 rounded flex items-center justify-center font-black font-headline text-tertiary">03</div>
+<div>
+<h4 class="font-headline font-bold text-sm tracking-tight">FLEX</h4>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Universal Eligible</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-tertiary hover:scale-110 transition-transform"><span class="material-symbols-outlined text-lg">tune</span></button>
+</div>
+</div>
+</div>
+<button class="w-full py-4 border-2 border-dashed border-outline-variant hover:border-primary hover:text-primary transition-all rounded-lg flex items-center justify-center gap-2 text-xs font-bold font-label uppercase">
+<span class="material-symbols-outlined">add_box</span>
+                        Add Roster Slot
+                    </button>
+</div>
+<div class="flex gap-4">
+<button class="flex-1 py-4 bg-surface-container-highest text-on-surface font-headline font-black uppercase tracking-widest text-sm rounded-lg hover:bg-surface-bright transition-colors active:scale-95 transition-transform">
+                        Save Draft
+                    </button>
+<button class="flex-[2] py-4 metal-gradient text-on-primary-fixed font-headline font-black uppercase tracking-widest text-sm rounded-lg shadow-[0_0_20px_rgba(173,198,255,0.3)] hover:brightness-110 active:scale-95 transition-transform">
+                        Launch Waiting Room
+                    </button>
+</div>
+</aside>
+</div>
+</main>
+<!-- BottomNavBar Shell (Mobile Only) -->
+<nav class="fixed bottom-0 w-full md:hidden z-50 border-t border-[#31353c] bg-[#0a0e14]/90 backdrop-blur-md flex justify-around items-center h-20 px-4 pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center text-[#e9c400] scale-110 font-['Space_Grotesk'] text-[10px] font-bold uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="sports_football">sports_football</span>
+<span>DRAFT</span>
+</a>
+<a class="flex flex-col items-center text-[#c4c6cf] hover:text-[#adc6ff] font-['Space_Grotesk'] text-[10px] font-bold uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span>SCHOOLS</span>
+</a>
+<a class="flex flex-col items-center text-[#c4c6cf] hover:text-[#adc6ff] font-['Space_Grotesk'] text-[10px] font-bold uppercase active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>BID</span>
+</a>
+<a class="flex flex-col items-center text-[#c4c6cf] hover:text-[#adc6ff] font-['Space_Grotesk'] text-[10px] font-bold uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+<span>CHAT</span>
+</a>
+</nav>
+<!-- Decorative Background Elements -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
+<div class="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-5%] left-[-5%] w-[40%] h-[40%] bg-secondary/5 blur-[100px] rounded-full"></div>
+<div class="absolute top-[20%] left-[50%] w-[1px] h-full bg-gradient-to-b from-transparent via-outline-variant/10 to-transparent"></div>
+</div>
+</body></html>

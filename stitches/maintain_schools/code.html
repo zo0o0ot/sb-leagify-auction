@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#ffcccb",
+                    "surface-tint": "#adc6ff",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "on-tertiary-fixed": "#221b00",
+                    "tertiary": "#e9c400",
+                    "background": "#10141a",
+                    "secondary-container": "#bf012c",
+                    "inverse-on-surface": "#2d3137",
+                    "on-secondary-fixed": "#410008",
+                    "outline": "#8d9199",
+                    "tertiary-container": "#c9a900",
+                    "primary-fixed-dim": "#adc6ff",
+                    "tertiary-fixed": "#ffe16d",
+                    "primary-container": "#00204d",
+                    "on-surface": "#dfe2eb",
+                    "surface-container-high": "#262a31",
+                    "outline-variant": "#43474e",
+                    "on-primary": "#002e69",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-low": "#181c22",
+                    "primary-fixed": "#d8e2ff",
+                    "inverse-primary": "#005bc1",
+                    "surface-container-lowest": "#0a0e14",
+                    "tertiary-fixed-dim": "#e9c400",
+                    "secondary-fixed": "#ffdad9",
+                    "error": "#ffb4ab",
+                    "surface-variant": "#31353c",
+                    "secondary-fixed-dim": "#ffb3b2",
+                    "primary": "#adc6ff",
+                    "on-primary-fixed": "#001a41",
+                    "on-secondary-fixed-variant": "#92001f",
+                    "on-error": "#690005",
+                    "on-primary-container": "#3686ff",
+                    "surface-container": "#1c2026",
+                    "surface-bright": "#353940",
+                    "secondary": "#ffb3b2",
+                    "on-background": "#dfe2eb",
+                    "on-primary-fixed-variant": "#004493",
+                    "error-container": "#93000a",
+                    "on-tertiary-container": "#4c3f00",
+                    "on-secondary": "#680013",
+                    "surface": "#10141a",
+                    "surface-dim": "#10141a",
+                    "surface-container-highest": "#31353c",
+                    "on-tertiary": "#3a3000",
+                    "inverse-surface": "#dfe2eb",
+                    "on-surface-variant": "#c4c6cf"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-shift-bg {
+            background-color: #1c2026;
+        }
+        .glass-chyron {
+            background: rgba(49, 53, 60, 0.6);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#0a0e14] dark:bg-[#0a0e14] border-b border-[#31353c]/30 shadow-[0_4px_20px_rgba(0,68,147,0.15)] flex justify-between items-center px-8 h-16 w-full max-w-full">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black italic tracking-tighter text-[#adc6ff] dark:text-[#adc6ff] font-['Space_Grotesk'] uppercase tracking-tighter">GRIDIRON PRIME</span>
+<nav class="hidden md:flex gap-6">
+<a class="font-['Space_Grotesk'] uppercase tracking-tighter text-[#c4c6cf] hover:text-[#adc6ff] transition-colors duration-300" href="#">WAR ROOM</a>
+<a class="font-['Space_Grotesk'] uppercase tracking-tighter text-[#c4c6cf] hover:text-[#adc6ff] transition-colors duration-300" href="#">AUCTION</a>
+<a class="font-['Space_Grotesk'] uppercase tracking-tighter text-[#e9c400] border-b-2 border-[#e9c400] pb-1 transition-colors duration-300" href="#">SCHOOLS</a>
+<a class="font-['Space_Grotesk'] uppercase tracking-tighter text-[#c4c6cf] hover:text-[#adc6ff] transition-colors duration-300" href="#">STANDINGS</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-[#1c2026] transition-colors duration-300 active:scale-95 transition-transform text-[#adc6ff]">
+<span class="material-symbols-outlined">leaderboard</span>
+</button>
+<button class="p-2 hover:bg-[#1c2026] transition-colors duration-300 active:scale-95 transition-transform text-[#adc6ff]">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional sports analyst in a dark suit with dramatic studio lighting and a tech background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtAQNp2XDFG5FjtUl4RmiSPPWVro56uVmlXrLvOvg7_Fbp7njWJcFoWjvc8B19yj_IC8reb1OX1l4NEQZfSg8bFcCpRrP5KDWuO8tiv3mAR4xpRNvMATuNludFPzqR4WVqKaPhxhVmChYT34btVw_U8Uxj_8IwngDjXKQSUXzuS6lKwKgMH3JKJRBAiZH48P3wXXqvnelPfV7NZAVBRsd6AqLK_1u6cQWfpE3Sl4pRFdKS4F3ARVEtRCYv_n0nd3P141lzgXwVNpY"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-full w-64 border-r border-[#31353c]/50 bg-[#1c2026] dark:bg-[#1c2026] shadow-2xl flex flex-col py-6 z-40 hidden md:flex">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-10 h-10 bg-surface-container-highest flex items-center justify-center rounded border border-primary/20">
+<span class="material-symbols-outlined text-tertiary">security</span>
+</div>
+<div>
+<h2 class="font-['Space_Grotesk'] font-bold text-sm text-on-surface uppercase tracking-tight">STRATEGIC COMMAND</h2>
+<p class="text-[10px] text-tertiary font-bold tracking-widest uppercase">PHASE: NOMINATION</p>
+</div>
+</div>
+</div>
+<nav class="flex-1">
+<a class="flex items-center gap-4 px-6 py-4 font-['Space_Grotesk'] font-bold text-sm text-[#c4c6cf] hover:bg-[#31353c]/50 hover:translate-x-1 transition-all active:bg-[#adc6ff]/10" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>DRAFT BOARD</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 font-['Space_Grotesk'] font-bold text-sm text-[#c4c6cf] hover:bg-[#31353c]/50 hover:translate-x-1 transition-all active:bg-[#adc6ff]/10" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span>MY ROSTER</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 font-['Space_Grotesk'] font-bold text-sm text-[#c4c6cf] hover:bg-[#31353c]/50 hover:translate-x-1 transition-all active:bg-[#adc6ff]/10" href="#">
+<span class="material-symbols-outlined">gavel</span>
+<span>NOMINATIONS</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 font-['Space_Grotesk'] font-bold text-sm bg-[#31353c] text-[#e9c400] border-l-4 border-[#e9c400] hover:translate-x-1 transition-all active:bg-[#adc6ff]/10" href="#">
+<span class="material-symbols-outlined">search_check</span>
+<span>SCOUTING</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 font-['Space_Grotesk'] font-bold text-sm text-[#c4c6cf] hover:bg-[#31353c]/50 hover:translate-x-1 transition-all active:bg-[#adc6ff]/10" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>HISTORY</span>
+</a>
+</nav>
+<div class="px-6 mt-auto pb-20">
+<button class="w-full bg-gradient-to-br from-primary to-on-primary-container text-on-primary-fixed font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-[0_0_15px_rgba(173,198,255,0.3)] font-['Space_Grotesk'] uppercase tracking-tighter">
+<span class="material-symbols-outlined">upload_file</span>
+                PLACE BID
+            </button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="md:ml-64 pt-24 pb-24 px-4 md:px-10 min-h-screen">
+<div class="max-w-7xl mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+<div class="relative">
+<div class="absolute -top-4 -left-4 w-12 h-12 bg-tertiary/10 rounded-full blur-2xl"></div>
+<h1 class="font-headline text-5xl font-black italic tracking-tighter uppercase text-on-surface leading-none relative">
+                        MAINTAIN <span class="text-primary">SCHOOLS</span>
+</h1>
+<p class="font-label text-tertiary text-xs tracking-[0.2em] font-bold mt-2 uppercase">Core Database Management • 132 Entities Identified</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-surface-container-highest border-b-2 border-primary/30 px-6 py-3 font-label text-primary font-bold text-sm hover:bg-surface-bright transition-all active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">download</span>
+                        EXPORT TEMPLATE
+                    </button>
+<button class="bg-gradient-to-r from-tertiary to-tertiary-container text-on-tertiary-fixed font-label font-black text-sm px-8 py-3 rounded-sm flex items-center gap-2 hover:shadow-[0_0_20px_rgba(233,196,0,0.4)] transition-all active:scale-95">
+<span class="material-symbols-outlined">cloud_upload</span>
+                        BULK UPLOAD SCHOOLS
+                    </button>
+</div>
+</div>
+<!-- Dashboard Stats -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="bg-surface-container border-l-4 border-primary p-6 shadow-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 -rotate-12 translate-x-12 -translate-y-12 transition-transform group-hover:translate-x-10"></div>
+<p class="font-label text-outline text-[10px] uppercase tracking-widest mb-1">TOTAL INSTITUTIONS</p>
+<h3 class="font-headline text-4xl font-bold text-on-surface">132</h3>
+</div>
+<div class="bg-surface-container border-l-4 border-tertiary p-6 shadow-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary/5 -rotate-12 translate-x-12 -translate-y-12 transition-transform group-hover:translate-x-10"></div>
+<p class="font-label text-outline text-[10px] uppercase tracking-widest mb-1">PROJECTED CAPTURE</p>
+<h3 class="font-headline text-4xl font-bold text-on-surface">4,850 <span class="text-sm font-label text-tertiary">PTS</span></h3>
+</div>
+<div class="bg-surface-container border-l-4 border-secondary p-6 shadow-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 -rotate-12 translate-x-12 -translate-y-12 transition-transform group-hover:translate-x-10"></div>
+<p class="font-label text-outline text-[10px] uppercase tracking-widest mb-1">UNASSIGNED LOGOS</p>
+<h3 class="font-headline text-4xl font-bold text-secondary">08</h3>
+</div>
+</div>
+<!-- Table Actions -->
+<div class="glass-chyron mb-4 p-4 flex flex-wrap items-center justify-between gap-4 rounded-t-lg">
+<div class="relative w-full md:w-96 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-lowest border-none border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface font-label text-xs tracking-wider py-3 pl-10 transition-all uppercase placeholder:text-outline/50" placeholder="FILTER BY SCHOOL OR CONFERENCE..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label text-xs text-outline font-bold uppercase mr-2">Sort by:</span>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface font-label text-xs font-bold border-b border-primary/20">POINTS</button>
+<button class="px-4 py-2 bg-surface-container-lowest text-outline font-label text-xs font-bold hover:text-on-surface">ALPHABETICAL</button>
+</div>
+</div>
+<!-- Schools Data Grid -->
+<div class="bg-surface-container shadow-2xl overflow-hidden rounded-b-lg">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-highest/50">
+<tr>
+<th class="px-6 py-4 font-headline text-[10px] uppercase tracking-[0.2em] text-outline font-bold">Icon</th>
+<th class="px-6 py-4 font-headline text-[10px] uppercase tracking-[0.2em] text-outline font-bold">School Name</th>
+<th class="px-6 py-4 font-headline text-[10px] uppercase tracking-[0.2em] text-outline font-bold">Conference</th>
+<th class="px-6 py-4 font-headline text-[10px] uppercase tracking-[0.2em] text-outline font-bold text-center">Proj. Points</th>
+<th class="px-6 py-4 font-headline text-[10px] uppercase tracking-[0.2em] text-outline font-bold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1 -->
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="w-12 h-12 bg-surface-container-lowest flex items-center justify-center border border-outline-variant/30 relative overflow-hidden group-hover:border-primary/50">
+<img alt="University Logo" class="w-full h-full object-cover" data-alt="Stylized graphic minimalist sports logo of a university athletic department with sharp geometric lines and vibrant colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCR6XVLmYXNLKYOWoOvoTzOOq_DNV6gOnCkYlo-fYcq8SgIXKSj3dU1DJHgGNtdLxEsOr4RcoK7jtuRip91dX0_xJDDvws4Slx6FJRF4WrQI6ChC4xSl55vVBUrkDOJeXzJ8dVUy1pmT6Ur4a2lnLIg_pBvDU64MTYQ9ypCKayIfbpsuJLX6o7oaC2Rf-1Fs4muyruDH9kpp8Mg7Ah6UPbqK2selDU7HPnCXtrkCOPZLVtua3rV8yMPzjetmcbORPXAYQe7ELG3gkY"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-on-primary text-xs">edit</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">ALABAMA CRIMSON TIDE</p>
+<span class="font-label text-[10px] text-outline tracking-wider">ID: SEC-001</span>
+</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container-high px-3 py-1 rounded-full font-label text-[10px] font-bold text-on-surface-variant border border-outline-variant/20 uppercase">Southeastern (SEC)</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="font-headline font-black text-lg text-tertiary">98.5</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-highest hover:bg-primary hover:text-on-primary transition-all rounded active:scale-90" title="Manage Icon">
+<span class="material-symbols-outlined">image</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-highest hover:bg-tertiary hover:text-on-tertiary transition-all rounded active:scale-90" title="Edit School">
+<span class="material-symbols-outlined">settings_suggest</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="w-12 h-12 bg-surface-container-lowest flex items-center justify-center border border-outline-variant/30 relative overflow-hidden group-hover:border-primary/50">
+<img alt="University Logo" class="w-full h-full object-cover" data-alt="Professional sports shield emblem with metallic textures and a university crest motif featuring navy and gold colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzOoLzvUKQFmjk4-mxBZaRRjM0t2lqYT20Frpy4IuorkKjBjd580aReIoY9W0fleoQ83w9KuAddSp4MyoOv34wCGaL8CpBQagzgACa9uHWzVCnWzjVG7V39yZd5FNChjOXw248YpvqLXCbbZ3ZsfRBxeHYpymY-icmzLzpY51CFVZ2xhgaGT0Mx6IpzYjyvRzcRecohW6nA5_p35PwBSWMZwmlf483VSOxKnCYmOxVQvleog4T8Dv4o55iC_3holgVWH1B6lpKw9w"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-on-primary text-xs">edit</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">OHIO STATE BUCKEYES</p>
+<span class="font-label text-[10px] text-outline tracking-wider">ID: B10-042</span>
+</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container-high px-3 py-1 rounded-full font-label text-[10px] font-bold text-on-surface-variant border border-outline-variant/20 uppercase">Big Ten (B1G)</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="font-headline font-black text-lg text-tertiary">96.2</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-highest hover:bg-primary hover:text-on-primary transition-all rounded active:scale-90" title="Manage Icon">
+<span class="material-symbols-outlined">image</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-highest hover:bg-tertiary hover:text-on-tertiary transition-all rounded active:scale-90" title="Edit School">
+<span class="material-symbols-outlined">settings_suggest</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="w-12 h-12 bg-surface-container-lowest flex items-center justify-center border border-dashed border-secondary/50 relative group-hover:border-secondary transition-all">
+<span class="material-symbols-outlined text-secondary opacity-50 group-hover:opacity-100">add_a_photo</span>
+<div class="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full border-2 border-surface-container animate-pulse"></div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">GEORGIA BULLDOGS</p>
+<span class="font-label text-[10px] text-outline tracking-wider">ID: SEC-005</span>
+</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container-high px-3 py-1 rounded-full font-label text-[10px] font-bold text-on-surface-variant border border-outline-variant/20 uppercase">Southeastern (SEC)</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="font-headline font-black text-lg text-tertiary">97.8</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-highest hover:bg-secondary hover:text-on-secondary transition-all rounded active:scale-90" title="Manage Icon">
+<span class="material-symbols-outlined">image</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-highest hover:bg-tertiary hover:text-on-tertiary transition-all rounded active:scale-90" title="Edit School">
+<span class="material-symbols-outlined">settings_suggest</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="w-12 h-12 bg-surface-container-lowest flex items-center justify-center border border-outline-variant/30 relative overflow-hidden group-hover:border-primary/50">
+<img alt="University Logo" class="w-full h-full object-cover" data-alt="Bold athletic typography 'U' logo with high contrast colors and stadium lighting effects on a dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGTMkpFCIj8xvNTRkiGhqWp06byCnUfRiScdVUC1enTV1w_jIwnoQbTNgp3_jYFb-hjqIVjzrO0AJunhhJgiJbhC4n-Md5Tr3-cXVR7dLjL0p_kyOob4R0PfzMGci-zT1PkkmEpij4h4_MD8HzlJZwxLQfc5U9E03tEGBZ0ZDjNN4ILqfuwfSqLYk1eCUZYc9NViVbE9b42u6X3dnMP0IDGU2QlcGv59fTQYhIQeCeORNcpa5eOIbQlvlju4VUEdw6gc4rJYXKB2U"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-on-primary text-xs">edit</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">MICHIGAN WOLVERINES</p>
+<span class="font-label text-[10px] text-outline tracking-wider">ID: B10-045</span>
+</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container-high px-3 py-1 rounded-full font-label text-[10px] font-bold text-on-surface-variant border border-outline-variant/20 uppercase">Big Ten (B1G)</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="font-headline font-black text-lg text-tertiary">91.4</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-highest hover:bg-primary hover:text-on-primary transition-all rounded active:scale-90" title="Manage Icon">
+<span class="material-symbols-outlined">image</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-highest hover:bg-tertiary hover:text-on-tertiary transition-all rounded active:scale-90" title="Edit School">
+<span class="material-symbols-outlined">settings_suggest</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination -->
+<div class="px-6 py-6 border-t border-outline-variant/10 flex items-center justify-between">
+<p class="font-label text-xs text-outline uppercase tracking-wider">Showing 1 to 25 of 132 Institutions</p>
+<div class="flex gap-2">
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-lowest text-outline border border-outline-variant/20 hover:text-primary transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center bg-primary text-on-primary font-headline font-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-lowest text-outline border border-outline-variant/20 hover:text-primary transition-all font-headline font-bold">2</button>
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-lowest text-outline border border-outline-variant/20 hover:text-primary transition-all font-headline font-bold">3</button>
+<button class="w-10 h-10 flex items-center justify-center bg-surface-container-lowest text-outline border border-outline-variant/20 hover:text-primary transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 w-full md:hidden z-50 bg-[#0a0e14]/90 backdrop-blur-md border-t border-[#31353c] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] flex justify-around items-center h-20 px-4 pb-safe">
+<div class="flex flex-col items-center text-[#c4c6cf] hover:text-[#adc6ff] active:scale-90">
+<span class="material-symbols-outlined">sports_football</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase">DRAFT</span>
+</div>
+<div class="flex flex-col items-center text-[#e9c400] scale-110 active:scale-90">
+<span class="material-symbols-outlined">school</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase">SCHOOLS</span>
+</div>
+<div class="flex flex-col items-center text-[#c4c6cf] hover:text-[#adc6ff] active:scale-90">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase">BID</span>
+</div>
+<div class="flex flex-col items-center text-[#c4c6cf] hover:text-[#adc6ff] active:scale-90">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase">CHAT</span>
+</div>
+</nav>
+<!-- Manage Icon Overlay (Implicit Design Element) -->
+<div class="fixed inset-0 bg-background/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden">
+<div class="bg-surface-container border-b-4 border-primary w-full max-w-lg shadow-2xl overflow-hidden">
+<div class="bg-surface-container-highest px-6 py-4 flex justify-between items-center">
+<h3 class="font-headline font-black italic text-xl uppercase tracking-tighter text-on-surface">MANAGE ASSET: GEORGIA BULLDOGS</h3>
+<button class="text-outline hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-8">
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<label class="font-label text-[10px] font-black text-outline tracking-widest uppercase">CURRENT ASSET</label>
+<div class="aspect-square bg-surface-container-lowest border-2 border-dashed border-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-outline/30">image</span>
+</div>
+</div>
+<div class="flex flex-col justify-center gap-4">
+<button class="w-full bg-surface-container-high border-b-2 border-primary/50 py-4 font-label font-bold text-xs text-on-surface flex items-center justify-center gap-2 hover:bg-surface-bright active:scale-95 transition-all">
+<span class="material-symbols-outlined">upload</span>
+                            UPLOAD SVG/PNG
+                        </button>
+<button class="w-full bg-surface-container-high border-b-2 border-tertiary/50 py-4 font-label font-bold text-xs text-on-surface flex items-center justify-center gap-2 hover:bg-surface-bright active:scale-95 transition-all">
+<span class="material-symbols-outlined">grid_view</span>
+                            BROWSE GALLERY
+                        </button>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant/20 flex justify-end gap-3">
+<button class="px-6 py-2 font-label text-xs font-bold text-outline hover:text-on-surface">CANCEL</button>
+<button class="px-8 py-2 bg-primary text-on-primary font-label text-xs font-black uppercase tracking-widest">SAVE CHANGES</button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

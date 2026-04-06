@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-low": "#181c22",
+            "primary-fixed": "#d8e2ff",
+            "inverse-primary": "#005bc1",
+            "surface-container-lowest": "#0a0e14",
+            "tertiary-fixed-dim": "#e9c400",
+            "secondary-fixed": "#ffdad9",
+            "error": "#ffb4ab",
+            "on-surface": "#dfe2eb",
+            "primary-container": "#00204d",
+            "outline-variant": "#43474e",
+            "surface-container-high": "#262a31",
+            "on-primary": "#002e69",
+            "on-error-container": "#ffdad6",
+            "on-secondary-fixed": "#410008",
+            "tertiary-container": "#c9a900",
+            "primary-fixed-dim": "#adc6ff",
+            "outline": "#8d9199",
+            "tertiary-fixed": "#ffe16d",
+            "surface-tint": "#adc6ff",
+            "on-secondary-container": "#ffcccb",
+            "tertiary": "#e9c400",
+            "on-tertiary-fixed-variant": "#544600",
+            "on-tertiary-fixed": "#221b00",
+            "background": "#10141a",
+            "inverse-on-surface": "#2d3137",
+            "secondary-container": "#bf012c",
+            "surface-dim": "#10141a",
+            "surface-container-highest": "#31353c",
+            "on-tertiary": "#3a3000",
+            "inverse-surface": "#dfe2eb",
+            "on-surface-variant": "#c4c6cf",
+            "on-tertiary-container": "#4c3f00",
+            "on-primary-fixed-variant": "#004493",
+            "error-container": "#93000a",
+            "on-secondary": "#680013",
+            "surface": "#10141a",
+            "surface-container": "#1c2026",
+            "on-primary-container": "#3686ff",
+            "surface-bright": "#353940",
+            "secondary": "#ffb3b2",
+            "on-background": "#dfe2eb",
+            "surface-variant": "#31353c",
+            "secondary-fixed-dim": "#ffb3b2",
+            "primary": "#adc6ff",
+            "on-primary-fixed": "#001a41",
+            "on-secondary-fixed-variant": "#92001f",
+            "on-error": "#690005"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "fontFamily": {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Space Grotesk"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .broadcast-skew { transform: skewX(-10deg); }
+    .glass-panel {
+      background: rgba(28, 32, 38, 0.6);
+      backdrop-filter: blur(12px);
+    }
+    .metallic-primary {
+      background: linear-gradient(135deg, #adc6ff 0%, #3686ff 100%);
+    }
+    .glow-tertiary {
+      box-shadow: 0 0 15px rgba(233, 196, 0, 0.3);
+    }
+    .paused-lock::after {
+      content: 'PAUSE REQUIRED';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 0.05em;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-xl border-b border-blue-500/20 shadow-[0_4px_20px_rgba(0,68,147,0.2)] flex justify-between items-center px-6 h-16">
+<div class="text-2xl font-black italic tracking-tighter text-blue-400 font-['Space_Grotesk'] uppercase">GRIDIRON PRIME</div>
+<nav class="hidden md:flex space-x-8">
+<a class="text-slate-400 hover:text-slate-100 transition-colors font-['Space_Grotesk'] uppercase tracking-tighter" href="#">WAR ROOM</a>
+<a class="text-blue-400 border-b-2 border-blue-500 pb-1 font-['Space_Grotesk'] uppercase tracking-tighter" href="#">AUCTION</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors font-['Space_Grotesk'] uppercase tracking-tighter" href="#">SCHOOLS</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors font-['Space_Grotesk'] uppercase tracking-tighter" href="#">STANDINGS</a>
+</nav>
+<div class="flex items-center space-x-4">
+<button class="p-2 hover:bg-blue-500/10 transition-all active:scale-95 duration-150 rounded-full">
+<span class="material-symbols-outlined text-blue-400">notifications</span>
+</button>
+<button class="p-2 hover:bg-blue-500/10 transition-all active:scale-95 duration-150 rounded-full">
+<span class="material-symbols-outlined text-blue-400">settings</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px-48px)] w-64 bg-slate-900 shadow-2xl shadow-blue-900/20 flex flex-col py-4 z-40">
+<div class="px-6 py-4 flex items-center space-x-3 mb-6">
+<div class="w-10 h-10 rounded-sm bg-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-950" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<div>
+<div class="text-blue-400 font-black font-['Space_Grotesk'] uppercase leading-none">COMMANDER</div>
+<div class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Budget: $200.00</div>
+</div>
+</div>
+<nav class="flex-grow">
+<a class="flex items-center text-slate-400 hover:bg-slate-800 mx-2 my-1 px-4 py-3 transition-all hover:translate-x-1 font-['Space_Grotesk'] font-bold uppercase" href="#">
+<span class="material-symbols-outlined mr-3">leaderboard</span> War Room
+      </a>
+<a class="flex items-center bg-blue-600 text-slate-950 rounded-sm mx-2 my-1 px-4 py-3 active:brightness-125 font-['Space_Grotesk'] font-bold uppercase" href="#">
+<span class="material-symbols-outlined mr-3">gavel</span> Auction
+      </a>
+<a class="flex items-center text-slate-400 hover:bg-slate-800 mx-2 my-1 px-4 py-3 transition-all hover:translate-x-1 font-['Space_Grotesk'] font-bold uppercase" href="#">
+<span class="material-symbols-outlined mr-3">school</span> Schools
+      </a>
+<a class="flex items-center text-slate-400 hover:bg-slate-800 mx-2 my-1 px-4 py-3 transition-all hover:translate-x-1 font-['Space_Grotesk'] font-bold uppercase" href="#">
+<span class="material-symbols-outlined mr-3">groups</span> Rosters
+      </a>
+<a class="flex items-center text-slate-400 hover:bg-slate-800 mx-2 my-1 px-4 py-3 transition-all hover:translate-x-1 font-['Space_Grotesk'] font-bold uppercase" href="#">
+<span class="material-symbols-outlined mr-3">history</span> History
+      </a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full metallic-primary text-on-primary-fixed py-4 font-black font-['Space_Grotesk'] uppercase tracking-widest active:scale-95 transition-all shadow-lg shadow-blue-500/20">
+        PLACE BID
+      </button>
+</div>
+</aside>
+<!-- Main Content: Live Bidding Console -->
+<main class="ml-64 mt-16 p-8 pb-20">
+<div class="grid grid-cols-12 gap-6">
+<!-- Top Section: Active School Info & Bidding Status -->
+<section class="col-span-12 lg:col-span-8 space-y-6">
+<div class="bg-surface-container rounded-lg p-8 relative overflow-hidden flex flex-col md:flex-row items-center justify-between shadow-2xl">
+<!-- Background Decoration -->
+<div class="absolute -right-10 -top-10 opacity-5">
+<span class="material-symbols-outlined text-[240px]">school</span>
+</div>
+<div class="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-10 relative z-10 w-full">
+<div class="w-48 h-48 bg-surface-container-lowest flex items-center justify-center rounded-lg border border-outline-variant/20 p-6 shadow-inner flex-shrink-0">
+<img class="w-full h-full object-contain filter grayscale invert brightness-100" data-alt="minimalist athletic logo for a prestigious university with bold typography and shield emblem on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBL7aBnjk6-D2z7dS-gkyhBi9rmmJ2N9t7cfW1zKKIUXm7vFJ-Y_Jn74Io6X8pEgyprYdkIvk_kkn1PV5f2H9NWUg8b_zNgv093mzLKwM91b79H8oH20zASt5usOliZvuZJEuttdCtZqegeoP2Zp6Ytm12_94l2tODT-QKBIkxNr2vBbUCyUa2paIK1ZpWnyoDbA8InSXG5xEaEutGo1I7GiukdxtccRabJknKBnY5_K00ZJuwgkSEdgSUHwEHREobmPS7vObtZGe8"/>
+</div>
+<div class="flex-grow">
+<div class="inline-flex items-center space-x-2 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-sm mb-4">
+<span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+<span class="font-headline font-black text-xs uppercase tracking-widest">Live Auction</span>
+</div>
+<h1 class="text-6xl font-black font-headline tracking-tighter uppercase mb-2">OHIO STATE</h1>
+<p class="text-on-surface-variant font-label text-sm uppercase tracking-[0.2em] mb-6">Big Ten Conference • Power 5 Tier</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<div>
+<p class="text-on-surface-variant text-[10px] font-black uppercase mb-1">Proj. Points</p>
+<p class="text-xl font-headline font-bold text-tertiary">342.5</p>
+</div>
+<div>
+<p class="text-on-surface-variant text-[10px] font-black uppercase mb-1">LY Rank</p>
+<p class="text-xl font-headline font-bold text-on-surface">#04</p>
+</div>
+<div>
+<p class="text-on-surface-variant text-[10px] font-black uppercase mb-1">SOS Rank</p>
+<p class="text-xl font-headline font-bold text-on-surface">#12</p>
+</div>
+<div>
+<p class="text-on-surface-variant text-[10px] font-black uppercase mb-1">Recruit Score</p>
+<p class="text-xl font-headline font-bold text-primary">98.2</p>
+</div>
+</div>
+</div>
+</div>
+<!-- De-emphasized Bidding Clock -->
+<div class="flex flex-col items-center justify-center text-center md:pl-10 mt-6 md:mt-0 md:border-l border-outline-variant/20 relative z-10 min-w-[120px]">
+<p class="text-[10px] font-black uppercase tracking-[0.2em] mb-1 text-on-surface-variant">Auction State</p>
+<div class="text-4xl font-headline font-black italic tracking-tighter text-slate-400">0:14</div>
+<div class="w-full bg-surface-container-lowest h-1 mt-2 rounded-full overflow-hidden opacity-30">
+<div class="bg-slate-400 h-full w-[45%]"></div>
+</div>
+</div>
+</div>
+<!-- Bidding Stats Row -->
+<div class="grid grid-cols-2 gap-6">
+<div class="bg-surface-container-high rounded-lg p-6 border-l-4 border-tertiary shadow-xl">
+<p class="text-xs font-black font-headline uppercase text-on-surface-variant mb-1">Current High Bid</p>
+<div class="text-5xl font-headline font-black text-tertiary tracking-tighter">
+              $42.00
+            </div>
+</div>
+<div class="bg-surface-container-high rounded-lg p-6 border-l-4 border-primary shadow-xl">
+<p class="text-xs font-black font-headline uppercase text-on-surface-variant mb-1">Winning Coach</p>
+<div class="flex items-center space-x-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container-lowest border border-outline-variant/20 flex items-center justify-center">
+<span class="text-xl font-black font-headline text-primary opacity-50 select-none">SR</span>
+</div>
+<div>
+<p class="text-2xl font-headline font-black text-on-surface uppercase tracking-tight">COACH S. RILEY</p>
+<p class="text-xs font-label uppercase text-on-surface-variant">Los Angeles Empire</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Feed -->
+<div class="bg-surface-container rounded-lg p-6">
+<h3 class="text-sm font-black font-headline uppercase tracking-widest mb-4 flex items-center">
+<span class="material-symbols-outlined mr-2 text-primary">history</span>
+            Bidding Log
+          </h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded hover:bg-surface-bright transition-colors">
+<div class="flex items-center space-x-4">
+<span class="text-[10px] font-black font-label text-on-surface-variant">14:02:11</span>
+<span class="text-sm font-bold uppercase">Coach Riley</span>
+</div>
+<span class="text-sm font-headline font-black text-primary">+$2.00</span>
+<span class="text-sm font-headline font-black text-on-surface">$42.00</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest/50 rounded border-l-2 border-outline-variant">
+<div class="flex items-center space-x-4">
+<span class="text-[10px] font-black font-label text-on-surface-variant">14:01:45</span>
+<span class="text-sm font-bold uppercase text-on-surface-variant">Coach Smart</span>
+</div>
+<span class="text-sm font-headline font-black text-outline">+$1.00</span>
+<span class="text-sm font-headline font-black text-on-surface-variant">$40.00</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest/50 rounded border-l-2 border-outline-variant">
+<div class="flex items-center space-x-4">
+<span class="text-[10px] font-black font-label text-on-surface-variant">14:01:22</span>
+<span class="text-sm font-bold uppercase text-on-surface-variant">Coach Harbaugh</span>
+</div>
+<span class="text-sm font-headline font-black text-outline">+$5.00</span>
+<span class="text-sm font-headline font-black text-on-surface-variant">$39.00</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Column: Admin Master Control & Upcoming Nominators -->
+<aside class="col-span-12 lg:col-span-4 space-y-6">
+<!-- ADMIN MASTER CONTROL PANEL -->
+<div class="bg-surface-container-highest rounded-lg p-6 border border-primary/30 shadow-[0_0_30px_rgba(173,198,255,0.1)]">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-lg font-black font-headline uppercase tracking-tighter text-primary">ADMIN CONTROL</h2>
+<span class="bg-primary/20 text-primary text-[10px] font-black px-2 py-1 rounded">RESTRICTED</span>
+</div>
+<div class="space-y-6">
+<!-- NEW: Pause Auction Toggle -->
+<div class="bg-surface-container-lowest p-4 border-2 border-secondary/50 rounded-lg flex items-center justify-between group cursor-pointer hover:bg-secondary/10 transition-all">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-secondary animate-pulse">pause_circle</span>
+<span class="text-sm font-black font-headline uppercase tracking-tight text-on-surface">PAUSE AUCTION</span>
+</div>
+<div class="w-12 h-6 bg-surface-container-highest rounded-full relative p-1">
+<div class="w-4 h-4 bg-outline rounded-full transition-all"></div>
+</div>
+</div>
+<!-- Manual Bid Entry (Active) -->
+<div class="space-y-3">
+<label class="text-[10px] font-black font-label uppercase tracking-widest text-on-surface-variant">Admin Override Bid</label>
+<select class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-sm font-bold uppercase text-on-surface transition-all">
+<option>SELECT COACH...</option>
+<option>Coach Smart (Georgia)</option>
+<option>Coach Saban (Retired-Consult)</option>
+<option>Coach Day (Ohio State)</option>
+<option>Coach Swinney (Clemson)</option>
+</select>
+<div class="flex space-x-2">
+<input class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-sm font-bold uppercase text-on-surface" placeholder="AMT ($0.00)" type="number"/>
+<button class="bg-primary text-on-primary-fixed px-4 font-black text-xs uppercase tracking-tighter whitespace-nowrap active:scale-95 transition-all">BID</button>
+</div>
+</div>
+<!-- Toggle Controls -->
+<div class="space-y-2">
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded border border-outline-variant/10">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-primary text-sm">auto_mode</span>
+<span class="text-[10px] font-bold uppercase tracking-tight">Auto-Pass Inactive</span>
+</div>
+<div class="w-8 h-4 bg-primary/20 rounded-full relative cursor-pointer">
+<div class="absolute right-0.5 top-0.5 w-3 h-3 bg-primary rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded border border-outline-variant/10 relative overflow-hidden paused-lock">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-secondary text-sm">security</span>
+<span class="text-[10px] font-bold uppercase tracking-tight">Lock Order</span>
+</div>
+<div class="w-8 h-4 bg-surface-container-lowest rounded-full relative">
+<div class="absolute left-0.5 top-0.5 w-3 h-3 bg-outline rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Critical Admin Actions -->
+<div class="grid grid-cols-2 gap-3 pt-4 border-t border-outline-variant/20">
+<button class="relative overflow-hidden paused-lock flex flex-col items-center justify-center p-4 bg-surface-container-low border border-outline-variant/20 grayscale opacity-50">
+<span class="material-symbols-outlined mb-1 text-sm">undo</span>
+<span class="text-[9px] font-black uppercase text-center leading-tight">Reset Bid</span>
+</button>
+<button class="relative overflow-hidden paused-lock flex flex-col items-center justify-center p-4 bg-surface-container-low border border-outline-variant/20 grayscale opacity-50">
+<span class="material-symbols-outlined mb-1 text-sm">assignment_ind</span>
+<span class="text-[9px] font-black uppercase text-center leading-tight">Assign</span>
+</button>
+<button class="col-span-2 py-3 bg-secondary-container text-on-secondary-container font-black uppercase tracking-widest text-xs shadow-lg active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined text-sm">gavel</span>
+<span>Force End</span>
+</button>
+</div>
+</div>
+</div>
+<!-- UPCOMING NOMINATORS -->
+<div class="bg-surface-container rounded-lg p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-black font-headline uppercase tracking-widest text-on-surface-variant">Rotation</h3>
+</div>
+<div class="space-y-4">
+<div class="flex items-center space-x-4 group cursor-pointer">
+<div class="w-10 h-10 bg-surface-container-highest flex items-center justify-center rounded">
+<span class="font-headline font-black text-primary">01</span>
+</div>
+<div class="flex-grow border-b border-outline-variant/10 pb-2 group-hover:border-primary/40 transition-colors">
+<p class="text-sm font-bold uppercase">Coach Deion Sanders</p>
+<p class="text-[10px] font-label text-on-surface-variant uppercase">Colorado Buffaloes</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">drag_handle</span>
+</div>
+<div class="flex items-center space-x-4 group cursor-pointer opacity-70">
+<div class="w-10 h-10 bg-surface-container-highest flex items-center justify-center rounded">
+<span class="font-headline font-black text-outline">02</span>
+</div>
+<div class="flex-grow border-b border-outline-variant/10 pb-2">
+<p class="text-sm font-bold uppercase">Coach Kirby Smart</p>
+<p class="text-[10px] font-label text-on-surface-variant uppercase">Georgia Bulldogs</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant">drag_handle</span>
+</div>
+</div>
+<button class="w-full mt-4 py-2 border border-outline-variant/20 text-[10px] font-black uppercase text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-all">VIEW FULL ROTATION</button>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer (Chyron Style) -->
+<footer class="fixed bottom-0 w-full h-12 skew-x-[-10deg] bg-slate-950 border-t-2 border-yellow-500 shadow-[0_-4px_15px_rgba(233,196,0,0.15)] z-50 flex items-center px-10 overflow-hidden">
+<div class="flex items-center space-x-8 transform skew-x-[10deg]">
+<div class="flex items-center space-x-3">
+<span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+<span class="text-yellow-400 font-['Space_Grotesk'] text-xs font-black uppercase tracking-widest">LIVE FEED:</span>
+</div>
+<div class="flex items-center space-x-12 whitespace-nowrap">
+<span class="text-slate-100 font-['Space_Grotesk'] text-xs font-black uppercase tracking-widest">DRAFT CLOCK: ACTIVE</span>
+<span class="text-slate-400 font-['Space_Grotesk'] text-xs font-black uppercase tracking-widest">NEXT UP: COACH DEION SANDERS (COL)</span>
+<span class="text-slate-400 font-['Space_Grotesk'] text-xs font-black uppercase tracking-widest">PREVIOUS: CLEMSON SOLD FOR $38.50</span>
+<span class="text-yellow-400 font-['Space_Grotesk'] text-xs font-black uppercase tracking-widest">GRIDIRON PRIME © 2024</span>
+</div>
+</div>
+</footer>
+</body></html>

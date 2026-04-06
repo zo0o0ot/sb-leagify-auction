@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<title>DRAFT COMMAND - STANDINGS</title>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#c4c6cf",
+                    "inverse-on-surface": "#2d3137",
+                    "error": "#ffb4ab",
+                    "surface-container": "#1c2026",
+                    "secondary-fixed-dim": "#ffb3b2",
+                    "secondary": "#ffb3b2",
+                    "tertiary-fixed-dim": "#e9c400",
+                    "surface-variant": "#31353c",
+                    "surface-dim": "#10141a",
+                    "on-secondary-fixed": "#410008",
+                    "on-secondary-container": "#ffcccb",
+                    "tertiary-fixed": "#ffe16d",
+                    "on-secondary-fixed-variant": "#92001f",
+                    "secondary-container": "#bf012c",
+                    "primary": "#adc6ff",
+                    "primary-fixed-dim": "#adc6ff",
+                    "outline-variant": "#43474e",
+                    "on-error": "#690005",
+                    "surface-container-high": "#262a31",
+                    "primary-fixed": "#d8e2ff",
+                    "outline": "#8d9199",
+                    "on-secondary": "#680013",
+                    "background": "#10141a",
+                    "surface": "#10141a",
+                    "on-background": "#dfe2eb",
+                    "tertiary-container": "#c9a900",
+                    "on-primary": "#002e69",
+                    "on-tertiary": "#3a3000",
+                    "error-container": "#93000a",
+                    "surface-container-low": "#181c22",
+                    "inverse-primary": "#005bc1",
+                    "secondary-fixed": "#ffdad9",
+                    "on-primary-container": "#3686ff",
+                    "on-surface": "#dfe2eb",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#31353c",
+                    "tertiary": "#e9c400",
+                    "surface-tint": "#adc6ff",
+                    "on-tertiary-container": "#4c3f00",
+                    "surface-bright": "#353940",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "primary-container": "#00204d",
+                    "inverse-surface": "#dfe2eb",
+                    "on-tertiary-fixed": "#221b00",
+                    "on-primary-fixed": "#001a41",
+                    "surface-container-lowest": "#0a0e14",
+                    "on-primary-fixed-variant": "#004493"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-panel {
+        background: rgba(28, 32, 38, 0.6);
+        backdrop-filter: blur(12px);
+      }
+      .skew-chyron {
+        transform: skew(-10deg);
+      }
+      .skew-content {
+        transform: skew(10deg);
+      }
+      .monolith-card {
+        background: #31353c;
+        box-shadow: 0 0 0 1px rgba(67, 71, 78, 0.15);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30 min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_20px_rgba(0,68,147,0.2)] flex justify-between items-center px-6 py-3">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black italic tracking-tighter text-blue-400 font-['Space_Grotesk'] uppercase">DRAFT COMMAND</span>
+<div class="hidden md:flex gap-6">
+<a class="text-slate-400 hover:text-white transition-colors font-['Space_Grotesk'] uppercase tracking-tighter" href="#">WAR ROOM</a>
+<a class="text-slate-400 hover:text-white transition-colors font-['Space_Grotesk'] uppercase tracking-tighter" href="#">MARKET</a>
+<a class="text-slate-400 hover:text-white transition-colors font-['Space_Grotesk'] uppercase tracking-tighter" href="#">ROSTERS</a>
+<a class="text-blue-400 border-b-2 border-blue-500 pb-1 font-['Space_Grotesk'] uppercase tracking-tighter" href="#">STANDINGS</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-white/5 p-2 rounded transition-all active:scale-95 duration-150">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-white/5 p-2 rounded transition-all active:scale-95 duration-150">settings</button>
+<img alt="Admin Profile" class="w-8 h-8 rounded-full border border-primary/30 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACzAVFT9EuCQ_uGBWQrwjROz_wtHbxABg2YdD9tN3MlYz7rq_QIeeEnvyIHRKpHGOA1PqdLkG-shocm6xYDLf7MDZMg87F9hajJ2UGHiz6pjVhPfLSS2XSuq_9_F7AQrufbWXeNx2BZs0KzuM3qHp6UJ_XBsgvR-HjTqqFbsrEtdYOTIYHOkLo_TZTOf_Q7O51G_1WPl7VAw4OayGTXF5AciHahAc-QAPdbLBm5P6peinamhZUYwvEcr0CVZ0vjgDR3Kf2POJvQpk"/>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="hidden lg:flex flex-col h-screen w-64 fixed left-0 border-r border-white/5 bg-slate-900 shadow-2xl pt-16">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 bg-primary-container rounded flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary">security</span>
+</div>
+<div>
+<p class="font-headline font-bold text-blue-400 text-xs tracking-widest uppercase">COMMISSIONER</p>
+<p class="text-[10px] text-on-surface-variant tracking-wider uppercase">Draft Active</p>
+</div>
+</div>
+<div class="space-y-1">
+<a class="flex items-center gap-3 text-slate-500 px-4 py-3 hover:text-slate-200 hover:bg-slate-800 transition-all duration-200 ease-in-out font-headline font-bold" href="#">
+<span class="material-symbols-outlined">dashboard</span> DASHBOARD
+                </a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-3 hover:text-slate-200 hover:bg-slate-800 transition-all duration-200 ease-in-out font-headline font-bold" href="#">
+<span class="material-symbols-outlined">gavel</span> NOMINATIONS
+                </a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-3 hover:text-slate-200 hover:bg-slate-800 transition-all duration-200 ease-in-out font-headline font-bold" href="#">
+<span class="material-symbols-outlined">sensors</span> LIVE FEED
+                </a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-3 hover:text-slate-200 hover:bg-slate-800 transition-all duration-200 ease-in-out font-headline font-bold" href="#">
+<span class="material-symbols-outlined">history</span> HISTORY
+                </a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-3 hover:text-slate-200 hover:bg-slate-800 transition-all duration-200 ease-in-out font-headline font-bold" href="#">
+<span class="material-symbols-outlined">gavel</span> RULES
+                </a>
+</div>
+</div>
+<div class="mt-auto p-6">
+<button class="w-full py-4 bg-secondary-container text-on-secondary-container font-headline font-black tracking-widest text-xs uppercase transition-all active:scale-95">PAUSE DRAFT</button>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="lg:ml-64 pt-20 px-6 pb-12 flex-grow">
+<!-- Hero Header -->
+<header class="mb-12 relative">
+<div class="absolute -top-10 -left-10 w-64 h-64 bg-primary/5 blur-[120px] rounded-full"></div>
+<div class="flex items-end justify-between relative z-10">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<div class="bg-secondary px-2 py-0.5 skew-chyron">
+<span class="block skew-content font-headline font-black text-[10px] text-on-secondary uppercase">PREDICTIONS</span>
+</div>
+<span class="text-on-surface-variant font-headline text-xs tracking-widest uppercase">POWER RANKINGS UPDATED 2M AGO</span>
+</div>
+<h1 class="text-6xl font-headline font-black uppercase italic tracking-tighter leading-none">POST-AUCTION <span class="text-primary">PREDICTIONS</span></h1>
+</div>
+<div class="text-right">
+<p class="font-label text-tertiary text-2xl font-black uppercase">PRE-DRAFT PROJECTIONS</p>
+</div>
+</div>
+</header>
+<!-- Podium Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 items-end">
+<!-- Rank 2 -->
+<div class="order-2 md:order-1">
+<div class="monolith-card p-6 border-t-2 border-slate-400 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2 font-headline font-black text-6xl text-white/5 select-none">02</div>
+<div class="relative z-10">
+<div class="w-16 h-16 rounded-full bg-surface-container-high border-2 border-slate-400 flex items-center justify-center mb-4 text-2xl font-black text-on-surface">JH</div>
+<h3 class="font-headline font-bold text-xl uppercase mb-1">COACH HARBAUGH</h3>
+<p class="text-xs text-on-surface-variant mb-6 uppercase tracking-wider">Michigan Wolverines Portfolio</p>
+<div class="flex justify-between items-end mb-6">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-label">PROJ POINTS</p>
+<p class="text-2xl font-headline font-black text-primary">2411</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant uppercase font-label">BUDGET REM</p>
+<p class="text-lg font-headline font-bold text-on-surface">$42</p>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-2">
+<div class="aspect-square bg-slate-800 rounded flex items-center justify-center text-[10px] font-bold border border-white/5">MICH</div>
+<div class="aspect-square bg-slate-800 rounded flex items-center justify-center text-[10px] font-bold border border-white/5">PUR</div>
+<div class="aspect-square bg-slate-800 rounded flex items-center justify-center text-[10px] font-bold border border-white/5">IU</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Rank 1 - Center Piece -->
+<div class="order-1 md:order-2 scale-105 z-20">
+<div class="bg-primary-container p-8 border-t-4 border-tertiary relative overflow-hidden shadow-[0_0_50px_rgba(233,196,0,0.1)]">
+<div class="absolute top-0 right-0 p-2 font-headline font-black text-8xl text-tertiary/10 select-none">01</div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-6">
+<div class="w-20 h-20 rounded-full bg-surface-container-highest border-4 border-tertiary flex items-center justify-center text-3xl font-black text-tertiary shadow-[0_0_20px_rgba(233,196,0,0.3)]">RD</div>
+<div class="bg-tertiary text-on-tertiary px-3 py-1 font-headline font-black text-xs uppercase skew-chyron">
+<span class="block skew-content">CURRENT LEADER</span>
+</div>
+</div>
+<h3 class="font-headline font-black text-3xl uppercase mb-1 italic tracking-tighter">COACH DAY</h3>
+<p class="text-sm text-primary font-medium mb-8 uppercase tracking-widest">Ohio State Portfolio</p>
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div class="bg-black/20 p-4 border-l-2 border-tertiary">
+<p class="text-[10px] text-on-primary-container uppercase font-label tracking-tighter">PROJ POINTS</p>
+<p class="text-4xl font-headline font-black text-tertiary">2685</p>
+</div>
+<div class="bg-black/20 p-4 border-l-2 border-white/20">
+<p class="text-[10px] text-on-primary-container uppercase font-label tracking-tighter">BUDGET REM</p>
+<p class="text-4xl font-headline font-black text-on-surface">$12</p>
+</div>
+</div>
+<div class="flex gap-2">
+<div class="px-2 py-1 bg-black/40 rounded border border-tertiary/20 text-[10px] font-black text-tertiary">OSU</div>
+<div class="px-2 py-1 bg-black/40 rounded border border-white/5 text-[10px] font-black">NW</div>
+<div class="px-2 py-1 bg-black/40 rounded border border-white/5 text-[10px] font-black">MINN</div>
+<div class="px-2 py-1 bg-black/40 rounded border border-white/5 text-[10px] font-black">MSU</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Rank 3 -->
+<div class="order-3">
+<div class="monolith-card p-6 border-t-2 border-tertiary-container relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2 font-headline font-black text-6xl text-white/5 select-none">03</div>
+<div class="relative z-10">
+<div class="w-16 h-16 rounded-full bg-surface-container-high border-2 border-tertiary-container flex items-center justify-center mb-4 text-2xl font-black text-on-surface">KS</div>
+<h3 class="font-headline font-bold text-xl uppercase mb-1">COACH SMART</h3>
+<p class="text-xs text-on-surface-variant mb-6 uppercase tracking-wider">Georgia Bulldogs Portfolio</p>
+<div class="flex justify-between items-end mb-6">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-label">PROJ POINTS</p>
+<p class="text-2xl font-headline font-black text-primary">2399</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant uppercase font-label">BUDGET REM</p>
+<p class="text-lg font-headline font-bold text-on-surface">$55</p>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-2">
+<div class="aspect-square bg-slate-800 rounded flex items-center justify-center text-[10px] font-bold border border-white/5">UGA</div>
+<div class="aspect-square bg-slate-800 rounded flex items-center justify-center text-[10px] font-bold border border-white/5">UK</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Standings Table -->
+<section class="surface-container rounded-lg overflow-hidden relative">
+<!-- Table Header -->
+<div class="grid grid-cols-12 px-8 py-4 bg-surface-container-low border-b border-white/5 items-center">
+<div class="col-span-1 font-headline font-bold text-xs text-on-surface-variant uppercase tracking-widest">RANK</div>
+<div class="col-span-5 font-headline font-bold text-xs text-on-surface-variant uppercase tracking-widest">COACH / SCHOOLS</div>
+<div class="col-span-3 font-headline font-bold text-xs text-on-surface-variant uppercase tracking-widest text-center">TOTAL PROJ POINTS</div>
+<div class="col-span-3 font-headline font-bold text-xs text-on-surface-variant uppercase tracking-widest text-right">BUDGET REMAINING</div>
+</div>
+<!-- Table Rows -->
+<div class="divide-y divide-white/5">
+<!-- Row 4 -->
+<div class="grid grid-cols-12 px-8 py-6 hover:bg-white/5 transition-colors items-center group">
+<div class="col-span-1 font-headline font-black text-xl text-on-surface-variant">04</div>
+<div class="col-span-5 flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center font-headline font-bold text-on-surface text-sm">NS</div>
+<div>
+<p class="font-headline font-bold text-on-surface uppercase tracking-tight">COACH SABAN</p>
+<p class="text-[10px] text-on-surface-variant uppercase">ALABAMA Portfolio</p>
+</div>
+</div>
+<div class="col-span-3 text-center">
+<span class="font-headline font-bold text-primary">2150</span>
+</div>
+<div class="col-span-3 text-right">
+<div class="inline-block w-32 h-2 bg-surface-container-highest rounded-full overflow-hidden mr-4">
+<div class="h-full bg-secondary w-[40%]"></div>
+</div>
+<span class="font-headline font-bold text-on-surface">$80</span>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="grid grid-cols-12 px-8 py-6 hover:bg-white/5 transition-colors items-center group">
+<div class="col-span-1 font-headline font-black text-xl text-on-surface-variant">05</div>
+<div class="col-span-5 flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center font-headline font-bold text-on-surface text-sm">SS</div>
+<div>
+<p class="font-headline font-bold text-on-surface uppercase tracking-tight">COACH SARKISIAN</p>
+<p class="text-[10px] text-on-surface-variant uppercase">TEXAS Portfolio</p>
+</div>
+</div>
+<div class="col-span-3 text-center">
+<span class="font-headline font-bold text-primary">2098</span>
+</div>
+<div class="col-span-3 text-right">
+<div class="inline-block w-32 h-2 bg-surface-container-highest rounded-full overflow-hidden mr-4">
+<div class="h-full bg-secondary w-[72.5%]"></div>
+</div>
+<span class="font-headline font-bold text-on-surface">$145</span>
+</div>
+</div>
+<!-- Row 6 -->
+<div class="grid grid-cols-12 px-8 py-6 hover:bg-white/5 transition-colors items-center group">
+<div class="col-span-1 font-headline font-black text-xl text-on-surface-variant">06</div>
+<div class="col-span-5 flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center font-headline font-bold text-on-surface text-sm">DL</div>
+<div>
+<p class="font-headline font-bold text-on-surface uppercase tracking-tight">COACH LANNING</p>
+<p class="text-[10px] text-on-surface-variant uppercase">OREGON Portfolio</p>
+</div>
+</div>
+<div class="col-span-3 text-center">
+<span class="font-headline font-bold text-primary">1942</span>
+</div>
+<div class="col-span-3 text-right">
+<div class="inline-block w-32 h-2 bg-surface-container-highest rounded-full overflow-hidden mr-4">
+<div class="h-full bg-secondary w-[51%]"></div>
+</div>
+<span class="font-headline font-bold text-on-surface">$102</span>
+</div>
+</div>
+<!-- Row 7 -->
+<div class="grid grid-cols-12 px-8 py-6 hover:bg-white/5 transition-colors items-center group">
+<div class="col-span-1 font-headline font-black text-xl text-on-surface-variant">07</div>
+<div class="col-span-5 flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center font-headline font-bold text-on-surface text-sm">LR</div>
+<div>
+<p class="font-headline font-bold text-on-surface uppercase tracking-tight">COACH RILEY</p>
+<p class="text-[10px] text-on-surface-variant uppercase">USC Portfolio</p>
+</div>
+</div>
+<div class="col-span-3 text-center">
+<span class="font-headline font-bold text-primary">1822</span>
+</div>
+<div class="col-span-3 text-right">
+<div class="inline-block w-32 h-2 bg-surface-container-highest rounded-full overflow-hidden mr-4">
+<div class="h-full bg-secondary w-[86%]"></div>
+</div>
+<span class="font-headline font-bold text-on-surface">$172</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="lg:ml-64 bg-black border-t border-yellow-500/20 py-4 flex justify-between items-center px-8 w-full mt-auto">
+<div class="flex items-center gap-6">
+<span class="font-black text-blue-400 font-headline uppercase tracking-tighter">DRAFT COMMAND</span>
+<span class="text-slate-600 font-['Inter'] text-[10px] tracking-widest uppercase">© 2024 BROADCAST TANOOKIZOOT - PRIME DIRECTIVE</span>
+</div>
+<div class="flex gap-8">
+<a class="text-slate-600 hover:text-yellow-400 transition-all font-['Inter'] text-[10px] tracking-widest uppercase opacity-80 hover:opacity-100" href="#">Support</a>
+<a class="text-slate-600 hover:text-yellow-400 transition-all font-['Inter'] text-[10px] tracking-widest uppercase opacity-80 hover:opacity-100" href="#">Draft Rules</a>
+<a class="text-slate-600 hover:text-yellow-400 transition-all font-['Inter'] text-[10px] tracking-widest uppercase opacity-80 hover:opacity-100" href="#">Privacy</a>
+</div>
+</footer>
+</body></html>

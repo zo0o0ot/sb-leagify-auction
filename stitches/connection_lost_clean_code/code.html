@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SIGNAL INTERRUPTED | DRAFT COMMAND</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#adc6ff",
+                    "on-tertiary": "#3a3000",
+                    "on-primary-container": "#3686ff",
+                    "secondary-fixed-dim": "#ffb3b2",
+                    "secondary-fixed": "#ffdad9",
+                    "secondary": "#ffb3b2",
+                    "on-tertiary-container": "#4c3f00",
+                    "surface-bright": "#353940",
+                    "primary": "#adc6ff",
+                    "on-primary-fixed": "#001a41",
+                    "surface-variant": "#31353c",
+                    "inverse-surface": "#dfe2eb",
+                    "on-secondary": "#680013",
+                    "on-error": "#690005",
+                    "on-surface": "#dfe2eb",
+                    "on-secondary-fixed": "#410008",
+                    "inverse-on-surface": "#2d3137",
+                    "error": "#ffb4ab",
+                    "primary-container": "#00204d",
+                    "surface": "#10141a",
+                    "surface-container-lowest": "#0a0e14",
+                    "on-secondary-fixed-variant": "#92001f",
+                    "on-secondary-container": "#ffcccb",
+                    "primary-fixed-dim": "#adc6ff",
+                    "primary-fixed": "#d8e2ff",
+                    "tertiary-fixed": "#ffe16d",
+                    "surface-container": "#1c2026",
+                    "on-primary": "#002e69",
+                    "error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "on-background": "#dfe2eb",
+                    "outline": "#8d9199",
+                    "tertiary-fixed-dim": "#e9c400",
+                    "surface-dim": "#10141a",
+                    "surface-container-low": "#181c22",
+                    "background": "#10141a",
+                    "tertiary-container": "#c9a900",
+                    "on-primary-fixed-variant": "#004493",
+                    "on-error-container": "#ffdad6",
+                    "outline-variant": "#43474e",
+                    "secondary-container": "#bf012c",
+                    "tertiary": "#e9c400",
+                    "surface-container-high": "#262a31",
+                    "inverse-primary": "#005bc1",
+                    "on-tertiary-fixed": "#221b00",
+                    "surface-container-highest": "#31353c",
+                    "on-surface-variant": "#c4c6cf"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(18, 16, 16, 0) 50%,
+                rgba(0, 0, 0, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .vignette {
+            background: radial-gradient(circle, transparent 40%, rgba(0, 0, 0, 0.8) 100%);
+        }
+        .skew-x-10 {
+            transform: skewX(-10deg);
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest font-body text-on-surface selection:bg-primary selection:text-on-primary overflow-hidden">
+<!-- SIGNAL INTERRUPTION OVERLAY -->
+<main class="relative min-h-screen w-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-surface-container-lowest via-[#001a41] to-surface-container-lowest">
+<!-- Scanline & Noise Layer -->
+<div class="absolute inset-0 scanlines opacity-30"></div>
+<div class="absolute inset-0 vignette opacity-60"></div>
+<!-- Background Imagery (Glitch Style) -->
+<div class="absolute inset-0 z-0 opacity-10 overflow-hidden">
+<img alt="distorted digital glitch pattern with technical data overlays and glowing grid lines in dark blue and black" class="w-full h-full object-cover scale-110" data-alt="distorted digital glitch pattern with technical data overlays and glowing grid lines in dark blue and black" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHjrVVUTOrSQ5jh-ztAxCO4fG8--DgsTku1ZBKMXJQDltm-drv59T6TTOdiV_dIKDRN-3HHXpVWiw9qhzxzkrhCxkPP5ZWbfaDIfv6Ak3teKrY3TCb_DiOAKPrbej08xpMg8iEEwrMkvzScBVHZSI7AcXzxXPSfxmgH3Jr_tTmnDHYWfvaDY8YuKmXfgomm8qGn4wm3D9i0nownlSTQ_VeaFJqQLeSuPMuIOFrLwTDITpOc_UE0L4A6olF9Yek89DLv2k8xPSyP3s"/>
+</div>
+<!-- Top Status Bar -->
+<div class="absolute top-0 left-0 w-full px-8 py-6 flex justify-between items-start z-20">
+<div class="flex flex-col">
+<span class="font-headline font-black italic tracking-tighter text-2xl text-primary">DRAFT COMMAND</span>
+<span class="font-label text-[10px] text-tertiary tracking-[0.2em]">LEAGIFY - BROADCAST TANOOKIZOOT</span>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex items-center space-x-2 bg-secondary-container px-3 py-1 skew-x-10">
+<div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
+<span class="font-label text-xs font-bold text-on-secondary-container skew-x-10">SIGNAL LOSS</span>
+</div>
+</div>
+</div>
+<!-- Central Content -->
+<div class="relative z-20 flex flex-col items-center text-center max-w-4xl">
+<!-- Rotating Sync Icon -->
+<div class="mb-12 relative">
+<div class="absolute inset-0 blur-xl bg-tertiary/20 rounded-full"></div>
+<div class="w-32 h-32 flex items-center justify-center border-4 border-dashed border-tertiary/30 rounded-full animate-[spin_10s_linear_infinite]">
+<span class="material-symbols-outlined text-6xl text-tertiary" data-icon="sync" style="font-variation-settings: 'FILL' 0;">sync</span>
+</div>
+<!-- Glitch Ornaments -->
+<div class="absolute top-0 -left-4 w-8 h-1 bg-secondary shadow-[0_0_10px_#ffb3b2]"></div>
+<div class="absolute bottom-4 -right-6 w-12 h-0.5 bg-primary shadow-[0_0_10px_#adc6ff]"></div>
+</div>
+<!-- Interruption Headline -->
+<div class="relative group">
+<h1 class="font-headline text-6xl md:text-8xl font-black uppercase tracking-tighter text-on-surface mb-4">
+                    SIGNAL <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-fixed-dim">INTERRUPTED</span>
+</h1>
+<!-- Glitch Offset Layers (Pseudo-effect) -->
+<h1 class="absolute inset-0 font-headline text-6xl md:text-8xl font-black uppercase tracking-tighter text-secondary/20 -translate-x-1 translate-y-0.5 pointer-events-none">SIGNAL INTERRUPTED</h1>
+</div>
+<div class="w-24 h-1.5 bg-tertiary mb-8"></div>
+<p class="font-body text-xl md:text-2xl text-on-surface-variant max-w-2xl mb-12 leading-relaxed">
+                WE'VE LOST THE FEED. ATTEMPTING TO RECONNECT TO <span class="text-on-surface font-bold">WAR ROOM</span>...
+            </p>
+<!-- Action Cluster -->
+<div class="flex flex-col md:flex-row gap-6 items-center">
+<button class="group relative px-10 py-4 bg-transparent border border-primary/20 hover:bg-primary/5 transition-all duration-300">
+<div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="relative font-label font-bold text-primary uppercase tracking-widest flex items-center">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="refresh">refresh</span>
+                        RETRY CONNECTION
+                    </span>
+<!-- Corner Accents -->
+<div class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-primary"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-primary"></div>
+</button>
+<div class="flex items-center space-x-6">
+<div class="flex flex-col items-start">
+<span class="font-label text-[10px] text-outline tracking-widest uppercase">Encryption Status</span>
+<span class="font-label text-sm text-on-surface font-bold">AES-256 / SHAKEN</span>
+</div>
+<div class="w-px h-8 bg-outline-variant"></div>
+<div class="flex flex-col items-start">
+<span class="font-label text-[10px] text-outline tracking-widest uppercase">Draft ID</span>
+<span class="font-label text-sm text-on-surface font-bold">TKZ9902</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Broadcast Ticker Footer -->
+<footer class="absolute bottom-0 left-0 w-full z-20">
+<div class="bg-surface-container-highest flex items-center h-12 overflow-hidden border-t border-outline-variant/10">
+<div class="bg-secondary px-6 h-full flex items-center skew-x-10 -ml-2">
+<span class="font-label font-bold text-on-secondary uppercase text-xs skew-x-10">URGENT</span>
+</div>
+<div class="flex-1 px-8 overflow-hidden whitespace-nowrap">
+<div class="inline-block animate-[marquee_30s_linear_infinite] font-label text-sm text-on-surface-variant font-medium tracking-wide">
+<span class="mx-8">COMMISSIONER NODE TIMEOUT DETECTED...</span>
+<span class="mx-8 text-tertiary">UPDATING BROADCAST RELAYS...</span>
+<span class="mx-8">ROSTER DATA CACHED LOCALLY...</span>
+<span class="mx-8">WAR ROOM STANDBY PROTOCOL ACTIVE...</span>
+<span class="mx-8">DRAFT CLOCK PAUSED BY SYSTEM...</span>
+<span class="mx-8">COMMISSIONER NODE TIMEOUT DETECTED...</span>
+</div>
+</div>
+<div class="bg-surface-bright h-full px-6 flex items-center border-l border-outline-variant/20">
+<span class="font-label text-xs text-on-surface-variant font-bold tabular-nums">00:00:14 TO TIMEOUT</span>
+</div>
+</div>
+</footer>
+<!-- Static Decoration Panels -->
+<div class="absolute right-12 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 z-10 opacity-40">
+<div class="w-16 h-1 bg-outline-variant"></div>
+<div class="w-24 h-1 bg-outline-variant/50"></div>
+<div class="w-12 h-1 bg-outline-variant"></div>
+<div class="w-32 h-1 bg-tertiary/30"></div>
+</div>
+<div class="absolute left-12 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 z-10 opacity-40 items-end">
+<div class="w-32 h-1 bg-primary/20"></div>
+<div class="w-12 h-1 bg-outline-variant"></div>
+<div class="w-24 h-1 bg-outline-variant/50"></div>
+<div class="w-16 h-1 bg-outline-variant"></div>
+</div>
+</main>
+<style>
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
+</body></html>

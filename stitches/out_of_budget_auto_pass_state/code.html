@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#adc6ff",
+                    "on-tertiary": "#3a3000",
+                    "on-primary-container": "#3686ff",
+                    "secondary-fixed-dim": "#ffb3b2",
+                    "secondary-fixed": "#ffdad9",
+                    "secondary": "#ffb3b2",
+                    "on-tertiary-container": "#4c3f00",
+                    "surface-bright": "#353940",
+                    "primary": "#adc6ff",
+                    "on-primary-fixed": "#001a41",
+                    "surface-variant": "#31353c",
+                    "inverse-surface": "#dfe2eb",
+                    "on-secondary": "#680013",
+                    "on-error": "#690005",
+                    "on-surface": "#dfe2eb",
+                    "on-secondary-fixed": "#410008",
+                    "inverse-on-surface": "#2d3137",
+                    "error": "#ffb4ab",
+                    "primary-container": "#00204d",
+                    "surface": "#10141a",
+                    "surface-container-lowest": "#0a0e14",
+                    "on-secondary-fixed-variant": "#92001f",
+                    "on-secondary-container": "#ffcccb",
+                    "primary-fixed-dim": "#adc6ff",
+                    "primary-fixed": "#d8e2ff",
+                    "tertiary-fixed": "#ffe16d",
+                    "surface-container": "#1c2026",
+                    "on-primary": "#002e69",
+                    "error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "on-background": "#dfe2eb",
+                    "outline": "#8d9199",
+                    "tertiary-fixed-dim": "#e9c400",
+                    "surface-dim": "#10141a",
+                    "surface-container-low": "#181c22",
+                    "background": "#10141a",
+                    "tertiary-container": "#c9a900",
+                    "on-primary-fixed-variant": "#004493",
+                    "on-error-container": "#ffdad6",
+                    "outline-variant": "#43474e",
+                    "secondary-container": "#bf012c",
+                    "tertiary": "#e9c400",
+                    "surface-container-high": "#262a31",
+                    "inverse-primary": "#005bc1",
+                    "on-tertiary-fixed": "#221b00",
+                    "surface-container-highest": "#31353c",
+                    "on-surface-variant": "#c4c6cf"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .broadcast-skew {
+            transform: skew(-10deg);
+        }
+        .broadcast-skew-inner {
+            transform: skew(10deg);
+        }
+        .metallic-red-gradient {
+            background: linear-gradient(135deg, #bf012c 0%, #680013 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<header class="w-full top-0 z-50 bg-[#0a0e14] dark:bg-[#0a0e14] border-b-2 border-[#1c2026] shadow-[0_4px_20px_rgba(0,68,147,0.2)] flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black italic tracking-tighter text-blue-400 font-['Space_Grotesk'] uppercase tracking-tight">DRAFT COMMAND</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-blue-400 border-b-2 border-blue-400 pb-1 font-['Space_Grotesk'] uppercase tracking-tight" href="#">LIVE DRAFT</a>
+<a class="text-slate-400 hover:text-white transition-colors font-['Space_Grotesk'] uppercase tracking-tight" href="#">ROSTER</a>
+<a class="text-slate-400 hover:text-white transition-colors font-['Space_Grotesk'] uppercase tracking-tight" href="#">SCHOOLS</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-400 hover:bg-blue-900/20 rounded transition-all active:scale-95 duration-75">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="p-2 text-slate-400 hover:bg-blue-900/20 rounded transition-all active:scale-95 duration-75">
+<span class="material-symbols-outlined" data-icon="power_settings_new">power_settings_new</span>
+</button>
+</div>
+</header>
+<div class="flex min-h-[calc(100vh-74px)]">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-full w-64 bg-[#0a0e14]/90 backdrop-blur-xl border-r border-blue-900/30 shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-[60]">
+<div class="p-6 border-b border-blue-900/20">
+<div class="flex items-center gap-3">
+<img alt="Commissioner Avatar" class="w-10 h-10 rounded-lg bg-surface-container-highest" data-alt="professional sports commissioner portrait avatar in front of a dark blue stadium background high contrast lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqq81wkc9zEKtOhnV9duFrUutQVDsX_R1LR-qqn4eWfbq3Lb5taM1Lvv5Sdzf6FjyOQMGugVsaYO5jJDi2BbXE5mDQqbPLAY2oMJg6eBzTxQFKJ_APCkIFRlkt-NpjtFbDN8uxTAMgKECr4BmdqUMaEx478JVtzDWyAfez0qxGZDG5_J9O8CIquLvVozKC9g9PwwT32-XSPTkyWgZx8cFYtz25H_SJcra_wk6DeiuCt8e05norUg8cCGL7rDmQxCccv7hLLUWBgYI"/>
+<div>
+<div class="text-white font-black font-['Space_Grotesk'] uppercase text-sm tracking-widest">STADIUM COMMAND</div>
+<div class="text-blue-400 text-[10px] font-bold font-['Space_Grotesk'] tracking-widest">SESSION ACTIVE</div>
+</div>
+</div>
+</div>
+<nav class="flex-grow py-4">
+<a class="bg-gradient-to-r from-blue-900/40 to-transparent text-blue-400 border-l-4 border-blue-400 py-4 px-6 flex items-center gap-4 font-['Space_Grotesk'] uppercase font-bold transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="gavel">gavel</span> WAR ROOM
+                </a>
+<a class="text-slate-500 py-4 px-6 flex items-center gap-4 font-['Space_Grotesk'] uppercase font-bold hover:text-slate-200 hover:bg-white/5 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span> BOARD
+                </a>
+<a class="text-slate-500 py-4 px-6 flex items-center gap-4 font-['Space_Grotesk'] uppercase font-bold hover:text-slate-200 hover:bg-white/5 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span> ROSTER
+                </a>
+<a class="text-slate-500 py-4 px-6 flex items-center gap-4 font-['Space_Grotesk'] uppercase font-bold hover:text-slate-200 hover:bg-white/5 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span> HISTORY
+                </a>
+<a class="text-slate-500 py-4 px-6 flex items-center gap-4 font-['Space_Grotesk'] uppercase font-bold hover:text-slate-200 hover:bg-white/5 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="security">security</span> ADMIN
+                </a>
+</nav>
+<div class="p-6">
+<button class="w-full bg-blue-400 text-[#001a41] py-3 font-['Space_Grotesk'] font-black uppercase text-sm tracking-widest hover:bg-blue-300 transition-colors">
+                    NOMINATE NOW
+                </button>
+</div>
+<div class="mt-auto border-t border-blue-900/20">
+<a class="text-slate-500 py-4 px-6 flex items-center gap-4 font-['Space_Grotesk'] uppercase font-bold hover:text-slate-200 hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span> LOGOUT
+                </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-grow p-8 bg-surface-container-lowest relative overflow-hidden">
+<!-- Background Decoration -->
+<div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-900/5 to-transparent pointer-events-none"></div>
+<!-- INSUFFICIENT FUNDS ALERT BANNER -->
+<div class="mb-8 relative z-10">
+<div class="metallic-red-gradient p-4 rounded-lg flex items-center gap-4 shadow-[0_0_30px_rgba(191,1,44,0.3)]">
+<span class="material-symbols-outlined text-4xl text-white font-bold" data-icon="warning">warning</span>
+<div>
+<h2 class="text-xl font-headline font-black uppercase tracking-tight text-white leading-none">YOU HAVE INSUFFICIENT FUNDS TO BID ON THIS SCHOOL.</h2>
+<p class="text-white/80 font-headline uppercase font-bold text-xs tracking-widest mt-1">LOCKDOWN IN EFFECT: $1 MINIMUM PER REMAINING SLOT REQUIRED ($8 RESERVED FOR 8 SLOTS). CURRENT BID EXCEEDS MAXIMUM CALCULATED BUDGET.</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-8">
+<!-- Player/School Card -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container rounded-lg relative overflow-hidden border-t border-white/10">
+<div class="absolute top-4 right-4 z-20">
+<div class="broadcast-skew bg-secondary py-1 px-4 text-on-secondary font-headline font-black uppercase text-sm">
+<div class="broadcast-skew-inner">LIVE BIDDING</div>
+</div>
+</div>
+<div class="relative h-[400px]">
+<img alt="University Campus" class="w-full h-full object-cover" data-alt="majestic university stadium and campus buildings at night with cinematic blue and white lighting and glowing stadium lights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_qSqjPfucYSyJq9sNB9Adh3zgxzbhZgpZMtIG0H9Qt2a3lqlC2qo_NIeZnpKzc4-ZB0F0AMqF6a5NgxecGahPjrn5InNW1UvysCfqYcGxZVET0dAafoc9k7Z_8iyC6TH7Y94qlDjE22njJGiAkVRi8wqEJ4Nzt6FeYx_5QWHJZon0_OVrkQ-6W9f-6GOZkDqL0zeDqUASox-B6_SXyPu5MB67-2q9RU5Lh15ifW1t_s946bFPPjGqnk3F4f8P75h2MatDHUOXw-o"/>
+<div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-surface-container via-surface-container/80 to-transparent">
+<h1 class="text-5xl font-headline font-black uppercase tracking-tighter text-white">UNIVERSITY OF MICHIGAN</h1>
+<div class="flex gap-4 mt-2">
+<span class="bg-surface-container-highest px-3 py-1 text-on-surface-variant font-label uppercase font-bold text-xs">BIG TEN</span>
+<span class="bg-surface-container-highest px-3 py-1 text-on-surface-variant font-label uppercase font-bold text-xs">RANK #2</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bidding Console -->
+<div class="col-span-12 lg:col-span-5 flex flex-col gap-6">
+<!-- Current Bid Display -->
+<div class="bg-surface-container-high p-8 rounded-lg border-t border-white/10 shadow-xl">
+<div class="flex justify-between items-end mb-4">
+<div>
+<label class="text-tertiary font-label font-bold text-xs tracking-widest uppercase">CURRENT BID</label>
+<div class="text-6xl font-headline font-black text-white">$145</div>
+</div>
+<div class="text-right">
+<label class="text-on-surface-variant font-label font-bold text-xs tracking-widest uppercase">BIDDER</label>
+<div class="text-xl font-headline font-bold text-primary uppercase">STRAT_COMMANDER</div>
+</div>
+</div>
+<!-- Budget Status -->
+<div class="mt-8 pt-6 border-t border-outline-variant/30">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label font-bold text-xs uppercase tracking-widest text-on-surface-variant">YOUR REMAINING BUDGET</span>
+<span class="font-headline font-black text-2xl text-secondary">$7</span>
+</div>
+<div class="w-full h-2 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="w-[8.75%] h-full bg-secondary"></div>
+</div>
+<div class="flex justify-between mt-2 font-label font-bold text-[10px] uppercase tracking-tighter text-on-surface-variant">
+<span>8 SLOTS OPEN</span>
+<span class="text-secondary">$7 REMAINING / 8 SLOTS OPEN</span>
+</div>
+</div>
+</div>
+<!-- Action Panel -->
+<div class="bg-surface-container-high p-8 rounded-lg border-t border-white/10 relative">
+<!-- Warning Tooltip Overlay -->
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 z-30">
+<div class="bg-secondary text-on-secondary px-6 py-2 rounded shadow-2xl font-headline font-black uppercase text-xs tracking-widest whitespace-nowrap border-2 border-on-secondary animate-pulse">
+                                MINIMUM $1 PER REMAINING SLOT REQUIRED ($8 total reserved)
+                            </div>
+</div>
+<div class="grid grid-cols-3 gap-4 mb-6">
+<button class="flex flex-col items-center justify-center py-4 bg-surface-container-lowest/50 border border-outline-variant/10 rounded cursor-not-allowed group opacity-40" disabled="">
+<span class="text-on-surface-variant font-headline font-black text-2xl">+$1</span>
+<span class="text-on-surface-variant font-label font-bold text-[10px] uppercase">INSUFFICIENT</span>
+</button>
+<button class="flex flex-col items-center justify-center py-4 bg-surface-container-lowest/50 border border-outline-variant/10 rounded cursor-not-allowed group opacity-40" disabled="">
+<span class="text-on-surface-variant font-headline font-black text-2xl">+$5</span>
+<span class="text-on-surface-variant font-label font-bold text-[10px] uppercase">INSUFFICIENT</span>
+</button>
+<button class="flex flex-col items-center justify-center py-4 bg-surface-container-lowest/50 border border-outline-variant/10 rounded cursor-not-allowed group opacity-40" disabled="">
+<span class="text-on-surface-variant font-headline font-black text-2xl">+$10</span>
+<span class="text-on-surface-variant font-label font-bold text-[10px] uppercase">INSUFFICIENT</span>
+</button>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- PASS BUTTON (ACTIVE) -->
+<button class="border-2 border-primary py-6 rounded group transition-all active:scale-95 duration-75 relative overflow-hidden"><div class="absolute inset-0 bg-primary opacity-100"></div><span class="relative z-10 text-surface-container-highest font-headline font-black text-3xl uppercase tracking-tighter flex items-center justify-center gap-3"><span class="material-symbols-outlined text-4xl">lock</span> LOCKED IN: PASS</span></button>
+<div class="flex items-center justify-center gap-2 mt-4 text-on-surface-variant/50 font-label font-bold text-[10px] uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+                                BIDDING SYSTEM LOCKED FOR USER_0182
+                            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Ticker (Bento Style) -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="bg-surface-container p-4 rounded border-l-4 border-primary">
+<div class="text-[10px] font-label font-bold uppercase text-on-surface-variant">LATEST ACTION</div>
+<div class="text-sm font-headline font-bold text-white uppercase mt-1">TEXAS SOLD $120</div>
+</div>
+<div class="bg-surface-container p-4 rounded border-l-4 border-tertiary">
+<div class="text-[10px] font-label font-bold uppercase text-on-surface-variant">WHALE ALERT</div>
+<div class="text-sm font-headline font-bold text-white uppercase mt-1">DRAFT_KING SPENT $240</div>
+</div>
+<div class="bg-surface-container p-4 rounded border-l-4 border-outline-variant">
+<div class="text-[10px] font-label font-bold uppercase text-on-surface-variant">TIMER</div>
+<div class="text-sm font-headline font-bold text-white uppercase mt-1">0:14 REMAINING</div>
+</div>
+<div class="bg-surface-container p-4 rounded border-l-4 border-secondary">
+<div class="text-[10px] font-label font-bold uppercase text-on-surface-variant">BUDGET ALERT</div>
+<div class="text-sm font-headline font-bold text-secondary uppercase mt-1">USER_0182 CAP REACHED</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

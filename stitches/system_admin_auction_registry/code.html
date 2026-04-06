@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DRAFT COMMANDER - AUCTION REGISTRY</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(16, 20, 26, 0.6);
+            backdrop-filter: blur(12px);
+        }
+        .ghost-border {
+            outline: 1px solid rgba(67, 71, 78, 0.15);
+        }
+        .metallic-gradient {
+            background: linear-gradient(135deg, #adc6ff 0%, #3686ff 100%);
+        }
+        .auction-hammer-glow {
+            box-shadow: 0 0 15px rgba(233, 196, 0, 0.3);
+        }
+        .skew-chyron {
+            transform: skewX(-10deg);
+        }
+        .skew-fix {
+            transform: skewX(10deg);
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "surface-container-low": "#181c22",
+                "error-container": "#93000a",
+                "tertiary": "#e9c400",
+                "secondary-fixed-dim": "#ffb3b2",
+                "primary-fixed": "#d8e2ff",
+                "outline": "#8d9199",
+                "on-surface-variant": "#c4c6cf",
+                "surface": "#10141a",
+                "surface-bright": "#353940",
+                "surface-tint": "#adc6ff",
+                "primary-container": "#00204d",
+                "on-primary": "#002e69",
+                "on-secondary": "#680013",
+                "error": "#ffb4ab",
+                "on-tertiary": "#3a3000",
+                "on-tertiary-fixed-variant": "#544600",
+                "inverse-on-surface": "#2d3137",
+                "surface-container": "#1c2026",
+                "on-secondary-fixed-variant": "#92001f",
+                "background": "#10141a",
+                "on-secondary-fixed": "#410008",
+                "inverse-primary": "#005bc1",
+                "on-primary-fixed": "#001a41",
+                "secondary-fixed": "#ffdad9",
+                "surface-dim": "#10141a",
+                "on-error": "#690005",
+                "surface-container-lowest": "#0a0e14",
+                "surface-container-high": "#262a31",
+                "outline-variant": "#43474e",
+                "surface-container-highest": "#31353c",
+                "on-error-container": "#ffdad6",
+                "on-primary-container": "#3686ff",
+                "on-tertiary-container": "#4c3f00",
+                "tertiary-container": "#c9a900",
+                "secondary": "#ffb3b2",
+                "surface-variant": "#31353c",
+                "secondary-container": "#bf012c",
+                "primary-fixed-dim": "#adc6ff",
+                "tertiary-fixed-dim": "#e9c400",
+                "primary": "#adc6ff",
+                "on-tertiary-fixed": "#221b00",
+                "inverse-surface": "#dfe2eb",
+                "on-background": "#dfe2eb",
+                "on-primary-fixed-variant": "#004493",
+                "tertiary-fixed": "#ffe16d",
+                "on-surface": "#dfe2eb",
+                "on-secondary-container": "#ffcccb"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "fontFamily": {
+                "headline": ["Space Grotesk"],
+                "body": ["Inter"],
+                "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body overflow-x-hidden">
+<!-- Sidebar Navigation -->
+<nav class="fixed left-0 top-0 h-full flex flex-col h-screen w-64 border-r border-white/10 bg-slate-950/60 backdrop-blur-xl z-50">
+<div class="p-6">
+<div class="text-2xl font-black italic tracking-tighter text-blue-400 font-headline">WAR ROOM</div>
+<div class="font-headline uppercase tracking-tight text-xs text-slate-500 mt-1">COMMAND CENTER</div>
+</div>
+<div class="flex-1 px-4 space-y-2 mt-4">
+<!-- Active State: Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 text-yellow-400 font-bold border-r-4 border-yellow-400 bg-white/5 transition-all duration-300 font-headline uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/10 transition-all duration-300 font-headline uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="gavel">gavel</span>
+<span>Nominations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/10 transition-all duration-300 font-headline uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="live_tv">live_tv</span>
+<span>Live Feed</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/10 transition-all duration-300 font-headline uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/10 transition-all duration-300 font-headline uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span>Rules</span>
+</a>
+</div>
+<div class="p-6">
+<button class="w-full metallic-gradient py-3 font-headline font-black text-on-primary-fixed uppercase tracking-widest text-sm shadow-[0_0_15px_rgba(173,198,255,0.3)] active:scale-95 transition-transform">
+                NEW AUCTION
+            </button>
+</div>
+</nav>
+<!-- Top App Bar -->
+<header class="fixed top-0 right-0 left-64 flex justify-between items-center px-8 z-40 w-auto h-16 border-b border-white/5 bg-slate-950/80 backdrop-blur-md">
+<div class="flex items-center gap-8">
+<div class="text-xl font-black text-white tracking-widest font-headline">DRAFT COMMANDER</div>
+<div class="hidden md:flex gap-6 items-center">
+<span class="text-yellow-400 font-headline uppercase font-bold text-xs">Live Sync</span>
+<span class="text-slate-400 font-headline uppercase font-bold text-xs">Latency: 24ms</span>
+<span class="text-slate-400 font-headline uppercase font-bold text-xs">Server: East-1</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<input class="bg-transparent border-0 border-b-2 border-outline-variant focus:ring-0 focus:border-primary transition-all w-64 text-sm font-headline tracking-widest text-on-surface-variant placeholder:text-slate-600" placeholder="SEARCH REGISTRY..." type="text"/>
+<span class="material-symbols-outlined absolute right-0 top-1 text-slate-600 group-focus-within:text-primary" data-icon="search">search</span>
+</div>
+<div class="flex gap-4">
+<button class="text-slate-400 hover:text-blue-300 transition-colors"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="text-slate-400 hover:text-blue-300 transition-colors"><span class="material-symbols-outlined" data-icon="settings">settings</span></button>
+<button class="text-slate-400 hover:text-blue-300 transition-colors"><span class="material-symbols-outlined" data-icon="account_circle">account_circle</span></button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-10 min-h-[calc(100vh-4rem)] relative overflow-hidden">
+<!-- Background Decor -->
+<div class="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
+<div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[100px] -z-10 -translate-x-1/3 translate-y-1/3"></div>
+<!-- Section Header -->
+<div class="mb-12">
+<div class="flex items-center gap-4 mb-2">
+<div class="h-1 w-12 bg-primary"></div>
+<h1 class="text-5xl font-black font-headline uppercase tracking-tighter text-on-surface">AUCTION REGISTRY</h1>
+</div>
+<p class="text-on-surface-variant font-headline tracking-[0.2em] text-xs uppercase opacity-70">Total Controlled Environments: 24 active sessions</p>
+</div>
+<!-- High-Impact Registry Table -->
+<div class="glass-panel ghost-border overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-high border-b border-white/10">
+<tr>
+<th class="px-6 py-5 font-headline uppercase tracking-widest text-xs text-tertiary">Join Code</th>
+<th class="px-6 py-5 font-headline uppercase tracking-widest text-xs text-tertiary">Auction Name</th>
+<th class="px-6 py-5 font-headline uppercase tracking-widest text-xs text-tertiary">Status</th>
+<th class="px-6 py-5 font-headline uppercase tracking-widest text-xs text-tertiary">Teams Count</th>
+<th class="px-6 py-5 font-headline uppercase tracking-widest text-xs text-tertiary">Last Activity</th>
+<th class="px-6 py-5 font-headline uppercase tracking-widest text-xs text-tertiary text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<!-- Row 1: Active -->
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-6">
+<span class="font-headline font-bold text-primary tracking-widest">LX-9921</span>
+</td>
+<td class="px-6 py-6">
+<div class="font-headline font-black text-lg uppercase tracking-tight text-white">Elite Invitational Round 1</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest">ID: #BCAST_4420</div>
+</td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-headline uppercase text-xs font-bold text-secondary">ACTIVE</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="text-on-surface font-headline font-bold">12 / 12</span>
+</td>
+<td class="px-6 py-6">
+<span class="text-on-surface-variant text-sm">2 MIN AGO</span>
+</td>
+<td class="px-6 py-6 text-right">
+<button class="metallic-gradient text-on-primary-fixed font-headline font-black text-[10px] uppercase tracking-widest px-6 py-2.5 shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                                ENTER WAR ROOM
+                            </button>
+</td>
+</tr>
+<!-- Row 2: Scheduled -->
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-6">
+<span class="font-headline font-bold text-slate-500 tracking-widest">KD-1102</span>
+</td>
+<td class="px-6 py-6">
+<div class="font-headline font-black text-lg uppercase tracking-tight text-white/80">Dynasty Starter Auction</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest">STARTS IN 45m</div>
+</td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary/40"></span>
+<span class="font-headline uppercase text-xs font-bold text-slate-400">SCHEDULED</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="text-on-surface font-headline font-bold">10 / 14</span>
+</td>
+<td class="px-6 py-6">
+<span class="text-on-surface-variant text-sm">1 HR AGO</span>
+</td>
+<td class="px-6 py-6 text-right">
+<button class="bg-transparent border-2 border-primary/20 text-primary font-headline font-black text-[10px] uppercase tracking-widest px-6 py-2 hover:border-primary transition-all">
+                                SETUP / MODIFY
+                            </button>
+</td>
+</tr>
+<!-- Row 3: Active -->
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-6">
+<span class="font-headline font-bold text-primary tracking-widest">ZP-8833</span>
+</td>
+<td class="px-6 py-6">
+<div class="font-headline font-black text-lg uppercase tracking-tight text-white">Sunday Night Showdown</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest">ID: #BCAST_9912</div>
+</td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-headline uppercase text-xs font-bold text-secondary">ACTIVE</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="text-on-surface font-headline font-bold">8 / 8</span>
+</td>
+<td class="px-6 py-6">
+<span class="text-on-surface-variant text-sm">NOW</span>
+</td>
+<td class="px-6 py-6 text-right">
+<button class="metallic-gradient text-on-primary-fixed font-headline font-black text-[10px] uppercase tracking-widest px-6 py-2.5 shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                                ENTER WAR ROOM
+                            </button>
+</td>
+</tr>
+<!-- Row 4: Completed -->
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-6">
+<span class="font-headline font-bold text-slate-500 tracking-widest">RM-5521</span>
+</td>
+<td class="px-6 py-6">
+<div class="font-headline font-black text-lg uppercase tracking-tight text-slate-500">Titan Cup Draft Phase</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest">COMPLETED 12/05</div>
+</td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-slate-700"></span>
+<span class="font-headline uppercase text-xs font-bold text-slate-600">COMPLETED</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="text-on-surface-variant font-headline font-bold">12 / 12</span>
+</td>
+<td class="px-6 py-6">
+<span class="text-on-surface-variant text-sm">2 DAYS AGO</span>
+</td>
+<td class="px-6 py-6 text-right">
+<div class="flex items-center justify-end gap-3">
+<button class="text-on-surface-variant hover:text-white transition-colors" title="Export Results">
+<span class="material-symbols-outlined text-xl" data-icon="file_download">file_download</span>
+</button>
+<button class="bg-surface-container-highest px-4 py-2 text-[10px] font-headline font-black uppercase tracking-widest text-white border border-white/5 hover:bg-surface-bright transition-all">
+                                    VIEW RECAP
+                                </button>
+</div>
+</td>
+</tr>
+<!-- Row 5: Draft -->
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-6">
+<span class="font-headline font-bold text-slate-500 tracking-widest">NW-2114</span>
+</td>
+<td class="px-6 py-6">
+<div class="font-headline font-black text-lg uppercase tracking-tight text-white/80">Pro Bowl Pro League</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest">DRAFT SAVED</div>
+</td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-yellow-600"></span>
+<span class="font-headline uppercase text-xs font-bold text-yellow-600">DRAFT</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="text-on-surface font-headline font-bold">0 / 12</span>
+</td>
+<td class="px-6 py-6">
+<span class="text-on-surface-variant text-sm">5 MIN AGO</span>
+</td>
+<td class="px-6 py-6 text-right">
+<button class="bg-transparent border-2 border-primary/20 text-primary font-headline font-black text-[10px] uppercase tracking-widest px-6 py-2 hover:border-primary transition-all">
+                                SETUP / MODIFY
+                            </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Gridiron Accents (Asymmetric Details) -->
+<div class="mt-12 flex justify-between items-end">
+<div class="relative">
+<div class="bg-surface-container-highest skew-chyron p-4 border-l-4 border-secondary">
+<div class="skew-fix flex items-center gap-4">
+<div class="bg-secondary-container px-2 py-1 text-[10px] font-headline font-black uppercase text-white">LIVE FEED</div>
+<div class="font-headline text-sm uppercase tracking-tighter text-white">Auction #LX-9921: Bid increased to $45 by User_88</div>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<div class="w-2 h-2 bg-primary"></div>
+<div class="w-2 h-2 bg-primary/40"></div>
+<div class="w-2 h-2 bg-primary/10"></div>
+</div>
+</div>
+</main>
+<!-- Footer Chyron -->
+<footer class="fixed bottom-0 right-0 left-64 bg-slate-950 h-10 flex items-center border-t border-white/5 z-50">
+<div class="w-full flex justify-between px-8">
+<div class="flex items-center gap-4">
+<div class="text-[10px] font-headline font-black uppercase tracking-[0.3em] text-white">BROADCAST TANOOKIZOOT</div>
+<div class="h-3 w-px bg-white/10"></div>
+<div class="text-[10px] font-headline uppercase text-slate-500">© 2024 LEAGIFY DIGITAL SYSTEMS</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-[10px] font-headline uppercase text-slate-500">System Uptime: 99.98%</div>
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+<div class="text-[10px] font-headline uppercase text-primary font-bold">OPERATIONAL</div>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

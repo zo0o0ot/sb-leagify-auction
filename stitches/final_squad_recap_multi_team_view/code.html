@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#4c3f00",
+                    "surface-dim": "#10141a",
+                    "surface": "#10141a",
+                    "tertiary": "#e9c400",
+                    "primary": "#adc6ff",
+                    "primary-container": "#00204d",
+                    "on-surface-variant": "#c4c6cf",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "on-secondary-fixed": "#410008",
+                    "tertiary-fixed": "#ffe16d",
+                    "surface-container": "#1c2026",
+                    "on-secondary": "#680013",
+                    "secondary": "#ffb3b2",
+                    "surface-container-high": "#262a31",
+                    "outline": "#8d9199",
+                    "on-secondary-container": "#ffcccb",
+                    "on-primary-container": "#3686ff",
+                    "tertiary-fixed-dim": "#e9c400",
+                    "secondary-fixed": "#ffdad9",
+                    "primary-fixed": "#d8e2ff",
+                    "surface-container-low": "#181c22",
+                    "on-tertiary": "#3a3000",
+                    "on-primary": "#002e69",
+                    "on-error": "#690005",
+                    "inverse-surface": "#dfe2eb",
+                    "surface-container-highest": "#31353c",
+                    "on-tertiary-fixed": "#221b00",
+                    "secondary-fixed-dim": "#ffb3b2",
+                    "error-container": "#93000a",
+                    "surface-variant": "#31353c",
+                    "on-background": "#dfe2eb",
+                    "secondary-container": "#bf012c",
+                    "surface-tint": "#adc6ff",
+                    "on-secondary-fixed-variant": "#92001f",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-primary-fixed-variant": "#004493",
+                    "outline-variant": "#43474e",
+                    "inverse-on-surface": "#2d3137",
+                    "tertiary-container": "#c9a900",
+                    "inverse-primary": "#005bc1",
+                    "on-primary-fixed": "#001a41",
+                    "on-error-container": "#ffdad6",
+                    "surface-bright": "#353940",
+                    "on-surface": "#dfe2eb",
+                    "background": "#10141a",
+                    "surface-container-lowest": "#0a0e14",
+                    "error": "#ffb4ab"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(28, 32, 38, 0.6);
+            backdrop-filter: blur(12px);
+            outline: 1px solid rgba(67, 71, 78, 0.15);
+        }
+        .skew-ticker {
+            transform: skewX(-10deg);
+        }
+        .glow-gold {
+            box-shadow: 0 0 15px rgba(233, 196, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/80 backdrop-blur-xl border-b border-white/10 shadow-[0_20px_40px_rgba(0,68,147,0.15)]">
+<div class="text-2xl font-black italic tracking-tighter text-blue-400 font-headline">GRIDIRON PRIME</div>
+<div class="hidden md:flex items-center space-x-8 font-headline uppercase tracking-tighter">
+<a class="text-slate-400 hover:text-slate-100 transition-all" href="#">WAR ROOM</a>
+<a class="text-slate-400 hover:text-slate-100 transition-all" href="#">MARKET</a>
+<a class="text-slate-400 hover:text-slate-100 transition-all" href="#">ROSTERS</a>
+<a class="text-slate-400 hover:text-slate-100 transition-all" href="#">STANDINGS</a>
+<a class="text-blue-400 border-b-2 border-blue-500 pb-1" href="#">RECAPS</a>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 hover:text-white cursor-pointer transition-colors">notifications</span>
+<span class="material-symbols-outlined text-slate-400 hover:text-white cursor-pointer transition-colors">settings</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/30">
+<img alt="Commander Avatar" data-alt="Close-up profile of a futuristic football commander wearing a sleek carbon fiber helmet with glowing blue visors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfa9WB193u3hAATPF6t6X8MGIG3fPqmtv3ssutXPNW-1ZNTqRZIdnfFwNgKoWFdlBudKG1RVtdX6D3WB9t93kfppCBlKUuDbtRyrLeYE1cd0QIBes0IdevNuIpMkpA8omBukQs2V61dC-MIPUeY_w_QxHW5vWg6LjvwnFtyYk2kTgEx2Ql0Cvzu2AsfoAlR0klZz_kxXnaqn2MRCTyhcOkH8g9m9P2xIaM_DUHxoFOLsOIBoduXj3Qs6-ApypZwJr-nC2zU3TB0VU"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-900 shadow-2xl z-40 hidden lg:block">
+<div class="flex flex-col h-full pt-20 font-headline uppercase font-bold">
+<div class="px-6 mb-10 flex items-center gap-4">
+<div class="p-2 bg-primary-container rounded-lg">
+<span class="material-symbols-outlined text-blue-400" style="font-variation-settings: 'FILL' 1;">gavel</span>
+</div>
+<div>
+<div class="text-blue-400 text-sm leading-none">COMMANDER</div>
+<div class="text-slate-500 text-[10px]">LEAGUE ADMIN</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-6 py-4 text-slate-500 hover:text-slate-300 transition-colors duration-200 hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>DASHBOARD</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 bg-blue-600/20 text-blue-400 border-r-4 border-blue-500 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span>ROSTER CONTROL</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-500 hover:text-slate-300 transition-colors duration-200 hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>DRAFT LOG</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-500 hover:text-slate-300 transition-colors duration-200 hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">gavel</span>
+<span>COMMISH TOOLS</span>
+</a>
+</nav>
+<div class="p-6 border-t border-white/5">
+<button class="w-full py-3 bg-gradient-to-br from-primary to-on-primary-container text-on-primary-fixed font-black text-sm tracking-widest rounded-sm hover:brightness-110 transition-all">
+                    LOCK ROSTERS
+                </button>
+<button class="mt-4 flex items-center gap-2 text-slate-500 hover:text-slate-300 transition-colors text-xs">
+<span class="material-symbols-outlined text-sm">logout</span>
+                    LOGOUT
+                </button>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="lg:ml-64 pt-24 pb-20 px-6 max-w-7xl mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div>
+<h1 class="text-5xl md:text-7xl font-black italic tracking-tighter font-headline text-on-surface uppercase mb-2">
+                    FINAL SQUAD <span class="text-primary">RECAP</span>
+</h1>
+<p class="text-on-surface-variant font-headline tracking-widest text-sm font-medium">AUCTION PHASE: COMPLETE // SEASON MODE: PENDING</p>
+</div>
+<div class="relative group">
+<label class="block text-[10px] font-headline font-bold text-tertiary mb-1 tracking-[0.2em]">SWITCH ROSTER</label>
+<div class="flex items-center justify-between w-48 bg-surface-container border-b-2 border-outline-variant px-4 py-3 cursor-pointer group-hover:border-primary transition-all">
+<span class="font-headline font-bold tracking-tight">TEAM 1</span>
+<span class="material-symbols-outlined text-primary">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Stats Bar -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+<div class="glass-panel p-6 flex items-center justify-between overflow-hidden relative">
+<div class="relative z-10">
+<div class="text-[10px] font-headline font-bold text-slate-400 tracking-[0.3em] mb-1">TOTAL PROJECTED POINTS</div>
+<div class="text-4xl font-headline font-black tracking-tighter text-on-surface">2,482</div>
+</div>
+<div class="opacity-10 absolute -right-4 -bottom-6">
+<span class="material-symbols-outlined text-9xl">analytics</span>
+</div>
+<div class="h-1 bg-primary/20 w-full absolute bottom-0 left-0">
+<div class="h-full bg-primary w-[88%] shadow-[0_0_10px_rgba(173,198,255,0.5)]"></div>
+</div>
+</div>
+<div class="glass-panel p-6 flex items-center justify-between overflow-hidden relative">
+<div class="relative z-10">
+<div class="text-[10px] font-headline font-bold text-slate-400 tracking-[0.3em] mb-1">TOTAL BUDGET SPENT</div>
+<div class="text-4xl font-headline font-black tracking-tighter text-tertiary">$198</div>
+</div>
+<div class="opacity-10 absolute -right-4 -bottom-6">
+<span class="material-symbols-outlined text-9xl">payments</span>
+</div>
+<div class="h-1 bg-tertiary/20 w-full absolute bottom-0 left-0">
+<div class="h-full bg-tertiary w-[99%] shadow-[0_0_10px_rgba(233,196,0,0.5)]"></div>
+</div>
+</div>
+</div>
+<!-- Roster Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+<!-- Slot 1 -->
+<div class="bg-surface-container group hover:bg-surface-container-high transition-all flex items-center p-4 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-50 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-16 h-16 bg-surface-container-low flex items-center justify-center rounded-sm border border-white/5 mr-6 shrink-0">
+<img alt="Alabama Logo" class="w-12 h-12 grayscale group-hover:grayscale-0 transition-all" data-alt="University athletic logo with a crimson aesthetic, bold serif typography, high-contrast studio lighting on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbOsU7NFP2kJpxWcos34YghnP8nYoSLBEqIq8AVZaXXl1JneLLYBtO3JRMI6S2mTEwc_BGxU6S5sGrfw9_rMhhs8UZbmaTiAMBIawbs0kIY0iUBFL7cdQMsS2v7wNf6ZWxOyseLdqXSBzmtFoTFY__9RI3vwZQXV4Jvv4seeqXbT6XsvMmA4VQ8C95j_ALOV7L_k2i83O5O0BiZ0hA05MripiivgNvIW0qxNPhz9huEO-vKYLuuO28zz2eHkdtxivX8KiS3EvLo0c"/>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">SCHOOL</div>
+<div class="text-lg font-headline font-black tracking-tight text-on-surface">ALABAMA</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">POINTS</div>
+<div class="text-xl font-headline font-bold text-on-surface">312</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] font-headline font-bold text-tertiary tracking-wider">PRICE</div>
+<div class="text-xl font-headline font-bold text-tertiary">$42</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slot 2 -->
+<div class="bg-surface-container group hover:bg-surface-container-high transition-all flex items-center p-4 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-50 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-16 h-16 bg-surface-container-low flex items-center justify-center rounded-sm border border-white/5 mr-6 shrink-0">
+<img alt="Ohio State Logo" class="w-12 h-12 grayscale group-hover:grayscale-0 transition-all" data-alt="University athletic emblem with scarlet and grey colors, modern industrial design, metallic finish, dark dramatic background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr3-5VL4j036TrrZwuef-C4bqfFsSFEiY4_CWLyJxN4VFi0m9_3PHrGjwd6jiUQ5WfwlaASHrvTnDIJMhzUcjqCIQYvO2KSxTEQFeOMcy6_g6gKQ1zybHnJsv7zquT4A-VEROamn72BWH2v57MBV56P0cBe456dctGvxvNBHP3vNMr9QPXiRNOaxrLwlE2xL6IG7ZdNOfQFgyFKjCQQJDuZNc25P2gcWPQV4_5LknCCb-OfyBCHmMA2Vxw236SIfV0xUmuNw5IUaI"/>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">SCHOOL</div>
+<div class="text-lg font-headline font-black tracking-tight text-on-surface">OHIO STATE</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">POINTS</div>
+<div class="text-xl font-headline font-bold text-on-surface">295</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] font-headline font-bold text-tertiary tracking-wider">PRICE</div>
+<div class="text-xl font-headline font-bold text-tertiary">$38</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slot 3 -->
+<div class="bg-surface-container group hover:bg-surface-container-high transition-all flex items-center p-4 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-50 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-16 h-16 bg-surface-container-low flex items-center justify-center rounded-sm border border-white/5 mr-6 shrink-0">
+<img alt="Georgia Logo" class="w-12 h-12 grayscale group-hover:grayscale-0 transition-all" data-alt="Fierce bulldog head mascot logo in red and black, aggressive athletic styling, high-gloss 3D render effect" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCc0fxpJyo3g60ccH9gKAf_rDz1pgr4Yc7FOswxGgrGRh4zj-0oTeqdj-DZmJgeKHlzJgXvXwGuUstswgOkUodsA29PeOvi_VomSmEUfkQz8oxRKOZ_8b0A8tXDZgL4tNmZ1Q5Da8IaiuiXEqq2YPwQTCVDudBHTU9tvPLmLcI6eqdW2uy6N6MO9J7JqRQVnnGEE4XElmAQ6QavW7CqQ2fgOWDo6jYsX7GE4YxY4TQBxkyhxnMgxlX6HSoq78sji6FoAfynWtEf8CE"/>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">SCHOOL</div>
+<div class="text-lg font-headline font-black tracking-tight text-on-surface">GEORGIA</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">POINTS</div>
+<div class="text-xl font-headline font-bold text-on-surface">308</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] font-headline font-bold text-tertiary tracking-wider">PRICE</div>
+<div class="text-xl font-headline font-bold text-tertiary">$40</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slot 4 -->
+<div class="bg-surface-container group hover:bg-surface-container-high transition-all flex items-center p-4 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-50 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-16 h-16 bg-surface-container-low flex items-center justify-center rounded-sm border border-white/5 mr-6 shrink-0">
+<img alt="Michigan Logo" class="w-12 h-12 grayscale group-hover:grayscale-0 transition-all" data-alt="Block M university logo in maize and blue, clean minimalist aesthetic, soft studio lighting on dark slate texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtmEHpVJh45RBIOoxz45QEetlWS4vLkobIRaYIlMHxWhofPCTjm6DmKDrMfcnpSV_c5LE3LW4KUl3ZIbpv-mjWABqUkgFd2qUUHset7cO1OURFXvci6lR80VGjZ1wo_L-7VYZxarO86NIJJ1cm3E_CbMpSPqk-BxTbvV00TmsyH12uUjvCilsKkUZZacV_76Crocn-Hz1_ASkhtYwTV8v-vv__Mz1Rj9LaqHZdWd88OD4Ab2B4zkuULwpWooLBukMjW5uEDynD-H4"/>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">SCHOOL</div>
+<div class="text-lg font-headline font-black tracking-tight text-on-surface">MICHIGAN</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">POINTS</div>
+<div class="text-xl font-headline font-bold text-on-surface">272</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] font-headline font-bold text-tertiary tracking-wider">PRICE</div>
+<div class="text-xl font-headline font-bold text-tertiary">$29</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slot 5 -->
+<div class="bg-surface-container group hover:bg-surface-container-high transition-all flex items-center p-4 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-50 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-16 h-16 bg-surface-container-low flex items-center justify-center rounded-sm border border-white/5 mr-6 shrink-0">
+<img alt="Texas Logo" class="w-12 h-12 grayscale group-hover:grayscale-0 transition-all" data-alt="Longhorn silhouette logo in burnt orange, minimalist design, sharp edges, metallic copper highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdm63cRduUgtsiN6yXz8JvyiPQ3mU8cp2g0BLh3sTVf5RbVipfr9bXD9wwVUiATY29XMLo63v189QQHSDvRagS_EHzUpUzGnwmOcwLl7TCwPO8fwWhSoVrub0frL-ATZiZIFVFuXE_SAcxddLqs8wpUweG_r_FOtCCM7b-Kq8BlO2Dam_gXkf1YIsd0W85Y0bczkwu84E_8wAx8PzPu1K-JK1yPwCrJINkM9Dc4Br1V64j3D_rgVVuzCJoQpQbeiajt33Y3C5HmoQ"/>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">SCHOOL</div>
+<div class="text-lg font-headline font-black tracking-tight text-on-surface">TEXAS</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">POINTS</div>
+<div class="text-xl font-headline font-bold text-on-surface">288</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] font-headline font-bold text-tertiary tracking-wider">PRICE</div>
+<div class="text-xl font-headline font-bold text-tertiary">$33</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slot 6 -->
+<div class="bg-surface-container group hover:bg-surface-container-high transition-all flex items-center p-4 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-50 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-16 h-16 bg-surface-container-low flex items-center justify-center rounded-sm border border-white/5 mr-6 shrink-0">
+<img alt="USC Logo" class="w-12 h-12 grayscale group-hover:grayscale-0 transition-all" data-alt="Interlocking university letters in gold and cardinal red, classic collegiate style, vibrant colors, premium finish" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4brUl6v3KZ_4Be7p7DiG0kT9_Wh24zDjqHTjuW1-LqH-xd8AyKh0d4x15KUK4wSw95xYHDl3OJZF1xtinVj1QmFyFf2O0QVKzjQop92lDWuST2qy3wjzDHWUI4qm4Ylrk8mtlSXFoiz329k-Zz2FekjUBWtA3bO2to1bBXt3a5KhD-CYv8pqBNuZpOuCxjtBLHiD_IJGBgcHYJ9Rdfvb2vBoGuklCclr6gKEVrGJTkPr-l-PyAQzkMwwgTEt_RaNLG216cjSueMY"/>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">SCHOOL</div>
+<div class="text-lg font-headline font-black tracking-tight text-on-surface">USC</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">POINTS</div>
+<div class="text-xl font-headline font-bold text-on-surface">264</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] font-headline font-bold text-tertiary tracking-wider">PRICE</div>
+<div class="text-xl font-headline font-bold text-tertiary">$12</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slot 7 -->
+<div class="bg-surface-container group hover:bg-surface-container-high transition-all flex items-center p-4 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-50 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-16 h-16 bg-surface-container-low flex items-center justify-center rounded-sm border border-white/5 mr-6 shrink-0">
+<img alt="Oregon Logo" class="w-12 h-12 grayscale group-hover:grayscale-0 transition-all" data-alt="Modern stylized 'O' logo in neon green and yellow, futuristic athletic aesthetic, chrome surface reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMpUaTkCOlnU-OZUpUnAvt_sfjH_4SR4z9zY4XJwn8aI8WOsTMKx7f72wiL_qB4PFekRPLG23NTnp5q7IecKrRWYIh0XxCfn6odL4i015rjD636aytHlx-Q7fFiuzEyxprBefVy2zY1Hd1IOsnGBeZLQYL6BhXoqB2ffoTHUbkUI1n3-tB7Luhj2DZP3cpELdxa13rUF6S4QseTOAjJJ5ntgT0xlLKRfA6dPKErZ9OdOZnad3v5bEE-lwSK0GpiAEpEHebJYocUFw"/>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">SCHOOL</div>
+<div class="text-lg font-headline font-black tracking-tight text-on-surface">OREGON</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">POINTS</div>
+<div class="text-xl font-headline font-bold text-on-surface">255</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] font-headline font-bold text-tertiary tracking-wider">PRICE</div>
+<div class="text-xl font-headline font-bold text-tertiary">$8</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slot 8 -->
+<div class="bg-surface-container group hover:bg-surface-container-high transition-all flex items-center p-4 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-50 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-16 h-16 bg-surface-container-low flex items-center justify-center rounded-sm border border-white/5 mr-6 shrink-0">
+<img alt="LSU Logo" class="w-12 h-12 grayscale group-hover:grayscale-0 transition-all" data-alt="LSU tiger head logo in purple and gold, cinematic lighting, dramatic shadows, highly detailed fur texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGG7uowEfivJ2oR6B0bdwAj-9n_WF9bqwsGsDrLG2H7khUhWwgJmzFsfQv1aBYmgcCfp58iNnC3fk7pnvS_62zZcCDjrj5DmNv6-MylIt6baY92YuSF6JpPrlhY-VHnYrP42UZOuNbYAN_F7Q3QZ3YgHJ3zE9-TPfiGh97qHZYSBMbnpRNoomLSxr7KLObeMnAjHqbi8MzBWigLWQ4_H5Po00Vz4QRJgltzC7fRrYWcRI7HSDQs6SpJ7mj0QUdMU_NZRCmCNQumTk"/>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">SCHOOL</div>
+<div class="text-lg font-headline font-black tracking-tight text-on-surface">LSU</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-wider">POINTS</div>
+<div class="text-xl font-headline font-bold text-on-surface">212</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] font-headline font-bold text-tertiary tracking-wider">PRICE</div>
+<div class="text-xl font-headline font-bold text-tertiary">$6</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Desktop Action Footer (Simulating Broadcast Chyron) -->
+<div class="mt-12 glass-panel p-4 flex items-center justify-between border-l-4 border-primary">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary animate-pulse shadow-[0_0_8px_#ffb3b2]"></div>
+<span class="font-headline font-bold text-xs uppercase tracking-tighter">POST-DRAFT ANALYSIS LIVE</span>
+</div>
+<div class="text-on-surface-variant text-sm font-medium">Draft Efficiency Grade: <span class="text-primary font-bold">A-</span></div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-slate-500 text-xs font-bold font-headline uppercase">Quick Share:</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:scale-110 transition-transform">share</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:scale-110 transition-transform">download</span>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-center items-center h-12 overflow-hidden bg-slate-900 border-t-2 border-amber-400/50 shadow-[0_-4px_20px_rgba(233,196,0,0.2)] skew-x-[-10deg]">
+<div class="flex items-center justify-center w-full max-w-lg px-2 gap-1 font-headline text-[10px] uppercase font-bold">
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1 hover:text-amber-200" href="#">
+<span class="material-symbols-outlined text-lg">sensors</span>
+<span>LIVE TICKER</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1 hover:text-amber-200" href="#">
+<span class="material-symbols-outlined text-lg">payments</span>
+<span>TOP BIDS</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-amber-400 text-slate-950 px-4 py-1" href="#">
+<span class="material-symbols-outlined text-lg">trending_up</span>
+<span>TRENDING</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1 hover:text-amber-200" href="#">
+<span class="material-symbols-outlined text-lg">person_add</span>
+<span>FA</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1 hover:text-amber-200" href="#">
+<span class="material-symbols-outlined text-lg">emergency_home</span>
+<span>ALERTS</span>
+</a>
+</div>
+</nav>
+<!-- Footer -->
+<footer class="w-full bg-slate-950 py-4 px-6 mt-12 mb-16 lg:mb-0 border-t border-white/5">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="text-[10px] font-headline font-bold text-slate-500 tracking-widest">
+                GRIDIRON PRIME BROADCAST NETWORK © 2026
+            </div>
+<!-- Ticker -->
+<div class="w-full md:w-1/2 bg-surface-container-low h-8 rounded-sm overflow-hidden relative flex items-center">
+<div class="absolute left-0 h-full bg-secondary px-3 flex items-center z-10 skew-ticker -ml-2">
+<span class="text-[10px] font-black text-on-secondary uppercase skew-x-[10deg]">BREAKING</span>
+</div>
+<div class="flex items-center gap-12 whitespace-nowrap animate-marquee ml-24">
+<span class="text-xs font-bold font-headline uppercase text-slate-300">AUCTION WRAP-UP: TEAM 1 SPENDS $198 ON HIGH-EFFICIENCY STARTERS...</span>
+<span class="text-xs font-bold font-headline uppercase text-slate-300">TRAINING CAMP OPENS IN 48 HOURS...</span>
+<span class="text-xs font-bold font-headline uppercase text-slate-300">STAY TUNED FOR SEASON PROJECTIONS...</span>
+</div>
+</div>
+</div>
+</footer>
+<style>
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            animation: marquee 20s linear infinite;
+        }
+    </style>
+</body></html>

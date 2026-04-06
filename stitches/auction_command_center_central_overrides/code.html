@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DRAFT COMMANDER | Admin War Room</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#181c22",
+                        "error-container": "#93000a",
+                        "tertiary": "#e9c400",
+                        "secondary-fixed-dim": "#ffb3b2",
+                        "primary-fixed": "#d8e2ff",
+                        "outline": "#8d9199",
+                        "on-surface-variant": "#c4c6cf",
+                        "surface": "#10141a",
+                        "surface-bright": "#353940",
+                        "surface-tint": "#adc6ff",
+                        "primary-container": "#00204d",
+                        "on-primary": "#002e69",
+                        "on-secondary": "#680013",
+                        "error": "#ffb4ab",
+                        "on-tertiary": "#3a3000",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "inverse-on-surface": "#2d3137",
+                        "surface-container": "#1c2026",
+                        "on-secondary-fixed-variant": "#92001f",
+                        "background": "#10141a",
+                        "on-secondary-fixed": "#410008",
+                        "inverse-primary": "#005bc1",
+                        "on-primary-fixed": "#001a41",
+                        "secondary-fixed": "#ffdad9",
+                        "surface-dim": "#10141a",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#0a0e14",
+                        "surface-container-high": "#262a31",
+                        "outline-variant": "#43474e",
+                        "surface-container-highest": "#31353c",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-container": "#3686ff",
+                        "on-tertiary-container": "#4c3f00",
+                        "tertiary-container": "#c9a900",
+                        "secondary": "#ffb3b2",
+                        "surface-variant": "#31353c",
+                        "secondary-container": "#bf012c",
+                        "primary-fixed-dim": "#adc6ff",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "primary": "#adc6ff",
+                        "on-tertiary-fixed": "#221b00",
+                        "inverse-surface": "#dfe2eb",
+                        "on-background": "#dfe2eb",
+                        "on-primary-fixed-variant": "#004493",
+                        "tertiary-fixed": "#ffe16d",
+                        "on-surface": "#dfe2eb",
+                        "on-secondary-container": "#ffcccb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .broadcast-skew {
+            transform: skewX(-10deg);
+        }
+        .broadcast-skew-inner {
+            transform: skewX(10deg);
+        }
+        .metallic-glint {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.05) 100%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #31353c;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary-fixed">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col z-50 bg-slate-950/60 backdrop-blur-xl h-screen w-64 border-r border-white/10 shadow-[0_20px_40px_rgba(0,68,147,0.15)] overflow-y-auto custom-scrollbar">
+<div class="p-6 flex flex-col gap-1">
+<div class="text-2xl font-black italic tracking-tighter text-blue-400 font-['Space_Grotesk'] uppercase tracking-tight">WAR ROOM</div>
+<div class="text-[10px] tracking-[0.2em] text-slate-500 font-bold uppercase">COMMAND CENTER</div>
+</div>
+<nav class="mt-8">
+<a class="flex items-center gap-4 px-6 py-4 text-yellow-400 font-bold border-r-4 border-yellow-400 bg-white/5 font-['Space_Grotesk'] uppercase tracking-tight transition-all duration-300" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white transition-colors hover:bg-white/10 hover:backdrop-blur-md font-['Space_Grotesk'] uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined">gavel</span>
+<span>Nominations</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white transition-colors hover:bg-white/10 hover:backdrop-blur-md font-['Space_Grotesk'] uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined">live_tv</span>
+<span>Live Feed</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white transition-colors hover:bg-white/10 hover:backdrop-blur-md font-['Space_Grotesk'] uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white transition-colors hover:bg-white/10 hover:backdrop-blur-md font-['Space_Grotesk'] uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span>Rules</span>
+</a>
+</nav>
+<div class="p-6 mt-auto">
+<button class="w-full py-3 bg-primary text-on-primary-fixed font-bold rounded-lg scale-95 active:scale-90 transition-transform uppercase tracking-tighter font-headline">
+            NEW AUCTION
+        </button>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-64 flex justify-between items-center px-8 z-40 bg-slate-950/80 backdrop-blur-md w-full h-16 border-b border-white/5">
+<div class="flex items-center gap-8">
+<span class="text-xl font-black text-white tracking-widest font-['Space_Grotesk'] uppercase">DRAFT COMMANDER</span>
+<div class="hidden md:flex gap-6">
+<span class="text-[10px] font-bold text-yellow-400 font-['Space_Grotesk'] uppercase tracking-widest flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span> Live Sync
+            </span>
+<span class="text-[10px] font-bold text-slate-400 font-['Space_Grotesk'] uppercase tracking-widest">Latency: 24ms</span>
+<span class="text-[10px] font-bold text-slate-400 font-['Space_Grotesk'] uppercase tracking-widest">Server: East-1</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-slate-400 hover:text-blue-300 transition-colors">notifications</button>
+<button class="material-symbols-outlined text-slate-400 hover:text-blue-300 transition-colors">settings</button>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<div class="text-[10px] font-black text-white uppercase leading-none">Admin_01</div>
+<div class="text-[8px] text-blue-400 uppercase tracking-tighter">Superuser</div>
+</div>
+<span class="material-symbols-outlined text-3xl text-slate-400">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 pt-24 px-8 pb-12 min-h-screen bg-surface-container-lowest relative overflow-hidden">
+<!-- Background decorative elements -->
+<div class="absolute top-0 right-0 w-1/2 h-1/2 bg-on-primary-fixed-variant/5 blur-[120px] rounded-full pointer-events-none"></div>
+<!-- Master Control Toggle Section -->
+<section class="mb-8 grid grid-cols-12 gap-6 items-center">
+<div class="col-span-12 lg:col-span-7">
+<div class="flex items-center gap-4">
+<div class="h-16 w-2 bg-secondary animate-pulse shadow-[0_0_15px_rgba(255,179,178,0.5)]"></div>
+<div>
+<h1 class="text-4xl font-black font-headline uppercase tracking-tighter italic">AUCTION 2024_08_ALPHA</h1>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-5 flex justify-end">
+<div class="flex gap-1 p-1 bg-surface-container-highest rounded-lg border border-outline-variant/20 shadow-2xl">
+<button class="px-8 py-4 bg-secondary text-on-secondary font-black font-headline uppercase tracking-widest rounded-lg flex items-center gap-3 shadow-[0_0_20px_rgba(191,1,44,0.3)] transition-all active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pause</span>
+                    PAUSE AUCTION
+                </button>
+<button class="px-8 py-4 text-on-surface-variant/40 font-black font-headline uppercase tracking-widest rounded-lg cursor-not-allowed">
+                    RESUME
+                </button>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-12 gap-6">
+<!-- Expanded Left/Main Column: Monitors and Ticker -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+<!-- Live Ticker Row -->
+<div class="bg-surface-container p-1 broadcast-skew overflow-hidden border-t border-surface-bright/30">
+<div class="broadcast-skew-inner flex items-center whitespace-nowrap gap-8 py-2">
+<div class="flex items-center gap-2 px-4 bg-secondary text-on-secondary font-black text-xs uppercase tracking-tighter">
+<span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span> LIVE
+                    </div>
+<div class="text-xs font-bold font-label text-tertiary uppercase tracking-widest">LATEST BID: $4,500 - COACH STEVENS (MIAMI)</div>
+<div class="text-xs font-bold font-label text-white/40 uppercase tracking-widest">•</div>
+<div class="text-xs font-bold font-label text-on-surface-variant uppercase tracking-widest">CLOCK: 00:08 REMAINING</div>
+<div class="text-xs font-bold font-label text-white/40 uppercase tracking-widest">•</div>
+<div class="text-xs font-bold font-label text-on-surface-variant uppercase tracking-widest">NOMINATED: UNIVERSITY OF TEXAS</div>
+</div>
+</div>
+<!-- Participant Monitor -->
+<div class="bg-surface-container rounded-lg p-6 border-t border-surface-bright/20 metallic-glint">
+<div class="flex justify-between items-end mb-6">
+<h2 class="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">groups</span>
+                        Participant Monitor
+                    </h2>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em]">12/12 Connected</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+<!-- Participant Cards -->
+<div class="bg-surface-container-low p-4 rounded border-l-4 border-primary flex items-center gap-4">
+<div class="relative">
+<img class="w-10 h-10 rounded bg-surface-container-highest" data-alt="close-up portrait of professional sports coach with serious expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3vKd0nr48fQdUHn5PlS7-cAqlYIv_qusUdevZ6O0rFL_s7sUr39Dsm9QOFHZIvpZi3kAHWJl_GfEiu2j2LsjH4PaCJcR1C1jHaSzAsRNugQr3eytjWOeGj7X2EMk-4ywyglhPVh4RG7f9aL56zPvZMds5Ui10p2PgEuL3eWiC9KiL9VOJaoT1ds6nnz6N00jJI30gSmbgijDRRNYj3A3Ya-24eCBxSbk8F4G3fFEElh1xkZK5lkCiLJk6IpE_CuyL6Rzv18V98-w"/>
+<span class="absolute -bottom-1 -right-1 w-3 h-3 bg-primary rounded-full border-2 border-surface-container-low"></span>
+</div>
+<div class="flex-1">
+<div class="text-xs font-black uppercase tracking-tight">Coach Miller</div>
+<div class="text-[10px] text-primary font-bold uppercase tracking-widest">READY</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] text-on-surface-variant uppercase">Lat</div>
+<div class="text-xs font-mono font-bold text-white">12ms</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded border-l-4 border-primary flex items-center gap-4">
+<div class="relative">
+<img class="w-10 h-10 rounded bg-surface-container-highest" data-alt="close-up portrait of a female sports executive" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI8nDOJ3EKiRGqnnphcYxCBPqxFNtloj_n9WeHDjULqkrRud93lTd40LK8NOlfvgTCgq05gcrzNhCVbHZwSGCALDFfV55zE3fRi-6h8ULtltoknMiAgjXzbrAFjH8GraVfBQZbyfut4EtKTRuSUzb_DOBANhRmC6dhD4EZyOb-uGVRATFOO11f-vsa1SFECwqklCNV5BugBCBC-HlKmf0egSsYcyCRRYS9XBbAGGpMls5tpZLPO3CWkCnks9ESHQ39fpySx77mj7c"/>
+<span class="absolute -bottom-1 -right-1 w-3 h-3 bg-primary rounded-full border-2 border-surface-container-low"></span>
+</div>
+<div class="flex-1">
+<div class="text-xs font-black uppercase tracking-tight">Coach Sarah</div>
+<div class="text-[10px] text-primary font-bold uppercase tracking-widest">READY</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] text-on-surface-variant uppercase">Lat</div>
+<div class="text-xs font-mono font-bold text-white">18ms</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded border-l-4 border-tertiary flex items-center gap-4">
+<div class="relative">
+<img class="w-10 h-10 rounded bg-surface-container-highest" data-alt="close-up portrait of experienced sports recruiter" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiFhZ_jG7tt9n_hovkQe6aiefvgV2GJN1aLwnp_r2p7s-djUfbHC8rvpCAVyIK-hmqsZzE5wAg_q5qjJcfHB67ZLLxLXow_S4olzx8luzx0W1OMQtbqknTRJJ7DoJNVn9kODsxU4ScaprPR4MI8W0OxGDGhTw6VEJE16cJIGWvmXjH8BepkvaPgEX89CLoYgOshIKuVJHrhjszotAA-KatJ1F8WoPGMR0lPG_XD3s2NjFzH_i-bYvuy9srcKnwCdfuKcuG1ai4rFM"/>
+<span class="absolute -bottom-1 -right-1 w-3 h-3 bg-tertiary rounded-full border-2 border-surface-container-low"></span>
+</div>
+<div class="flex-1">
+<div class="text-xs font-black uppercase tracking-tight">Coach Vance</div>
+<div class="text-[10px] text-tertiary font-bold uppercase tracking-widest">NOT READY</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] text-on-surface-variant uppercase">Lat</div>
+<div class="text-xs font-mono font-bold text-white">45ms</div>
+</div>
+</div>
+</div>
+</div>
+<!-- System Overrides (Moved from SideNavBar) -->
+<div class="bg-surface-container rounded-lg p-6 border-t border-secondary/20 metallic-glint">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined">warning</span>
+                    System Overrides
+                </h2>
+<div class="text-[8px] text-secondary font-medium px-2 py-1 bg-secondary-container/10 border border-secondary/20 rounded uppercase tracking-widest">
+                    Critical Access Only
+                </div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<button class="p-4 bg-surface-container-low border border-outline-variant/30 flex items-center justify-between hover:bg-secondary-container/20 group transition-all rounded-lg">
+<div class="text-left">
+<div class="text-xs font-black uppercase tracking-tight group-hover:text-secondary transition-colors">Force End</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Terminate current auction timer</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary">gavel</span>
+</button>
+<button class="p-4 bg-surface-container-low/40 border border-dashed border-outline-variant/50 flex items-center justify-between cursor-not-allowed opacity-50 rounded-lg">
+<div class="text-left">
+<div class="text-xs font-black uppercase tracking-tight">Reset Bid</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Available during pause only</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">undo</span>
+</button>
+<button class="p-4 bg-surface-container-low border border-outline-variant/30 flex items-center justify-between hover:bg-tertiary-container/20 group transition-all rounded-lg">
+<div class="text-left">
+<div class="text-xs font-black uppercase tracking-tight group-hover:text-tertiary transition-colors">Re-assign</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Manual ledger correction</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-tertiary">edit_document</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Analytics & Command History -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+<!-- Performance Sync Card -->
+<div class="bg-surface-container-high rounded-lg p-6 border border-primary/20 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-9xl">analytics</span>
+</div>
+<h3 class="text-xs font-black text-primary uppercase tracking-[0.3em] mb-4">LIVE SYNC STATUS</h3>
+<div class="space-y-6 relative z-10">
+<div class="flex justify-between items-center">
+<div class="text-sm font-label uppercase text-on-surface-variant">Global Latency</div>
+<div class="text-2xl font-black font-headline text-white italic">24.2<span class="text-xs font-normal ml-1">MS</span></div>
+</div>
+<div class="w-full bg-surface-container-lowest h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%]"></div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-3 rounded">
+<div class="text-[8px] text-on-surface-variant uppercase mb-1">Server Health</div>
+<div class="text-xs font-bold text-primary uppercase">OPTIMAL</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded">
+<div class="text-[8px] text-on-surface-variant uppercase mb-1">Socket Load</div>
+<div class="text-xs font-bold text-white uppercase">14.5%</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Command History -->
+<div class="bg-surface-container rounded-lg p-6 border border-surface-bright/20 flex-1 min-h-[300px] flex flex-col">
+<h2 class="text-xs font-black font-label text-on-surface-variant uppercase tracking-[0.3em] mb-4">Command History</h2>
+<div class="space-y-4 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
+<div class="border-l-2 border-outline-variant pl-4 py-2">
+<div class="text-[10px] text-on-surface-variant font-mono">14:22:01</div>
+<div class="text-xs font-bold uppercase tracking-tight">Bid Processed: $4,500 - Coach Stevens</div>
+</div>
+<div class="border-l-2 border-primary pl-4 py-2">
+<div class="text-[10px] text-primary font-mono">14:21:45</div>
+<div class="text-xs font-bold uppercase tracking-tight">Nomination: University of Texas</div>
+</div>
+<div class="border-l-2 border-tertiary pl-4 py-2">
+<div class="text-[10px] text-tertiary font-mono">14:20:10</div>
+<div class="text-xs font-bold uppercase tracking-tight">System Alert: High Latency - East-1</div>
+</div>
+<div class="border-l-2 border-outline-variant pl-4 py-2">
+<div class="text-[10px] text-on-surface-variant font-mono">14:18:55</div>
+<div class="text-xs font-bold uppercase tracking-tight">Bid Processed: $3,200 - Coach Miller</div>
+</div>
+<div class="border-l-2 border-outline-variant pl-4 py-2 opacity-50">
+<div class="text-[10px] text-on-surface-variant font-mono">14:15:22</div>
+<div class="text-xs font-bold uppercase tracking-tight">Auction Started: 2024_08_ALPHA</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Live Status Bar -->
+<footer class="fixed bottom-0 right-0 left-64 bg-surface-container-highest h-8 flex items-center px-6 border-t border-surface-bright/20 z-50">
+<div class="flex items-center gap-6 w-full">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#adc6ff]"></span>
+<span class="text-[8px] font-black uppercase tracking-widest text-primary">Stream Healthy</span>
+</div>
+<div class="h-3 w-px bg-outline-variant"></div>
+<div class="text-[8px] font-bold text-on-surface-variant uppercase tracking-widest">
+            Session ID: <span class="text-white font-mono">CMD-449-01-X</span>
+</div>
+<div class="flex-1"></div>
+<div class="text-[8px] font-bold text-on-surface-variant uppercase tracking-widest">
+            Uptime: <span class="text-white font-mono">04:12:33</span>
+</div>
+</div>
+</footer>
+</body></html>

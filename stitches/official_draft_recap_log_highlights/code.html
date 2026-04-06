@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Draft Recap | GRIDIRON PRIME</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#4c3f00",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#221b00",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "secondary-fixed-dim": "#ffb3b2",
+                        "on-secondary-fixed-variant": "#92001f",
+                        "on-primary-fixed-variant": "#004493",
+                        "on-primary-fixed": "#001a41",
+                        "secondary": "#ffb3b2",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#c9a900",
+                        "surface-tint": "#adc6ff",
+                        "on-surface": "#dfe2eb",
+                        "on-secondary-fixed": "#410008",
+                        "tertiary": "#e9c400",
+                        "surface-container-low": "#181c22",
+                        "primary-container": "#00204d",
+                        "on-secondary-container": "#ffcccb",
+                        "error": "#ffb4ab",
+                        "surface-variant": "#31353c",
+                        "tertiary-fixed": "#ffe16d",
+                        "surface": "#10141a",
+                        "on-surface-variant": "#c4c6cf",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary": "#3a3000",
+                        "surface-container-highest": "#31353c",
+                        "secondary-fixed": "#ffdad9",
+                        "primary-fixed-dim": "#adc6ff",
+                        "inverse-primary": "#005bc1",
+                        "surface-bright": "#353940",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "on-primary": "#002e69",
+                        "on-secondary": "#680013",
+                        "on-error": "#690005",
+                        "outline-variant": "#43474e",
+                        "outline": "#8d9199",
+                        "on-primary-container": "#3686ff",
+                        "surface-dim": "#10141a",
+                        "inverse-surface": "#dfe2eb",
+                        "surface-container-lowest": "#0a0e14",
+                        "surface-container-high": "#262a31",
+                        "background": "#10141a",
+                        "secondary-container": "#bf012c",
+                        "on-background": "#dfe2eb",
+                        "inverse-on-surface": "#2d3137",
+                        "primary": "#adc6ff",
+                        "surface-container": "#1c2026"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .broadcast-skew {
+            transform: skew(-10deg);
+        }
+        .broadcast-skew-reverse {
+            transform: skew(10deg);
+        }
+        .glass-panel {
+            background: rgba(28, 32, 38, 0.6);
+            backdrop-filter: blur(12px);
+            outline: 1px solid rgba(67, 71, 78, 0.15);
+        }
+        .metallic-text {
+            background: linear-gradient(135deg, #adc6ff 0%, #3686ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar Shell -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-8 py-4 w-full bg-slate-950/80 backdrop-blur-xl border-b border-blue-500/10 shadow-[0_10px_30px_rgba(0,68,147,0.2)]">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black italic tracking-tighter text-blue-400 dark:text-blue-400 font-headline uppercase">GRIDIRON PRIME</span>
+<nav class="hidden md:flex gap-6">
+<a class="font-headline uppercase tracking-tight font-bold text-slate-400 hover:text-white transition-all transition-transform active:scale-95 duration-200" href="#">WAR ROOM</a>
+<a class="font-headline uppercase tracking-tight font-bold text-slate-400 hover:text-white transition-all transition-transform active:scale-95 duration-200" href="#">MARKET</a>
+<a class="font-headline uppercase tracking-tight font-bold text-slate-400 hover:text-white transition-all transition-transform active:scale-95 duration-200" href="#">ROSTERS</a>
+<a class="font-headline uppercase tracking-tight font-bold text-slate-400 hover:text-white transition-all transition-transform active:scale-95 duration-200" href="#">STANDINGS</a>
+<a class="font-headline uppercase tracking-tight font-bold text-yellow-400 border-b-2 border-yellow-500 pb-1 transition-transform active:scale-95 duration-200" href="#">RECAPS</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-slate-400 hover:bg-blue-500/5 hover:text-blue-200 p-2 rounded transition-all">notifications</button>
+<button class="material-symbols-outlined text-slate-400 hover:bg-blue-500/5 hover:text-blue-200 p-2 rounded transition-all">settings</button>
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-surface-variant border border-primary/20">
+<img alt="Coach Avatar" data-alt="close-up portrait of a professional football coach wearing a headset and dark team apparel in a stadium war room" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArnGbWx_yoBte192mJCDAy6RjATkwJJNqO3KJ59XI_cyRaGlB2O96ZBmNkLzCoGVJxN6nSySEf_Zgiy7yjz7xX_pROZ0K7sK5bNADlsgHH1gUMgtbzI-YYB8q_dr3tljjoBelgFhiO2k9Sg7wBhNBO3jKW54RbPPH62kOgqVcHEgWO6yeySEYd7uvOERwfOrpFnlgxjbykqpaUNswjgB8uc6hRIbIZ5JDQkHiqI0exhnxKi_JE8f1-PEKISeXBTY60UuDdDWBzPyc"/>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen">
+<!-- SideNavBar Shell -->
+<aside class="hidden lg:flex flex-col h-screen w-64 fixed left-0 top-0 pt-20 bg-slate-900 border-r border-white/5 shadow-2xl font-headline uppercase z-40">
+<div class="px-6 py-8 border-b border-white/5">
+<p class="text-xs text-blue-400 font-black tracking-widest">COMMAND CENTER</p>
+<p class="text-[10px] text-slate-500 mt-1">PHASE: POST-DRAFT</p>
+</div>
+<nav class="flex-1 py-4">
+<a class="flex items-center gap-4 px-6 py-4 text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">leaderboard</span> DRAFT BOARD
+                </a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">receipt_long</span> AUCTION LOG
+                </a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">psychology</span> STRATEGY
+                </a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">query_stats</span> SCOUTING
+                </a>
+<a class="flex items-center gap-4 px-6 py-4 bg-blue-900/30 text-blue-400 border-r-4 border-blue-500 transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">history</span> HISTORY
+                </a>
+</nav>
+<div class="p-6">
+<button class="w-full py-3 bg-primary text-on-primary-fixed font-black tracking-tighter rounded-lg hover:brightness-110 active:scale-95 transition-all">EXPORT RECAP</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 lg:ml-64 p-8 bg-surface-container-lowest">
+<!-- Draft Totals Banner -->
+<section class="mb-12 flex flex-col md:flex-row gap-4 items-stretch">
+<div class="flex-1 bg-surface-container-high rounded-lg p-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl">school</span>
+</div>
+<p class="text-xs font-headline font-black text-tertiary tracking-widest uppercase">TOTAL SCHOOLS DRAFTED</p>
+<h2 class="text-5xl font-headline font-black text-on-surface mt-2 tracking-tighter">132</h2>
+</div>
+<div class="flex-1 bg-surface-container-high rounded-lg p-6 relative overflow-hidden group border-l-4 border-primary">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl">payments</span>
+</div>
+<p class="text-xs font-headline font-black text-primary tracking-widest uppercase text-primary">TOTAL BUDGET SPENT</p>
+<h2 class="text-5xl font-headline font-black text-on-surface mt-2 tracking-tighter">$26,400</h2>
+</div>
+<div class="flex-1 bg-surface-container-high rounded-lg p-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl">groups</span>
+</div>
+<p class="text-xs font-headline font-black text-tertiary tracking-widest uppercase">TOTAL PARTICIPANTS</p>
+<h2 class="text-5xl font-headline font-black text-on-surface mt-2 tracking-tighter">12</h2>
+</div>
+</section>
+<!-- Leaderboard Highlights -->
+<section class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-12">
+<!-- Heavy Hitters -->
+<div class="glass-panel p-6 rounded-xl border-t border-white/5">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+<h3 class="text-xl font-headline font-black tracking-tight uppercase italic">HEAVY HITTERS</h3>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright transition-colors rounded-lg group">
+<div class="flex items-center gap-4">
+<span class="text-lg font-headline font-black text-on-surface-variant w-4">1</span>
+<div class="w-10 h-10 rounded bg-slate-800 flex items-center justify-center border border-white/5">
+<img alt="Alabama Logo" class="w-8 h-8 object-contain" data-alt="professional sports logo featuring a stylized crimson letter A with sharp clean lines on a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArswjodZhmJNpmNLKaGHO1SzF37hYY0wrGSFxUZj6IJ35KCkOPCJFffqEK741oCT9lyAc7F0SfAcL3UbymvFJe0-ZpybsdJ1duC5BBtXGdjImkj1HduELGCUrsX1_jlELtx1Yb3ILrbPkqxeof-QUKWqNdEBpb45UwL1h40brp6-cwGvwwp0cxQAvCrIwXYpUXH7wnPo6uFvLye68jDhOxGUxZmiABveL0gDRtZgarpE-SA3EDEX5cITuDViISUKEAdYSyiZGYctY"/>
+</div>
+<span class="font-headline font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors">ALABAMA</span>
+</div>
+<span class="text-2xl font-headline font-black text-secondary">$84</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright transition-colors rounded-lg group">
+<div class="flex items-center gap-4">
+<span class="text-lg font-headline font-black text-on-surface-variant w-4">2</span>
+<div class="w-10 h-10 rounded bg-slate-800 flex items-center justify-center border border-white/5">
+<img alt="Georgia Logo" class="w-8 h-8 object-contain" data-alt="university athletic logo of a bold red G with a distinct black outline high resolution sports emblem" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCipYRSfE30gjV4VDaK0RSUsv8o0O6LA6rt1zhbkx6avEFpx8E7qRZw4xway6PRugWH9ApCWulIuVX4BIfd7jUxIxN8dhxgpxSGvisZBmSBL_EHFNLFAJl81ck0cnMKU7bN_DWUCdsQ5OCx0YWOQiWEYjHqjx1l8Mm8nGoCwicURGhSDDOSXpqBsIcbTKmv5-gIWQaCpfnu4jRFXrWL0XiujHnxoSPHRRxbTwIYkCc5uhIgjILzVmvS2fk_kfO0E1E8_4PK6nHPrV8"/>
+</div>
+<span class="font-headline font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors">GEORGIA</span>
+</div>
+<span class="text-2xl font-headline font-black text-secondary">$81</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright transition-colors rounded-lg group">
+<div class="flex items-center gap-4">
+<span class="text-lg font-headline font-black text-on-surface-variant w-4">3</span>
+<div class="w-10 h-10 rounded bg-slate-800 flex items-center justify-center border border-white/5">
+<img alt="Ohio State Logo" class="w-8 h-8 object-contain" data-alt="sports team logo of a gray scarlet and white block O with stylized typography university mascot branding" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-ysE34WFGG_gCOnjpww7NwruVlWAqQql0t6C4isLyktKXOo_Og-_v6ofrkJaA95cKIB0TsK8J_4zd63k6CQTgG2poOL5BD8UGJMvslsY7z13vWkPXyDAPOrhd-E8F1Zq0dTYgv3F5rLi0T_wG93lYlFG70pKmjG0wPKPxoKPx2eSY1lPLKoZaAPdSJwLPaDjXvUMXNYsoDPrnWICn0_vVsKYwkTw-VzLyyK_bWvlagU8WWZCNYDm8l_p4IVuKrUDOyYOtnZYO3VE"/>
+</div>
+<span class="font-headline font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors">OHIO STATE</span>
+</div>
+<span class="text-2xl font-headline font-black text-secondary">$78</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright transition-colors rounded-lg group">
+<div class="flex items-center gap-4">
+<span class="text-lg font-headline font-black text-on-surface-variant w-4">4</span>
+<div class="w-10 h-10 rounded bg-slate-800 flex items-center justify-center border border-white/5">
+<img alt="Michigan Logo" class="w-8 h-8 object-contain" data-alt="athletic logo of a block letter M in deep navy and maize yellow colors high contrast sports design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOp9Du8YqC8-ZbzMZb1UzQcP8I2GxElrtjKs77Ax6SIrX8oNS4cVehCqj8hAryvdEscDaKujPlHIlDvYeKchqCWAXTDdljZ91eezaajtDr3YkF5t9K_codm0FP6lLnsiW-EpVAatY_5vpThPK1X4-CgEa1TsN04J2joGiJCjz-kua6X-eMwTOX_VGO_rT0rbr8pmPitX4xuQ_Ti-Nitlg6KXiyH5AuHEdaifHP3zhxGm0FzAiBQ_vk2W7TvgnvYJzHGHDUTdDVNCA"/>
+</div>
+<span class="font-headline font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors">MICHIGAN</span>
+</div>
+<span class="text-2xl font-headline font-black text-secondary">$75</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright transition-colors rounded-lg group">
+<div class="flex items-center gap-4">
+<span class="text-lg font-headline font-black text-on-surface-variant w-4">5</span>
+<div class="w-10 h-10 rounded bg-slate-800 flex items-center justify-center border border-white/5">
+<img alt="Texas Logo" class="w-8 h-8 object-contain" data-alt="sports logo of a stylized longhorn cattle silhouette in burnt orange color minimal athletic branding" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBd91D_ugbxEImfjbJZN6mKF6DWaw9Lu0NoCh-pgTBQTBWakMbzZUVYEYiwwYU5QzVzJdcQXbvFBUkex5_pJHTnox_AcipduXiSe47dZ-zAhQ6qboHTNEwnxrhd4WzlwfGJNJYzYAl5r0kD4y7P87YifKlRyVlVf9U7tDVKI5iJdz3pbvHDCWeaU9e97lFOQeyB_N8b8c0pSfBpGTVOTXApTpi8ic58aVxNn0ASEs-37UKrErrjcHrDfSNV2s2NKAtTDVTIDiTWkMQ"/>
+</div>
+<span class="font-headline font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors">TEXAS</span>
+</div>
+<span class="text-2xl font-headline font-black text-secondary">$72</span>
+</div>
+</div>
+</div>
+<!-- Prime Value -->
+<div class="glass-panel p-6 rounded-xl border-t border-white/5">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">stars</span>
+<h3 class="text-xl font-headline font-black tracking-tight uppercase italic">PRIME VALUE</h3>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright transition-colors rounded-lg group">
+<div class="flex items-center gap-4">
+<span class="text-lg font-headline font-black text-on-surface-variant w-4">1</span>
+<div class="w-10 h-10 rounded bg-slate-800 flex items-center justify-center border border-white/5">
+<img alt="Liberty Logo" class="w-8 h-8 object-contain" data-alt="sporty collegiate logo of an eagle head in navy red and white colors aggressive mascot design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7sxje8N5wtDdvhLvcCldLLYiZH_t8KlkqcASZjJkS2IPkUXpg3uFDZTs-Us5McVPRBkqpLTX3y_8Nnneo_xt67LKgblGuQ-YXOoMskj-xhyZQbXjt14hqKgxpscLP9iMLQXS7BKOTj5P6R-s6FGOq8qahAJoGD8uU3hvmDe3-Vqoe8P6naNqwitC1trrQNNvsz0AYXaRA5BGfqZcUUTr8HdGTBi_kNB2PYQ2S_YLUdHkn2FfAipBlkPxx5kKg8W9MamaNf5NL0Qk"/>
+</div>
+<span class="font-headline font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors">LIBERTY</span>
+</div>
+<span class="text-2xl font-headline font-black text-tertiary">$1</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright transition-colors rounded-lg group">
+<div class="flex items-center gap-4">
+<span class="text-lg font-headline font-black text-on-surface-variant w-4">2</span>
+<div class="w-10 h-10 rounded bg-slate-800 flex items-center justify-center border border-white/5">
+<img alt="Miami OH Logo" class="w-8 h-8 object-contain" data-alt="college sports logo featuring a red stylized M and a falcon head profile on a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNyrC1lS0CMBbUoX8DT_K63AN5mDSIcWvG2nJkiL_cMf3eSf6V0te2zEq1J_hCUEvBHtgB5Ot9lxsvsNN8zhU_OksP3IoIz4YR6FLjYgmXeNaaroZuIRTo4IV_W_0lEgD9fWAkeH5LLvG_UCi3lo5pDy26Id_v_XwyW0FagNTJaTm0I-oC9qKGzkbE5ZBzitqFbBp8fKKKzL_195E4_P2v_275Nak-5pjbcmxKi9kYgYUjIMoklPH5nRli8avkz1LpNBvFww2ri-8"/>
+</div>
+<span class="font-headline font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors">MIAMI (OH)</span>
+</div>
+<span class="text-2xl font-headline font-black text-tertiary">$1</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright transition-colors rounded-lg group">
+<div class="flex items-center gap-4">
+<span class="text-lg font-headline font-black text-on-surface-variant w-4">3</span>
+<div class="w-10 h-10 rounded bg-slate-800 flex items-center justify-center border border-white/5">
+<img alt="App State Logo" class="w-8 h-8 object-contain" data-alt="athletic collegiate logo of a stylized letter A with a mountain peak mascot motif in black and gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByZ3gV9M2RvyzIRvXrDB_uL7zhGVsstBSHfTczWFCUsodNyOPOV0v1Oj9vrBuktFJeX9oSHpkdvRCDu5Mrg3mWq919Apzr7-9Mshc5NREYQVL-61DfYnN-4exjIkcxqS5mYgNTmS9L19IaHZrzwsb-KhtuVxbzk3SQzkVswZUMJa3qn77L8AyyUdh4kIkDUH_XX077CNdfG4WUf1L6_lWMJNcMbzmEx-lSBgeCxQPhyFbih0bJHa7yGwZ0rWaYkmATmaD4cbkbmrc"/>
+</div>
+<span class="font-headline font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors">APP STATE</span>
+</div>
+<span class="text-2xl font-headline font-black text-tertiary">$2</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright transition-colors rounded-lg group">
+<div class="flex items-center gap-4">
+<span class="text-lg font-headline font-black text-on-surface-variant w-4">4</span>
+<div class="w-10 h-10 rounded bg-slate-800 flex items-center justify-center border border-white/5">
+<img alt="Boise State Logo" class="w-8 h-8 object-contain" data-alt="sports logo of a blue and orange bronco head profile dynamic athletic mascot illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYwkxD8UEB8b33uro4bcVLH8qhdsKv7nLfm6An2HXZXLeFWK5aLtzfHSTKXtNRcdQW4fFUje4x29Ad3ODI_dr2KDJRNH3p5U22dYxt6uRN-_F9Zv-fE6hXz_7EhUjhAEodcSXx0n99HLYhPGw012gAIz4T8YOajp8bMFJuy5Hpoi5WVaEwjDe8SeGCXQEW4QnyaG_KOIhNx6sn_DdAFDCI5N9FYrXYhnn8JI8JHbDuOHM5Y2WBSsGMAr0ja3xx8u-94cJR9O2tFrk"/>
+</div>
+<span class="font-headline font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors">BOISE STATE</span>
+</div>
+<span class="text-2xl font-headline font-black text-tertiary">$3</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright transition-colors rounded-lg group">
+<div class="flex items-center gap-4">
+<span class="text-lg font-headline font-black text-on-surface-variant w-4">5</span>
+<div class="w-10 h-10 rounded bg-slate-800 flex items-center justify-center border border-white/5">
+<img alt="Tulane Logo" class="w-8 h-8 object-contain" data-alt="university athletic logo of a stylized green wave surfing mascot on a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChWvTGm2qI9Ipe8XOym3Rz_O7TrV-GPKt6rwlD-5XSFXI5XgLCKrg5EExLat_CVQdYvdCK9QVgjUrKzDonJJlE6SRyn9MTq05sWFKTaf554ni0JljWyTpUX3RoHyOevDFTYaoI6jPWmnqbLKiNxMhGXNVoD11rH4qEaemehCYxbJ4Zs68JjeU1YTxylzPAWpBgxEuTkfecaJqm-wZCgV5EoKAGJh-ehaR0pbUBSLTbSPQevEbxuwDU7mdM5y6LWyi6g22BvJpObuw"/>
+</div>
+<span class="font-headline font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors">TULANE</span>
+</div>
+<span class="text-2xl font-headline font-black text-tertiary">$4</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Official Draft Log -->
+<section class="bg-surface-container-low rounded-xl overflow-hidden border border-white/5 shadow-2xl">
+<div class="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-surface-container-high/50">
+<h3 class="text-2xl font-headline font-black tracking-tighter uppercase italic metallic-text">THE OFFICIAL DRAFT LOG</h3>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black rounded border border-primary/20 uppercase tracking-widest">LIVE UPDATES FINALIZED</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant uppercase text-xs font-headline font-black tracking-widest">
+<th class="px-8 py-4">#</th>
+<th class="px-8 py-4">SCHOOL</th>
+<th class="px-8 py-4">WINNING COACH</th>
+<th class="px-8 py-4 text-right">PRICE</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5 font-headline">
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-8 py-6 font-black text-on-surface-variant">001</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-slate-800 rounded border border-white/5 flex items-center justify-center">
+<img alt="Georgia" class="w-8 h-8" data-alt="athletic logo of the university of georgia featuring a bold red G emblem" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkjb91UNz9WZ44xf6PUzaY0akrR_JvfYhbnpT2lgYKZ7LB_aBv3UVq_mrKgBVwfRwq_ieMppzPVyqCp02-tdkErbzwJVNhWJWYEx2adU_eyOZMYMTcdc7YaMoNxUWkZFxhsR2hm34sB9kjEvUw6nypZeT_eaWThiErjkQLsl_CQ0bZZ4UltOekWnHhODLIUMuGfIBIl-weM9yeaKO3lcm-FX7xBuqOMXBBynVe39j0RwSpSrxC92RpEwxzhz4S0Km2TpwX_Nu5WoE"/>
+</div>
+<div>
+<p class="font-black text-lg tracking-tight">GEORGIA</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-body">SEC CONFERENCE</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center border-2 border-primary/40 text-primary font-black">
+                                            JM
+                                        </div>
+<span class="font-bold text-on-surface tracking-tight uppercase">Coach Miller</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<span class="text-3xl font-black text-on-surface">$81</span>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-8 py-6 font-black text-on-surface-variant">002</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-slate-800 rounded border border-white/5 flex items-center justify-center">
+<img alt="Texas" class="w-8 h-8" data-alt="sports logo of the university of texas longhorns in burnt orange" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB24MGbd5Xd44S3q_lvsARHnTowqS7OmO6QuGtTU2ZM1DGLHhYa4ta56LmmtsRNZwleD7A5INEq0eJgHqQjdjfFQ-nr2bafQAzDcikesk2jymcX7VCYXx3uxoPQ2tVBse9VtJsWL-RVC6A6uiOZZ44CUSj-K4KWrkhX6CAJHlGhT18q6EDPx1BMLqPtCQwlli1spZBnLjdUr4WCA2jW3PMm9CeGgMsiFyOl1oTzwvbm73WYykoIDGe1Aaz5R32PQruiesykjx6XGBM"/>
+</div>
+<div>
+<p class="font-black text-lg tracking-tight">TEXAS</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-body">SEC CONFERENCE</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center border-2 border-white/10 text-on-surface-variant font-black">
+                                            RH
+                                        </div>
+<span class="font-bold text-on-surface tracking-tight uppercase">Coach Henderson</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<span class="text-3xl font-black text-on-surface">$72</span>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-8 py-6 font-black text-on-surface-variant">003</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-slate-800 rounded border border-white/5 flex items-center justify-center">
+<img alt="Oregon" class="w-8 h-8" data-alt="modern athletic logo for university of oregon featuring a sleek green and yellow O" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVf1dOlPzU38ytAteblBsc6UqG9OaFiM79-P6I1I798J6lbapbyA2AZewUNZNs0qtB0GtAIXfYBlt9ymTE3cp28VtoAZZMiXUXcNrs8R5hX45Sy6aAqYH9jbTmEvXhznt9wYpdkKO_4Cs5YTDuCNzVGypX1br3wod4xHsQ4nSnE3FVYwaA-8V2KnN5JlLz3nF_yrFJIGlj2w1wwpWRzNR8HS5jsPEOIocLKkYJ3ukxG6GjDJEIuhkX-vHuWIUxQHGq3vngBtKboGA"/>
+</div>
+<div>
+<p class="font-black text-lg tracking-tight">OREGON</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-body">BIG TEN CONFERENCE</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center border-2 border-primary/40 text-primary font-black">
+                                            SK
+                                        </div>
+<span class="font-bold text-on-surface tracking-tight uppercase">Coach Kramer</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<span class="text-3xl font-black text-on-surface">$68</span>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-8 py-6 font-black text-on-surface-variant">004</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-slate-800 rounded border border-white/5 flex items-center justify-center">
+<img alt="Penn State" class="w-8 h-8" data-alt="collegiate athletic logo of penn state university featuring a stylized blue lion head" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXE6LTWjrEhKhtjUeaDInzCXe1AcwETvKiwhO1xMGbey_Y-qLiS7YdQ612D4sRLfod691oeviujV_THM6e3JRCAIr2_1I7ePdXqyQmzTzg8Oll1WiwRKSoZLu7lYA9uw9o7-d0GWkidCtHd399DSrJop4uQM6Cnug0ELotGGuyeS_WFtj5t6nTNv12EUrbRJBilgZJtjMT2pkm-coAZte4SnPkl305GCA94jq11_aC37QSNyamJunTj56ThJ8DDyRC0hxjqbmwR9o"/>
+</div>
+<div>
+<p class="font-black text-lg tracking-tight">PENN STATE</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-body">BIG TEN CONFERENCE</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center border-2 border-white/10 text-on-surface-variant font-black">
+                                            AB
+                                        </div>
+<span class="font-bold text-on-surface tracking-tight uppercase">Coach Baker</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<span class="text-3xl font-black text-on-surface">$59</span>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-8 py-6 font-black text-on-surface-variant">005</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-slate-800 rounded border border-white/5 flex items-center justify-center">
+<img alt="Utah" class="w-8 h-8" data-alt="athletic university logo for utah featuring two interlocking circles with stylized feathers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDij2nFYsr-pmQ42__SOlg3RD6DmXYUHBbQQOozdcvb5d-l0wq_FiytmTZjCFyDp6PxmJhGHBrj7PrtXCLwfg0akP2-l6e0TjcOG2vEy8MsgHFSzRN44y8JJZ-7CZbrHrVe5OMefykb3GimbCXcrceNSaUa9ubgZpaDn-LLgfmtSDtZ5MErZB-HNxAd8icGafuVWyHsIpOEyr0Vhc6ctXsiK2deQkCzdUHxr_zmETrFyk7ILODoKNYFo57sStwiarXfBOE-4ksDyns"/>
+</div>
+<div>
+<p class="font-black text-lg tracking-tight">UTAH</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-body">BIG 12 CONFERENCE</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center border-2 border-primary/40 text-primary font-black">
+                                            JM
+                                        </div>
+<span class="font-bold text-on-surface tracking-tight uppercase">Coach Miller</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<span class="text-3xl font-black text-on-surface">$45</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-6 bg-slate-950/40 text-center">
+<button class="text-xs font-headline font-black text-primary tracking-widest hover:text-white transition-colors uppercase">VIEW ALL 132 ENTRIES</button>
+</div>
+</section>
+</main>
+</div>
+<!-- Mobile Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-950/90 backdrop-blur-xl border-t border-blue-500/10 flex justify-around items-center py-3 px-4 shadow-[0_-10px_30px_rgba(0,68,147,0.2)]">
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="text-[10px] font-headline font-bold uppercase tracking-tight">BOARD</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-[10px] font-headline font-bold uppercase tracking-tight">LOG</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-yellow-400" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="text-[10px] font-headline font-bold uppercase tracking-tight">RECAP</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-headline font-bold uppercase tracking-tight">ADMIN</span>
+</a>
+</nav>
+</body></html>
