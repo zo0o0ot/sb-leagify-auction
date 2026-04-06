@@ -85,14 +85,17 @@ npm run format       # Format code with Prettier
 npm run type-check   # TypeScript type checking
 ```
 
-### Supabase Local (coming soon)
+### Supabase Local
 
 ```bash
-supabase start       # Start local Supabase stack
-supabase db reset    # Apply migrations and seed data
-supabase stop        # Stop local stack
-supabase test db     # Run database tests (pgTAP)
+npm run db:start     # Start local Supabase stack
+npm run db:reset     # Apply migrations and seed data
+npm run db:stop      # Stop local stack
 ```
+
+After starting, Supabase Studio is available at http://localhost:54323
+
+For detailed setup instructions (especially on Ubuntu Linux), see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## Development Approach
 
