@@ -50,21 +50,28 @@ The join flow uses Supabase anonymous auth. Without this, no one can join.
 
 ---
 
-## What the Codebase Has Today
+## Current Build Status (updated Apr 6)
 
 | Area | Status |
 |------|--------|
-| Vue 3 + Vite + TypeScript | Scaffolded, working |
-| Tailwind CSS v4 | Installed, blank config |
-| Supabase client (`src/lib/supabase.ts`) | Wired up, reads from env |
-| Vue Router | Exists, only `/` and `/about` |
-| Pinia | Installed, only a demo counter store |
-| Database schema | Written in migrations, never run |
-| Seed data | Written, never run |
-| Gridiron Prime colors/fonts | Not yet in Tailwind config |
-| Any real components | None |
-
-The app is a blank slate with the right plumbing. Everything UI-wise is to be built.
+| Vue 3 + Vite + TypeScript | Done |
+| Tailwind CSS v4 + Gridiron Prime tokens | Done — `src/assets/main.css` |
+| Supabase client + session-token header injection | Done — `src/lib/supabase.ts` |
+| PostgREST pre_request hook (RLS session_token) | Done — migration `20260406000000_add_pre_request.sql` |
+| Vue Router (all routes) | Done — `src/router/index.ts` |
+| Pinia auction store | Done — `src/stores/auction.ts` |
+| TypeScript types | Done — `src/types/auction.ts` |
+| AppShell component | Done — `src/components/AppShell.vue` |
+| Join page (`/join`) | Done — `src/views/JoinView.vue` |
+| Create Auction page (`/create`) | Done — `src/views/CreateAuctionView.vue` |
+| Maintain Schools + CSV upload (`/admin/schools`) | Done — `src/views/admin/MaintainSchoolsView.vue` |
+| Realtime composable | Done — `src/composables/useAuctionRealtime.ts` |
+| Participant card component | Done — `src/components/lobby/ParticipantCard.vue` |
+| Practice Bidding Zone component | Done — `src/components/lobby/PracticeBiddingZone.vue` |
+| Auction Lobby — coach + admin views | Done — `src/views/auction/LobbyView.vue` |
+| myMaxBid unit tests (9 passing) | Done — `src/stores/__tests__/auction.spec.ts` |
+| Live Draft view | **Not started — Day 3** |
+| Edge Functions (place-bid, pass, complete-bid) | **Not started — Day 3** |
 
 ---
 
@@ -99,27 +106,28 @@ The app is a blank slate with the right plumbing. Everything UI-wise is to be bu
 
 ## Day-by-Day Build Sequence
 
-### Day 1 — Foundation + Entry Flow
+### Day 1 — Foundation + Entry Flow ✅ COMPLETE
 **Goal: the app runs, someone can join an auction**
 
-1. **Gridiron Prime Tailwind config** — add all color tokens, font families, border radius overrides from the HTML mockups into `tailwind.config` / `main.css`
-2. **App shell** (`AppShell.vue`) — fixed header (64px) + fixed left sidebar (256px), nav items, footer ticker. Used by all post-join screens.
-3. **Pinia auction store** (`stores/auction.ts`) — core state shape: auction, teams, participants, schools, draftPicks, currentBid
-4. **Join page** (`/join`) — join code field, display name field, team slot picker (shows unclaimed slots), submit. Calls Supabase anonymous auth + inserts participant record. Stores session in localStorage.
-5. **Session persistence** — on app mount, check localStorage, auto-rejoin if valid session exists
-6. **Create Auction page** (`/create`) — auction name, auto-generated join code (copy button), participant stepper, budget input, school pool selector (Default Set / Upload CSV), roster architecture panel. Creates auction record + placeholder team slots + assigns creator their own team automatically.
-7. **Basic routing** — `/`, `/join`, `/create`, `/auction/:id/lobby`
+1. ✅ **Gridiron Prime Tailwind config** — `src/assets/main.css` with `@theme {}` block
+2. ✅ **App shell** — `AppShell.vue` with header, sidebar, ticker, named slots
+3. ✅ **Pinia auction store** — `stores/auction.ts` with full state + myMaxBid
+4. ✅ **Join page** — anonymous auth, participant insert, team slot picker, session save
+5. ✅ **Session persistence** — localStorage, route guard on protected routes
+6. ✅ **Create Auction page** — single-page, join code, budget, roster positions, creator gets team 1
+7. ✅ **Basic routing** — all routes wired, session guard
+8. ✅ **myMaxBid unit tests** — 9 passing in Vitest
 
 ---
 
-### Day 2 — Lobby + School Setup
+### Day 2 — Lobby + School Setup ✅ COMPLETE
 **Goal: everyone is in the lobby and can practice bid**
 
-1. **Maintain Schools page** (`/admin/schools`) — table of schools with search/sort, "BULK UPLOAD SCHOOLS" button. CSV upload parses file, shows preview table, confirms import into `schools` and `auction_schools`.
-2. **Auction Lobby — Coach view** (`/auction/:id/lobby`) — left panel: participant readiness list (Tech Check dot + Draft Ready checkbox); right panel: Practice Bidding Zone with school display, budget, current bid, +$1/+$5/+$10 buttons, Submit Bid, Pass. Realtime subscription on participants table for live readiness updates.
-3. **Auction Lobby — Admin view** — same route, conditionally renders admin right panel: school hero card, Force +$1/+$5/Clear Bid/Reset controls, readiness summary, START DRAFT button (gated on all coaches ready), Skip Readiness Check override link.
-4. **Team slot self-selection on join** — join page shows unclaimed team slots, coach picks one. Slot name = their display name.
-5. **Realtime presence** — participants subscribe to auction channel; `is_connected` updated on join/leave.
+1. ✅ **Maintain Schools page** (`/admin/schools`) — school table, search/sort, CSV upload (parse → preview → import), export template, logo edit modal stub
+2. ✅ **Auction Lobby — Coach view** — left: participant readiness list; right: Practice Bidding Zone
+3. ✅ **Auction Lobby — Admin view** — same route, admin right panel: school on block, Force bid controls, START DRAFT gated on allCoachesReady, Skip override
+4. ✅ **Team slot self-selection on join** — join page slot picker, slot name = display name
+5. ✅ **Realtime presence** — `useAuctionRealtime` composable, `is_connected` heartbeat, 6-table subscription
 
 ---
 
