@@ -222,6 +222,15 @@ export const useAuctionStore = defineStore('auction', () => {
     return {}
   }
 
+  async function completeBid() {
+    if (!auction.value) return { error: 'Not in auction' }
+    const { data, error } = await supabase.functions.invoke('complete-bid', {
+      body: { auction_id: auction.value.id },
+    })
+    if (error) return { error: error.message }
+    return { data }
+  }
+
   async function setAuctionStatus(status: Auction['status']) {
     if (!auction.value) return
     await supabase.from('auctions').update({ status }).eq('id', auction.value.id)
@@ -268,6 +277,7 @@ export const useAuctionStore = defineStore('auction', () => {
     setReady,
     placeBid,
     pass,
+    completeBid,
     nominateSchool,
     assignPosition,
     setAuctionStatus,

@@ -1,10 +1,11 @@
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuctionStore } from '@/stores/auction'
 import type { Auction, Participant, Team, DraftPick, BidHistory } from '@/types/auction'
 
 export function useAuctionRealtime(auctionId: number) {
   const store = useAuctionStore()
+  const isConnected = ref(false)
   let channel: ReturnType<typeof supabase.channel> | null = null
   let heartbeatInterval: ReturnType<typeof setInterval> | null = null
 
@@ -73,8 +74,10 @@ export function useAuctionRealtime(auctionId: number) {
 
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
+          isConnected.value = true
           markConnected(true)
         } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+          isConnected.value = false
           markConnected(false)
         }
       })
@@ -106,8 +109,11 @@ export function useAuctionRealtime(auctionId: number) {
   })
 
   onUnmounted(() => {
+    isConnected.value = false
     markConnected(false)
     if (channel) supabase.removeChannel(channel)
     if (heartbeatInterval) clearInterval(heartbeatInterval)
   })
+
+  return { isConnected }
 }
