@@ -112,7 +112,12 @@ async function createAuction() {
 
   // 6. Create auction master participant and claim slot 1
   const sessionToken = crypto.randomUUID()
-  const { data: participant } = await supabase
+
+  // Pre-set the session token in localStorage so the x-session-token header is sent
+  // with this request. The participants SELECT policy requires it to read back the row.
+  localStorage.setItem('auction_session', JSON.stringify({ sessionToken }))
+
+  const { data: participant, error: participantErr } = await supabase
     .from('participants')
     .insert({
       auction_id: auctionId,
@@ -127,7 +132,8 @@ async function createAuction() {
     .single()
 
   if (!participant) {
-    errorMsg.value = 'Failed to create participant record.'
+    localStorage.removeItem('auction_session')
+    errorMsg.value = participantErr?.message ?? 'Failed to create participant record.'
     submitting.value = false
     return
   }
