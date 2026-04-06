@@ -131,21 +131,23 @@ The join flow uses Supabase anonymous auth. Without this, no one can join.
 
 ---
 
-### Day 3 — Live Draft
+### Day 3 — Live Draft ✅ COMPLETE
 **Goal: a full auction round works end-to-end**
 
-1. **Live Bidding Console** (`/auction/:id/draft`) — 12-column layout: left sidebar (participant status + budget), main area (school on the block, bid controls, pass button, bidder status list). Realtime subscription drives all updates.
-2. **School Nomination Grid** — modal/overlay for nominator to select next school. Shows available schools with conference, projected points, Nominate button.
-3. **On the Clock Alert** — overlay shown to current nominator if they haven't nominated within a few seconds of their turn.
-4. **Out of Budget state** — bid buttons replaced with AUTO-PASSED indicator when max bid ≤ current high bid.
-5. **Admin mode toggle** — "Bid on Behalf Of" team dropdown + per-team auto-pass toggle. CSS layout shift (main col span change) via reactive boolean.
-6. **Edge Function: `place-bid`** — validate bid > current, ≤ max bid, auction in_progress, update auction state, insert bid_history record.
-7. **Edge Function: `pass`** — record pass, check if all non-high-bidders passed, trigger complete-bid if so.
-8. **Edge Function: `complete-bid`** — deduct budget, create draft_pick (pending assignment), mark school unavailable, advance nominator.
-9. **"The Pick is In" sting** — full-screen overlay with animation, school logo, winner, price. Auto-dismisses after ~4 seconds.
-10. **Position Assignment Modal** — shown to winner after sting dismisses. School logo, roster slot radio group (most restrictive pre-selected), Confirm button.
-11. **Connection Lost overlay** — triggered by Supabase Realtime disconnect event.
-12. **Auction controls** — Start, Pause, Resume, Force End Bidding wired to auction status transitions.
+1. ✅ **Live Bidding Console** (`/auction/:id/draft`) — school hero, bid controls (+$1/+$5/+$10/custom), auto-pass lock state, bid log, admin right panel (team budgets + picks), nomination order sidebar
+2. ✅ **School Nomination Grid** — `NominationGrid.vue`, conference filter tabs, school grid, nominate action
+3. ✅ **On the Clock / Nominate Now** — inline prompt + sidebar button when it's coach's turn and no school on block
+4. ✅ **Out of Budget state** — bid controls replaced with BIDDING LOCKED indicator, Pass button auto-activates
+5. ✅ **Admin mode toggle** — proxy team dropdown + per-team auto-pass toggles, audit right panel at col-span-4
+6. ✅ **Edge Function: `place-bid`** — validates bid > current, ≤ budget, records bid_history
+7. ✅ **Edge Function: `pass-bid`** — records pass, auto-triggers complete-bid when all non-high-bidders passed
+8. ✅ **Edge Function: `complete-bid`** — deducts budget, creates draft_pick, marks school unavailable, advances nominator (circular by nomination_order)
+9. ✅ **Edge Function: `nominate-school`** — validates turn order, sets current_school_id on auction
+10. ✅ **"The Pick is In" sting** — `PickIsInSting.vue`, full-screen overlay, school logo, winner, price, auto-dismiss 4s
+11. ✅ **Position Assignment Modal** — `PositionAssignmentModal.vue`, roster slot radio group, confirm updates draft_pick
+12. ✅ **Connection Lost overlay** — `ConnectionLostOverlay.vue`, shown on Supabase Realtime disconnect
+13. ✅ **Auction controls** — Pause, Resume, Force End Bidding wired to auction status transitions
+14. ✅ **Migration** — `draft_picks.roster_position_id` made nullable (assigned post-sting via modal)
 
 ---
 
@@ -227,6 +229,38 @@ One channel per auction (`auction:{id}`), subscribed to:
 /auction/:id/lobby    → LobbyView.vue (coach + admin, role-conditional)
 /auction/:id/draft    → DraftView.vue (coach + admin, role-conditional)
 ```
+
+---
+
+## To Run a Full Draft (deployment checklist)
+
+All UI and edge function code is written. Before running an end-to-end draft:
+
+```bash
+# 1. Apply all migrations (includes nullable roster_position_id fix)
+supabase db reset
+# or if Supabase is already running:
+supabase migration up
+
+# 2. Deploy edge functions
+supabase functions deploy nominate-school
+supabase functions deploy place-bid
+supabase functions deploy pass-bid
+supabase functions deploy complete-bid
+
+# 3. Start dev server
+npm run dev
+```
+
+**Flow to test:**
+1. `/create` — create auction, set N teams, budget, roster positions
+2. Each coach opens `/join` and joins with their name + picks a team slot
+3. All coaches navigate to `/auction/:id/lobby`, toggle Draft Ready
+4. Admin clicks START DRAFT → navigates to `/auction/:id/draft`
+5. Current nominator sees NOMINATE NOW → picks a school from NominationGrid
+6. Coaches bid (+$1/+$5/+$10 or custom), or pass
+7. When all non-high-bidders pass → complete-bid fires → sting plays → winner assigns position
+8. Repeat until all schools sold
 
 ---
 
