@@ -1,1 +1,1 @@
-Here is where exported output from Google Stitch is placed.
+Here is where exported output from Google Stitch are placed.
