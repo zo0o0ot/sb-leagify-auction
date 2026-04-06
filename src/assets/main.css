@@ -1,3 +1,149 @@
 @import 'tailwindcss';
 
-/* Custom styles below Tailwind */
+@theme {
+  /* Surface stack */
+  --color-surface-container-lowest: #0a0e14;
+  --color-surface-container-low: #181c22;
+  --color-surface-container: #1c2026;
+  --color-surface-container-high: #262a31;
+  --color-surface-container-highest: #31353c;
+  --color-surface: #10141a;
+  --color-surface-dim: #10141a;
+  --color-surface-bright: #353940;
+  --color-surface-variant: #31353c;
+  --color-surface-tint: #adc6ff;
+
+  /* Primary (blue) */
+  --color-primary: #adc6ff;
+  --color-primary-container: #00204d;
+  --color-primary-fixed: #d8e2ff;
+  --color-primary-fixed-dim: #adc6ff;
+  --color-on-primary: #002e69;
+  --color-on-primary-container: #3686ff;
+  --color-on-primary-fixed: #001a41;
+  --color-on-primary-fixed-variant: #004493;
+  --color-inverse-primary: #005bc1;
+
+  /* Secondary (red) */
+  --color-secondary: #ffb3b2;
+  --color-secondary-container: #bf012c;
+  --color-secondary-fixed: #ffdad9;
+  --color-secondary-fixed-dim: #ffb3b2;
+  --color-on-secondary: #680013;
+  --color-on-secondary-container: #ffcccb;
+  --color-on-secondary-fixed: #410008;
+  --color-on-secondary-fixed-variant: #92001f;
+
+  /* Tertiary (gold) */
+  --color-tertiary: #e9c400;
+  --color-tertiary-container: #c9a900;
+  --color-tertiary-fixed: #ffe16d;
+  --color-tertiary-fixed-dim: #e9c400;
+  --color-on-tertiary: #3a3000;
+  --color-on-tertiary-container: #4c3f00;
+  --color-on-tertiary-fixed: #221b00;
+  --color-on-tertiary-fixed-variant: #544600;
+
+  /* Error */
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+
+  /* Surface text */
+  --color-on-surface: #dfe2eb;
+  --color-on-surface-variant: #c4c6cf;
+  --color-on-background: #dfe2eb;
+  --color-inverse-surface: #dfe2eb;
+  --color-inverse-on-surface: #2d3137;
+
+  /* Outlines */
+  --color-outline: #8d9199;
+  --color-outline-variant: #43474e;
+
+  /* Typography */
+  --font-headline: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-label: 'Space Grotesk', sans-serif;
+
+  /* Border radius — industrial, sharp */
+  --radius-none: 0;
+  --radius-sm: 0.125rem;
+  --radius: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 0.75rem;
+}
+
+/* Base */
+body {
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+/* Glassmorphism panel */
+.glass-panel {
+  background: rgba(28, 32, 38, 0.6);
+  backdrop-filter: blur(12px);
+  outline: 1px solid rgba(67, 71, 78, 0.15);
+}
+
+/* Metallic gradients */
+.metallic-primary {
+  background: linear-gradient(135deg, #adc6ff 0%, #3686ff 100%);
+}
+.metallic-secondary {
+  background: linear-gradient(135deg, #ffb3b2 0%, #bf012c 100%);
+}
+
+/* Broadcast skew */
+.broadcast-skew {
+  transform: skewX(-10deg);
+}
+.broadcast-unskew {
+  transform: skewX(10deg);
+}
+
+/* Gold glow — for championship moments */
+.glow-gold {
+  box-shadow: 0 0 15px rgba(233, 196, 0, 0.4);
+}
+
+/* Ambient shadow — stadium glow */
+.shadow-stadium {
+  box-shadow: 0 20px 40px rgba(0, 68, 147, 0.15);
+}
+
+/* Input style — bottom border only */
+.input-underline {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--color-outline-variant);
+  border-radius: 0;
+  outline: none;
+  color: var(--color-on-surface);
+  transition: border-color 150ms;
+}
+.input-underline:focus {
+  border-bottom-color: var(--color-primary);
+  box-shadow: 0 2px 0 0 var(--color-primary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-container-lowest);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-variant);
+}
