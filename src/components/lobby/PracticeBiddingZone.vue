@@ -162,7 +162,7 @@ async function resetBids() {
             class="w-full bg-surface-container hover:bg-secondary/10 border border-secondary/20 py-4 font-headline font-bold text-secondary transition-all active:scale-95 uppercase tracking-tighter disabled:opacity-40"
             @click="pass"
           >
-            Pass / Fold
+            Pass
           </button>
         </template>
 

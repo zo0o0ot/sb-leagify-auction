@@ -183,6 +183,7 @@ export const useAuctionStore = defineStore('auction', () => {
       },
     })
     if (error) return { error: error.message }
+    if (data?.ok === false) return { error: data.error ?? 'Bid failed' }
     return { data }
   }
 
@@ -196,6 +197,7 @@ export const useAuctionStore = defineStore('auction', () => {
       },
     })
     if (error) return { error: error.message }
+    if (data?.ok === false) return { error: data.error ?? 'Pass failed' }
     return { data }
   }
 
