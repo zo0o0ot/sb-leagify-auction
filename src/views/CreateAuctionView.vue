@@ -53,7 +53,7 @@ async function createAuction() {
   submitting.value = true
   errorMsg.value = ''
 
-  // 1. Anonymous auth
+  // 1. Anonymous auth (get a supabase_uid; no RLS-sensitive DB calls on the client)
   const { data: authData, error: authErr } = await supabase.auth.signInAnonymously()
   if (authErr || !authData.user) {
     errorMsg.value = 'Authentication failed.'
@@ -61,143 +61,53 @@ async function createAuction() {
     return
   }
 
-  // 2. Create or get user record
-  const { data: userData } = await supabase
-    .from('users')
-    .upsert({ supabase_uid: authData.user.id, email: null }, { onConflict: 'supabase_uid' })
-    .select('id')
-    .single()
-
-  const userId = userData?.id
-
-  // 3. Create auction
-  const { data: auction, error: auctionErr } = await supabase
-    .from('auctions')
-    .insert({
+  // 2. Call create-auction edge function (uses service role key, bypasses RLS)
+  const { data, error } = await supabase.functions.invoke('create-auction', {
+    body: {
+      auction_name: auctionName.value.trim(),
       join_code: joinCode.value,
-      name: auctionName.value.trim(),
-      status: 'draft',
-      created_by: userId ?? null,
-      default_budget: budget.value,
-    })
-    .select('id')
-    .single()
+      participant_count: participantCount.value,
+      budget: budget.value,
+      creator_name: creatorName.value.trim(),
+      school_source: schoolSource.value,
+      roster_positions: rosterPositions.value,
+      supabase_uid: authData.user.id,
+    },
+  })
 
-  if (auctionErr || !auction) {
+  if (error || !data?.ok) {
+    const msg = data?.error ?? error?.message ?? 'Failed to create auction.'
     errorMsg.value =
-      auctionErr?.code === '23505'
+      msg === 'JOIN_CODE_CONFLICT'
         ? 'That join code is already in use. Click the refresh icon to generate a new one.'
-        : (auctionErr?.message ?? 'Failed to create auction.')
+        : msg
     submitting.value = false
     return
   }
 
-  const auctionId = auction.id
+  const { auction_id, participant_id, team_id, session_token, role } = data
 
-  // 4. Create roster positions
-  await supabase.from('roster_positions').insert(
-    rosterPositions.value.map((rp) => ({ ...rp, auction_id: auctionId })),
-  )
-
-  // 5. Create team placeholder slots
-  const teamInserts = Array.from({ length: participantCount.value }, (_, i) => ({
-    auction_id: auctionId,
-    team_name: `Team ${i + 1}`,
-    budget: budget.value,
-    remaining_budget: budget.value,
-    nomination_order: i + 1,
-  }))
-  const { data: teams } = await supabase.from('teams').insert(teamInserts).select('id')
-  const creatorTeamId = teams?.[0]?.id ?? null
-
-  // 6. Create auction master participant and claim slot 1
-  const sessionToken = crypto.randomUUID()
-
-  // Pre-set the session token in localStorage so the x-session-token header is sent
-  // with this request. The participants SELECT policy requires it to read back the row.
-  localStorage.setItem('auction_session', JSON.stringify({ sessionToken }))
-
-  const { data: participant, error: participantErr } = await supabase
-    .from('participants')
-    .insert({
-      auction_id: auctionId,
-      user_id: userId ?? null,
-      display_name: creatorName.value.trim(),
-      role: 'auction_master',
-      team_id: creatorTeamId,
-      session_token: sessionToken,
-      is_connected: true,
-    })
-    .select('id, role, team_id')
-    .single()
-
-  if (!participant) {
-    localStorage.removeItem('auction_session')
-    errorMsg.value = participantErr?.message ?? 'Failed to create participant record.'
-    submitting.value = false
-    return
-  }
-
-  // Update slot 1 team name to creator's name
-  if (creatorTeamId) {
-    await supabase
-      .from('teams')
-      .update({ team_name: creatorName.value.trim() })
-      .eq('id', creatorTeamId)
-  }
+  // 3. Persist session locally
+  localStorage.setItem('auction_session', JSON.stringify({ sessionToken: session_token }))
 
   store.saveSession({
-    participantId: participant.id,
-    auctionId,
-    teamId: creatorTeamId,
-    role: 'auction_master',
+    participantId: participant_id,
+    auctionId: auction_id,
+    teamId: team_id,
+    role,
     displayName: creatorName.value.trim(),
-    sessionToken,
+    sessionToken: session_token,
     supabaseUid: authData.user.id,
   })
 
-  // 7. If default school set, link from master schools table
-  if (schoolSource.value === 'default') {
-    const { data: allSchools } = await supabase.from('schools').select('id, name')
-    if (allSchools?.length) {
-      const schoolInserts = allSchools.map((s, i) => ({
-        auction_id: auctionId,
-        school_id: s.id,
-        leagify_position: guessPosition(s.name),
-        conference: guessConference(s.name),
-        projected_points: 100,
-        import_order: i,
-      }))
-      await supabase.from('auction_schools').insert(schoolInserts)
-    }
-  }
-
   if (schoolSource.value === 'csv') {
-    // Navigate to maintain schools for CSV upload
-    router.push({ name: 'admin-schools', query: { auction_id: auctionId, setup: '1' } })
+    router.push({ name: 'admin-schools', query: { auction_id, setup: '1' } })
     return
   }
 
-  router.push(`/auction/${auctionId}/lobby`)
+  router.push(`/auction/${auction_id}/lobby`)
 }
 
-function guessPosition(name: string): string {
-  const sec = ['Alabama', 'Georgia', 'LSU', 'Tennessee', 'Auburn', 'Ole Miss', 'Texas A&M', 'Mississippi State', 'Arkansas', 'Kentucky', 'Missouri', 'Vanderbilt', 'South Carolina', 'Florida']
-  const bigTen = ['Ohio State', 'Michigan', 'Penn State', 'Wisconsin', 'Iowa', 'Minnesota', 'Illinois', 'Northwestern', 'Indiana', 'Purdue', 'Rutgers', 'Maryland', 'Nebraska', 'Michigan State']
-  const acc = ['Clemson', 'Florida State', 'Miami', 'North Carolina', 'NC State', 'Virginia', 'Virginia Tech', 'Georgia Tech', 'Pittsburgh', 'Boston College', 'Wake Forest', 'Duke', 'Syracuse', 'Louisville', 'Notre Dame']
-  const big12 = ['Texas', 'Oklahoma', 'Texas Tech', 'TCU', 'Baylor', 'Kansas State', 'Kansas', 'Iowa State', 'Oklahoma State', 'West Virginia', 'UCF', 'BYU', 'Cincinnati', 'Houston']
-  if (sec.includes(name)) return 'SEC'
-  if (bigTen.includes(name)) return 'Big Ten'
-  if (acc.includes(name)) return 'ACC'
-  if (big12.includes(name)) return 'Big 12'
-  return 'Flex'
-}
-
-function guessConference(name: string): string {
-  const pos = guessPosition(name)
-  if (pos === 'Flex') return 'Independent'
-  return pos
-}
 
 function updateSlotCount(idx: number, delta: number) {
   const rp = rosterPositions.value[idx]
