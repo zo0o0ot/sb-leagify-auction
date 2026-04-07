@@ -41,7 +41,16 @@ async function toggleReady() {
 async function startDraft(skipCheck = false) {
   if (!skipCheck && !store.allCoachesReady) return
   submitting.value = true
-  await store.setAuctionStatus('in_progress')
+
+  // Determine first nominator: participant whose team has nomination_order=1
+  const firstTeam = store.teams.slice().sort((a, b) => a.nomination_order - b.nomination_order)[0]
+  const firstNominator = store.participants.find((p) => p.team_id === firstTeam?.id)
+
+  await supabase
+    .from('auctions')
+    .update({ status: 'in_progress', current_nominator_id: firstNominator?.id ?? null })
+    .eq('id', auctionId)
+
   router.push(`/auction/${auctionId}/draft`)
 }
 
