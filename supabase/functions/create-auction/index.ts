@@ -143,8 +143,11 @@ serve(async (req) => {
     )
   } catch (err) {
     const msg = (err as Error).message
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 400,
+    // Always return 200 so the Supabase JS client passes the body back to the caller.
+    // A 4xx causes the client to throw FunctionsHttpError with a generic message,
+    // discarding the actual error detail.
+    return new Response(JSON.stringify({ ok: false, error: msg }), {
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
