@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+import { useAuctionStore } from '@/stores/auction'
+import type { DraftPick } from '@/types/auction'
 
 const props = defineProps<{ pick: DraftPick | null }>()
 const emit = defineEmits<{ assigned: []; close: [] }>()
