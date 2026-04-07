@@ -57,11 +57,10 @@ const initials = props.participant.display_name
       </div>
     </div>
 
-    <!-- Status indicators -->
-    <div class="flex items-center gap-6">
+    <div class="flex items-center">
       
-      <!-- Ready Toggle (Me only) -->
-      <div v-if="props.isMe" class="flex flex-col items-center">
+      <!-- Ready Toggle (Me only) - Positioned between name and status indicators -->
+      <div v-if="props.isMe" class="flex flex-col items-center mr-8 border-r border-outline-variant/30 pr-8">
         <button
           class="relative inline-flex items-center cursor-pointer"
           @click="emit('toggle-ready')"
@@ -76,24 +75,27 @@ const initials = props.participant.display_name
             ></div>
           </div>
         </button>
-        <span class="text-[9px] font-label mt-1 text-primary-fixed uppercase leading-tight">Ready</span>
+        <span class="text-[9px] font-label mt-1 text-primary-fixed uppercase leading-tight">Mark Ready</span>
       </div>
 
-      <div v-else class="flex flex-col items-center">
-        <span
-          class="material-symbols-outlined text-xl"
-          :class="props.participant.is_ready ? 'text-primary' : 'text-outline'"
-          :style="props.participant.is_ready ? 'font-variation-settings: \'FILL\' 1' : ''"
-        >check_box{{ props.participant.is_ready ? '' : '_outline_blank' }}</span>
-        <span class="text-[9px] font-label mt-0.5 text-on-surface-variant uppercase">Ready</span>
-      </div>
+      <!-- Status indicators (Always shown) -->
+      <div class="flex items-center gap-6">
+        <div class="flex flex-col items-center">
+          <span
+            class="material-symbols-outlined text-xl"
+            :class="props.participant.is_ready ? 'text-primary' : 'text-outline'"
+            :style="props.participant.is_ready ? 'font-variation-settings: \'FILL\' 1' : ''"
+          >check_box{{ props.participant.is_ready ? '' : '_outline_blank' }}</span>
+          <span class="text-[9px] font-label mt-0.5 text-on-surface-variant uppercase">Ready</span>
+        </div>
 
-      <div class="flex flex-col items-center">
-        <span
-          class="w-2 h-2 rounded-full"
-          :class="props.participant.is_connected ? 'bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]' : 'bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]'"
-        ></span>
-        <span class="text-[9px] font-label mt-1 text-on-surface-variant uppercase">Tech</span>
+        <div class="flex flex-col items-center">
+          <span
+            class="w-2 h-2 rounded-full"
+            :class="props.participant.is_connected ? 'bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]' : 'bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]'"
+          ></span>
+          <span class="text-[9px] font-label mt-1 text-on-surface-variant uppercase">Tech</span>
+        </div>
       </div>
     </div>
   </div>
