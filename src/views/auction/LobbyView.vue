@@ -48,23 +48,28 @@ async function startDraft(skipCheck = false) {
 const practiceSchoolId = ref<number | null>(null)
 const practiceSubmitting = ref(false)
 
+const practiceError = ref('')
+
 async function startPractice() {
   if (!practiceSchoolId.value) return
+  practiceError.value = ''
   practiceSubmitting.value = true
-  // Put the selected school on the block and set status to practice
-  await supabase
+  const { error } = await supabase
     .from('auctions')
     .update({ status: 'practice', current_school_id: practiceSchoolId.value, current_high_bid: 0, current_high_bidder_id: null })
     .eq('id', auctionId)
+  if (error) practiceError.value = error.message
   practiceSubmitting.value = false
 }
 
 async function stopPractice() {
-  await supabase
+  practiceError.value = ''
+  const { error } = await supabase
     .from('auctions')
     .update({ status: 'draft', current_school_id: null, current_high_bid: null, current_high_bidder_id: null })
     .eq('id', auctionId)
-  practiceSchoolId.value = null
+  if (!error) practiceSchoolId.value = null
+  else practiceError.value = error.message
 }
 </script>
 
@@ -302,6 +307,7 @@ async function stopPractice() {
 
             <!-- Practice controls -->
             <div class="w-full max-w-lg space-y-3">
+              <p v-if="practiceError" class="text-xs text-error font-label">{{ practiceError }}</p>
               <div v-if="!store.auction?.current_school_id" class="flex gap-2">
                 <select
                   v-model="practiceSchoolId"

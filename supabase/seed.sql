@@ -16,31 +16,7 @@ ALTER TABLE auction_schools DISABLE ROW LEVEL SECURITY;
 INSERT INTO users (supabase_uid, email, is_system_admin)
 VALUES ('00000000-0000-0000-0000-000000000001'::uuid, 'admin@example.com', true);
 
-------------------------------------------------------------
--- Sample Schools
-------------------------------------------------------------
-
-INSERT INTO schools (name, logo_url) VALUES
-  ('Ohio State', 'https://a.espncdn.com/i/teamlogos/ncaa/500/194.png'),
-  ('Alabama', 'https://a.espncdn.com/i/teamlogos/ncaa/500/333.png'),
-  ('Georgia', 'https://a.espncdn.com/i/teamlogos/ncaa/500/61.png'),
-  ('Michigan', 'https://a.espncdn.com/i/teamlogos/ncaa/500/130.png'),
-  ('Texas', 'https://a.espncdn.com/i/teamlogos/ncaa/500/251.png'),
-  ('Penn State', 'https://a.espncdn.com/i/teamlogos/ncaa/500/213.png'),
-  ('Clemson', 'https://a.espncdn.com/i/teamlogos/ncaa/500/228.png'),
-  ('Florida State', 'https://a.espncdn.com/i/teamlogos/ncaa/500/52.png'),
-  ('LSU', 'https://a.espncdn.com/i/teamlogos/ncaa/500/99.png'),
-  ('Notre Dame', 'https://a.espncdn.com/i/teamlogos/ncaa/500/87.png'),
-  ('Oregon', 'https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png'),
-  ('USC', 'https://a.espncdn.com/i/teamlogos/ncaa/500/30.png'),
-  ('Tennessee', 'https://a.espncdn.com/i/teamlogos/ncaa/500/2633.png'),
-  ('Oklahoma', 'https://a.espncdn.com/i/teamlogos/ncaa/500/201.png'),
-  ('Miami', 'https://a.espncdn.com/i/teamlogos/ncaa/500/2390.png'),
-  ('Wisconsin', 'https://a.espncdn.com/i/teamlogos/ncaa/500/275.png'),
-  ('Auburn', 'https://a.espncdn.com/i/teamlogos/ncaa/500/2.png'),
-  ('Ole Miss', 'https://a.espncdn.com/i/teamlogos/ncaa/500/145.png'),
-  ('Texas A&M', 'https://a.espncdn.com/i/teamlogos/ncaa/500/245.png'),
-  ('North Carolina', 'https://a.espncdn.com/i/teamlogos/ncaa/500/153.png');
+-- Schools are seeded via migration 20260406000010_seed_default_schools.sql
 
 ------------------------------------------------------------
 -- Test Auction (join code: TEST01)
