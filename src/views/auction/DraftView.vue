@@ -102,7 +102,9 @@ async function submitCustomBid() {
 
 async function pass() {
   submitting.value = true
-  await store.pass()
+  bidError.value = ''
+  const result = await store.pass()
+  if (result?.error) bidError.value = result.error
   submitting.value = false
 }
 
@@ -504,7 +506,7 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
                 @click="pass"
               >
                 <span class="material-symbols-outlined align-text-bottom mr-1" :style="(isAutoPass || isHighBidder) ? 'font-variation-settings: \'FILL\' 1' : ''">{{ isAutoPass ? 'lock' : 'block' }}</span>
-                {{ isHighBidder ? 'Cannot Pass — You\'re Winning' : isAutoPass ? 'LOCKED IN: PASS' : 'Pass / Fold' }}
+                {{ isHighBidder ? 'Cannot Pass — You\'re Winning' : isAutoPass ? 'LOCKED IN: PASS' : 'Pass' }}
               </button>
 
               <p v-if="bidError" class="text-xs text-error font-label text-center">{{ bidError }}</p>
