@@ -200,7 +200,7 @@ async function joinAuction() {
       <!-- Logo -->
       <div class="text-center mb-10">
         <h1 class="text-4xl font-black italic tracking-widest text-primary font-headline uppercase mb-2">
-          DRAFT COMMAND
+          LEAGIFY DRAFT COMMAND
         </h1>
         <p class="text-xs font-label text-outline uppercase tracking-[0.3em]">
           Fantasy Auction System

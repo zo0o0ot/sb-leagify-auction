@@ -124,7 +124,7 @@ function updateSlotCount(idx: number, delta: number) {
       class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 font-headline uppercase"
       style="background: #0a0e14; border-bottom: 1px solid rgba(49,53,60,0.3);"
     >
-      <span class="text-2xl font-black italic tracking-widest text-primary">GRIDIRON PRIME</span>
+      <span class="text-2xl font-black italic tracking-widest text-primary">LEAGIFY</span>
       <router-link to="/join" class="text-xs font-label text-outline hover:text-primary transition-colors tracking-wider uppercase">
         ← Join Instead
       </router-link>
