@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { supabase } from '@/lib/supabase'
 import { useAuctionStore } from '@/stores/auction'
 import { useAuctionRealtime } from '@/composables/useAuctionRealtime'
 import AppShell from '@/components/AppShell.vue'
@@ -44,8 +45,26 @@ async function startDraft(skipCheck = false) {
   router.push(`/auction/${auctionId}/draft`)
 }
 
+const practiceSchoolId = ref<number | null>(null)
+const practiceSubmitting = ref(false)
+
 async function startPractice() {
-  await store.setAuctionStatus('practice')
+  if (!practiceSchoolId.value) return
+  practiceSubmitting.value = true
+  // Put the selected school on the block and set status to practice
+  await supabase
+    .from('auctions')
+    .update({ status: 'practice', current_school_id: practiceSchoolId.value, current_high_bid: 0, current_high_bidder_id: null })
+    .eq('id', auctionId)
+  practiceSubmitting.value = false
+}
+
+async function stopPractice() {
+  await supabase
+    .from('auctions')
+    .update({ status: 'draft', current_school_id: null, current_high_bid: null, current_high_bidder_id: null })
+    .eq('id', auctionId)
+  practiceSchoolId.value = null
 }
 </script>
 
@@ -281,13 +300,38 @@ async function startPractice() {
               </div>
             </div>
 
-            <div class="flex gap-4 w-full max-w-lg">
+            <!-- Practice controls -->
+            <div class="w-full max-w-lg space-y-3">
+              <div v-if="!store.auction?.current_school_id" class="flex gap-2">
+                <select
+                  v-model="practiceSchoolId"
+                  class="flex-1 bg-surface-container border border-outline-variant/50 text-on-surface text-xs font-label px-3 py-2 focus:outline-none focus:border-primary"
+                >
+                  <option :value="null">— Pick a practice school —</option>
+                  <option
+                    v-for="s in store.availableSchools.slice(0, 20)"
+                    :key="s.id"
+                    :value="s.id"
+                  >{{ s.school?.name ?? s.id }}</option>
+                </select>
+                <button
+                  :disabled="!practiceSchoolId || practiceSubmitting"
+                  class="px-4 py-2 bg-surface-container hover:bg-primary/10 border border-primary/30 font-headline font-bold text-primary text-xs uppercase tracking-wider transition-all disabled:opacity-40"
+                  @click="startPractice"
+                >
+                  {{ practiceSubmitting ? '...' : 'Start Practice' }}
+                </button>
+              </div>
               <button
-                class="flex-1 bg-surface-container hover:bg-primary/10 border border-primary/30 py-4 font-headline font-bold text-primary text-sm uppercase tracking-wider transition-all"
-                @click="startPractice"
+                v-else
+                class="w-full bg-error-container/30 hover:bg-error/20 border border-error/30 py-2 font-label text-error text-xs uppercase"
+                @click="stopPractice"
               >
-                Start Practice
+                Stop Practice
               </button>
+            </div>
+
+            <div class="flex gap-4 w-full max-w-lg">
               <button
                 :disabled="!!notReadyCoach && !submitting"
                 class="flex-[2] bg-secondary-container hover:bg-secondary/20 text-on-secondary-container border border-secondary/50 py-4 font-headline font-black text-xl transition-all uppercase tracking-[0.2em] shadow-xl active:scale-[0.98] disabled:opacity-40"
