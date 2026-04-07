@@ -45,10 +45,12 @@ serve(async (req) => {
       if (amount > team.remaining_budget) throw new Error('Bid exceeds remaining budget')
 
       // Update auction with new high bid
-      await supabase
+      const { error: updateErr } = await supabase
         .from('auctions')
         .update({ current_high_bid: amount, current_high_bidder_id: effectiveTeamId })
         .eq('id', auction_id)
+
+      if (updateErr) throw new Error('Auction update failed: ' + updateErr.message)
 
       // Record bid
       await supabase.from('bid_history').insert({
