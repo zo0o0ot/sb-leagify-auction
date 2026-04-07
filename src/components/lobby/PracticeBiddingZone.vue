@@ -185,16 +185,32 @@ async function endBidding() {
       </div>
 
       <!-- Financials -->
-      <div class="grid grid-cols-2 bg-surface-container-low border-b border-outline-variant/20">
-        <div class="p-6 border-r border-outline-variant/20 flex flex-col items-center justify-center">
-          <span class="text-xs font-label text-outline uppercase tracking-widest mb-1">Your Budget</span>
-          <span class="text-4xl font-headline font-black text-primary">${{ myBudget }}</span>
+      <div class="bg-surface-container-low border-b border-outline-variant/20">
+        <!-- Row 1: Current high bidder + current high bid -->
+        <div class="grid grid-cols-2 border-b border-outline-variant/20" :class="currentHighBid > 0 ? 'bg-secondary-container/10' : ''">
+          <div class="p-4 border-r border-outline-variant/20 flex flex-col items-center justify-center">
+            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1">Current High Bidder</span>
+            <span class="text-xl font-headline font-black text-on-surface uppercase truncate">
+              {{ store.currentHighBidder?.team_name ?? '—' }}
+            </span>
+          </div>
+          <div class="p-4 flex flex-col items-center justify-center">
+            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1">Current High Bid</span>
+            <span class="text-xl font-headline font-black" :class="currentHighBid > 0 ? 'text-secondary animate-pulse' : 'text-outline'">
+              ${{ currentHighBid || '—' }}
+            </span>
+          </div>
         </div>
-        <div class="p-6 flex flex-col items-center justify-center" :class="currentHighBid > 0 ? 'bg-secondary-container/10' : ''">
-          <span class="text-xs font-label text-on-surface-variant uppercase tracking-widest mb-1">Current High Bid</span>
-          <span class="text-4xl font-headline font-black" :class="currentHighBid > 0 ? 'text-secondary animate-pulse' : 'text-outline'">
-            ${{ currentHighBid || '—' }}
-          </span>
+        <!-- Row 2: Your budget + next minimum bid -->
+        <div class="grid grid-cols-2">
+          <div class="p-4 border-r border-outline-variant/20 flex flex-col items-center justify-center">
+            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1">Your Budget</span>
+            <span class="text-xl font-headline font-black text-primary">${{ myBudget }}</span>
+          </div>
+          <div class="p-4 flex flex-col items-center justify-center">
+            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1">Next Minimum Bid</span>
+            <span class="text-xl font-headline font-black text-on-surface">${{ nextMinBid }}</span>
+          </div>
         </div>
       </div>
 
@@ -213,11 +229,6 @@ async function endBidding() {
         </div>
 
         <template v-else>
-          <div class="text-center">
-            <div class="text-xs font-label text-outline uppercase tracking-widest">Next Minimum Bid</div>
-            <div class="text-6xl font-headline font-black text-on-surface mt-2">${{ nextMinBid }}</div>
-          </div>
-
           <!-- Quick bid buttons -->
           <div class="grid grid-cols-3 gap-4">
             <button
