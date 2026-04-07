@@ -179,9 +179,16 @@ export const useAuctionStore = defineStore('auction', () => {
   }
 
   function updateDraftPick(data: DraftPick) {
-    const idx = draftPicks.value.findIndex((p) => p.id === data.id)
-    if (idx >= 0) draftPicks.value[idx] = data
-    else draftPicks.value.push(data)
+    // Realtime payloads contain only raw columns — no joins.
+    // Enrich with auction_school from the already-loaded schools list so the
+    // PickIsInSting and PositionAssignmentModal can show school name/logo.
+    const enriched: DraftPick = {
+      ...data,
+      auction_school: data.auction_school ?? schools.value.find((s) => s.id === data.auction_school_id),
+    }
+    const idx = draftPicks.value.findIndex((p) => p.id === enriched.id)
+    if (idx >= 0) draftPicks.value[idx] = enriched
+    else draftPicks.value.push(enriched)
   }
 
   function markSchoolUnavailable(auctionSchoolId: number) {

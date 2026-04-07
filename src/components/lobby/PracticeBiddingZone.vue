@@ -12,6 +12,24 @@ const submitting = ref(false)
 const bidError = ref('')
 const adminError = ref('')
 
+// Shown briefly after practice ends to indicate who had the winning bid
+const practiceResult = ref<{ teamName: string; amount: number; schoolName: string } | null>(null)
+let practiceResultTimer: ReturnType<typeof setTimeout> | null = null
+
+function showPracticeResult() {
+  if (!store.auction?.current_high_bidder_id || !store.auction.current_high_bid) return
+  const team = store.teams.find((t) => t.id === store.auction!.current_high_bidder_id)
+  const school = practiceSchool.value
+  if (!team || !school) return
+  if (practiceResultTimer) clearTimeout(practiceResultTimer)
+  practiceResult.value = {
+    teamName: store.getTeamDisplayName(team.id),
+    amount: store.auction.current_high_bid,
+    schoolName: school.school?.name ?? 'School',
+  }
+  practiceResultTimer = setTimeout(() => { practiceResult.value = null }, 6000)
+}
+
 const practiceSchool = computed(() => {
   if (!store.auction?.current_school_id) return null
   return store.schools.find((s) => s.id === store.auction!.current_school_id) ?? null
@@ -117,6 +135,9 @@ async function endBidding() {
   adminError.value = ''
   submitting.value = true
 
+  // Capture result before clearing so we can show who had the winning bid
+  showPracticeResult()
+
   // Clear all practice bids and stop practice
   await supabase
     .from('bid_history')
@@ -142,6 +163,28 @@ async function endBidding() {
       v-if="!practiceSchool"
       class="flex-1 flex flex-col items-center justify-center gap-4 p-8 text-center"
     >
+      <!-- Practice result banner (shown briefly after End Bidding) -->
+      <Transition
+        enter-active-class="transition-all duration-300 ease-out"
+        enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition-all duration-300 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="practiceResult"
+          class="w-full max-w-sm bg-secondary-container/20 border border-secondary/30 px-6 py-4 text-center mb-2"
+        >
+          <div class="text-[10px] font-label text-secondary uppercase tracking-[0.3em] mb-1">Practice Result</div>
+          <div class="font-headline font-black text-on-surface text-lg uppercase">{{ practiceResult.schoolName }}</div>
+          <div class="flex items-center justify-center gap-4 mt-1">
+            <span class="font-label text-sm text-on-surface-variant uppercase">{{ practiceResult.teamName }}</span>
+            <span class="font-headline font-bold text-secondary text-sm">${{ practiceResult.amount }}</span>
+          </div>
+        </div>
+      </Transition>
+
       <span class="material-symbols-outlined text-5xl text-outline">sports_football</span>
       <p class="font-headline font-bold uppercase text-on-surface-variant tracking-tight">
         {{ isAdmin ? 'No school on the block yet' : 'Waiting for practice to begin...' }}
