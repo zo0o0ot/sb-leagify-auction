@@ -103,6 +103,13 @@ export function useAuctionRealtime(auctionId: number) {
   }
 
   onMounted(async () => {
+    // Ensure an anonymous auth session exists before loading data.
+    // On hard refresh the Supabase SDK restores its own token from localStorage,
+    // but if it's missing or expired we re-authenticate so queries succeed.
+    const { data: { session: authSession } } = await supabase.auth.getSession()
+    if (!authSession) {
+      await supabase.auth.signInAnonymously()
+    }
     await store.loadAuction(auctionId)
     subscribe()
     startHeartbeat()

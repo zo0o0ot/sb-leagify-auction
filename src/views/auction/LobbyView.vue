@@ -163,6 +163,20 @@ async function startPractice() {
     </div>
 
     <div
+      v-else-if="store.error"
+      class="h-[calc(100vh-104px)] flex flex-col items-center justify-center gap-4"
+    >
+      <span class="material-symbols-outlined text-4xl text-error">error</span>
+      <p class="text-sm font-label text-error uppercase">{{ store.error }}</p>
+      <button
+        class="px-6 py-2 border border-primary text-primary font-label uppercase text-xs hover:bg-primary/10"
+        @click="router.go(0)"
+      >
+        Retry
+      </button>
+    </div>
+
+    <div
       v-else
       class="p-8 h-[calc(100vh-104px)] overflow-hidden grid grid-cols-12 gap-8"
     >
