@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useAuctionStore } from '@/stores/auction'
+import { supabase } from '@/lib/supabase'
 
 defineProps<{
   isAdmin?: boolean
@@ -9,6 +10,7 @@ defineProps<{
 const store = useAuctionStore()
 const submitting = ref(false)
 const bidError = ref('')
+const adminError = ref('')
 
 const practiceSchool = computed(() => {
   if (!store.auction?.current_school_id) return null
@@ -45,10 +47,90 @@ async function forceBid(delta: number) {
   submitting.value = false
 }
 
-async function resetBids() {
-  if (!store.auction) return
-  // Reset current bid state on the auction record directly
-  await store.setAuctionStatus(store.auction.status) // trigger a no-op to clear via store
+async function clearLastBid() {
+  const auction = store.auction
+  if (!auction?.current_school_id) return
+  adminError.value = ''
+  submitting.value = true
+
+  // Find two most recent practice bids for this school
+  const { data: history } = await supabase
+    .from('bid_history')
+    .select('id, amount, team_id')
+    .eq('auction_id', auction.id)
+    .eq('auction_school_id', auction.current_school_id)
+    .eq('bid_type', 'bid')
+    .eq('is_practice', true)
+    .order('id', { ascending: false })
+    .limit(2)
+
+  if (!history || history.length === 0) {
+    adminError.value = 'No bids to clear'
+    submitting.value = false
+    return
+  }
+
+  const last = history[0]!
+  const prev = history[1]
+  // Delete the most recent bid
+  await supabase.from('bid_history').delete().eq('id', last.id)
+  // Restore previous high bid (or 0 if this was the first)
+  const { error } = await supabase
+    .from('auctions')
+    .update({
+      current_high_bid: prev ? prev.amount : 0,
+      current_high_bidder_id: prev ? prev.team_id : null,
+    })
+    .eq('id', auction.id)
+
+  if (error) adminError.value = error.message
+  submitting.value = false
+}
+
+async function clearAllBids() {
+  const auction = store.auction
+  if (!auction?.current_school_id) return
+  adminError.value = ''
+  submitting.value = true
+
+  // Delete all practice bids for the current school
+  await supabase
+    .from('bid_history')
+    .delete()
+    .eq('auction_id', auction.id)
+    .eq('auction_school_id', auction.current_school_id)
+    .eq('is_practice', true)
+
+  // Reset bid state on the auction
+  const { error } = await supabase
+    .from('auctions')
+    .update({ current_high_bid: 0, current_high_bidder_id: null })
+    .eq('id', auction.id)
+
+  if (error) adminError.value = error.message
+  submitting.value = false
+}
+
+async function endBidding() {
+  const auction = store.auction
+  if (!auction) return
+  adminError.value = ''
+  submitting.value = true
+
+  // Clear all practice bids and stop practice
+  await supabase
+    .from('bid_history')
+    .delete()
+    .eq('auction_id', auction.id)
+    .eq('is_practice', true)
+
+  const { error } = await supabase
+    .from('auctions')
+    .update({ status: 'draft', current_school_id: null, current_high_bid: null, current_high_bidder_id: null })
+    .eq('id', auction.id)
+
+  if (error) adminError.value = error.message
+  submitting.value = false
 }
 </script>
 
@@ -172,7 +254,7 @@ async function resetBids() {
       <!-- Admin-only override controls -->
       <div v-if="isAdmin" class="p-6 border-t border-outline-variant/20 bg-surface-container-high/50 space-y-3">
         <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-2">Admin Controls</div>
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-2 gap-2 mb-2">
           <button
             class="bg-surface-container hover:bg-primary/20 border border-primary/30 py-3 font-headline font-black text-primary transition-all text-xs uppercase"
             @click="forceBid(1)"
@@ -181,11 +263,25 @@ async function resetBids() {
             class="bg-surface-container hover:bg-primary/20 border border-primary/30 py-3 font-headline font-black text-primary transition-all text-xs uppercase"
             @click="forceBid(5)"
           >Force +$5</button>
-          <button
-            class="bg-surface-container hover:bg-secondary/20 border border-secondary/30 py-3 font-headline font-bold text-secondary transition-all text-xs uppercase"
-            @click="resetBids"
-          >Clear Bid</button>
         </div>
+        <div class="grid grid-cols-3 gap-2">
+          <button
+            :disabled="submitting"
+            class="bg-surface-container hover:bg-secondary/20 border border-secondary/30 py-3 font-headline font-bold text-secondary transition-all text-xs uppercase disabled:opacity-40"
+            @click="clearLastBid"
+          >Clear Last Bid</button>
+          <button
+            :disabled="submitting"
+            class="bg-surface-container hover:bg-secondary/20 border border-secondary/30 py-3 font-headline font-bold text-secondary transition-all text-xs uppercase disabled:opacity-40"
+            @click="clearAllBids"
+          >Clear All Bids</button>
+          <button
+            :disabled="submitting"
+            class="bg-error-container/30 hover:bg-error/20 border border-error/30 py-3 font-headline font-bold text-error transition-all text-xs uppercase disabled:opacity-40"
+            @click="endBidding"
+          >End Bidding</button>
+        </div>
+        <p v-if="adminError" class="text-xs text-error font-label text-center">{{ adminError }}</p>
       </div>
     </template>
   </div>
