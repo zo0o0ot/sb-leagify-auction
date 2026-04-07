@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useAuctionStore } from '@/stores/auction'
-import type { DraftPick } from '@/types/auction'
 
 const props = defineProps<{ pick: DraftPick | null }>()
 const emit = defineEmits<{ assigned: []; close: [] }>()
@@ -71,7 +67,7 @@ async function confirm() {
           <div class="font-headline font-black uppercase text-on-surface text-lg">
             YOU WON {{ school?.school?.name ?? 'SCHOOL' }} FOR ${{ pick.winning_bid }}!
           </div>
-          <div class="text-[10px] font-label text-outline uppercase mt-1">{{ winningTeam?.team_name }}</div>
+          <div class="text-[10px] font-label text-outline uppercase mt-1">{{ store.getTeamDisplayName(winningTeam!.id) }}</div>
         </div>
 
         <!-- School badge -->

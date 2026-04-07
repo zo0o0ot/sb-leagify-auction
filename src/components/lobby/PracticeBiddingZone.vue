@@ -191,7 +191,7 @@ async function endBidding() {
           <div class="p-4 border-r border-outline-variant/20 flex flex-col items-center justify-center">
             <span class="text-xs font-label text-outline uppercase tracking-widest mb-1">Current High Bidder</span>
             <span class="text-xl font-headline font-black text-on-surface uppercase truncate">
-              {{ store.currentHighBidder?.team_name ?? '—' }}
+              {{ store.currentHighBidder?.display_name ?? '—' }}
             </span>
           </div>
           <div class="p-4 flex flex-col items-center justify-center">

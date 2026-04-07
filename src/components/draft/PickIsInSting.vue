@@ -83,7 +83,7 @@ const winningSchool = computed(() => {
           <div class="flex items-center justify-center gap-6 mt-4">
             <div class="text-center">
               <div class="text-[10px] font-label text-outline uppercase tracking-widest">WINNER</div>
-              <div class="font-headline font-bold uppercase text-primary text-xl">{{ winningTeam?.team_name ?? '—' }}</div>
+              <div class="font-headline font-bold uppercase text-primary text-xl">{{ winningTeam ? store.getTeamDisplayName(winningTeam.id) : '—' }}</div>
             </div>
             <div class="w-px h-12 bg-outline-variant/50"></div>
             <div class="text-center">

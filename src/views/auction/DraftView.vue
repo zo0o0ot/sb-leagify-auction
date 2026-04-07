@@ -137,8 +137,8 @@ function budgetPct(team: typeof store.teams[0]) {
 }
 
 function bidderNameFor(bid: typeof store.bidHistory[0]) {
-  const team = store.teams.find((t) => t.id === bid.team_id)
-  return team?.team_name ?? 'Unknown'
+  if (!bid.team_id) return 'Unknown'
+  return store.getTeamDisplayName(bid.team_id)
 }
 </script>
 
@@ -188,7 +188,7 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
           <span class="material-symbols-outlined text-primary text-3xl">gavel</span>
         </div>
         <div>
-          <div class="text-on-surface text-sm tracking-tight">{{ isAdmin ? 'COMMANDER' : store.activeTeam?.team_name ?? 'COACH' }}</div>
+          <div class="text-on-surface text-sm tracking-tight">{{ isAdmin ? 'COMMANDER' : (store.activeTeam ? store.getTeamDisplayName(store.activeTeam.id) : 'COACH') }}</div>
           <div class="text-primary text-xs">BUDGET: ${{ store.activeTeam?.remaining_budget ?? '—' }}</div>
         </div>
       </div>
@@ -225,7 +225,7 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
         >
           <span class="text-[10px] font-label text-outline w-4">{{ String(idx + 1).padStart(2, '0') }}</span>
           <div class="flex-1 min-w-0">
-            <div class="text-xs font-label font-bold text-on-surface truncate">{{ team.team_name }}</div>
+            <div class="text-xs font-label font-bold text-on-surface truncate">{{ store.getTeamDisplayName(team.id) }}</div>
             <div class="text-[10px] font-label text-outline">${{ team.remaining_budget }}</div>
           </div>
           <span
@@ -244,7 +244,7 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
         >
           <option :value="null">SELECT COACH...</option>
           <option v-for="team in store.teams" :key="team.id" :value="team.id">
-            {{ team.team_name }} (${{ team.remaining_budget }})
+            {{ store.getTeamDisplayName(team.id) }} (${{ team.remaining_budget }})
           </option>
         </select>
         <div class="text-[10px] font-label text-outline uppercase">Auto-Pass</div>
@@ -254,7 +254,7 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
             :key="team.id"
             class="flex items-center justify-between py-1.5 px-2 hover:bg-surface-container cursor-pointer"
           >
-            <span class="text-[10px] font-label text-on-surface-variant">{{ team.team_name }}</span>
+            <span class="text-[10px] font-label text-on-surface-variant">{{ store.getTeamDisplayName(team.id) }}</span>
             <input type="checkbox" class="accent-primary" />
           </label>
         </div>
@@ -407,7 +407,7 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
             <div class="p-5 border-r border-outline-variant/20 text-center" :class="isHighBidder ? 'bg-secondary-container/10' : ''">
               <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-1">Winning Coach</div>
               <div class="text-lg font-headline font-bold text-on-surface uppercase truncate">
-                {{ store.currentHighBidder?.team_name ?? '—' }}
+                {{ store.currentHighBidder?.display_name ?? '—' }}
               </div>
             </div>
             <div class="p-5 text-center">
@@ -561,7 +561,7 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
             class="bg-surface-container p-3 border border-outline-variant/20"
           >
             <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-label font-bold text-on-surface uppercase">{{ team.team_name }}</span>
+              <span class="text-xs font-label font-bold text-on-surface uppercase">{{ store.getTeamDisplayName(team.id) }}</span>
               <span class="text-xs font-headline font-bold text-primary">${{ team.remaining_budget }}</span>
             </div>
             <!-- Budget bar -->
@@ -589,7 +589,7 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
                   {{ pick.auction_school?.school?.name ?? 'School' }}
                 </div>
                 <div class="text-[10px] font-label text-outline">
-                  {{ store.teams.find((t) => t.id === pick.team_id)?.team_name ?? '—' }}
+                  {{ store.getTeamDisplayName(pick.team_id) }}
                 </div>
               </div>
               <span class="font-headline font-bold text-tertiary text-sm">${{ pick.winning_bid }}</span>

@@ -151,29 +151,7 @@ async function stopPractice() {
         </div>
       </div>
 
-      <!-- Coach: ready toggle -->
-      <div v-else class="mb-4 p-4 bg-surface-container border border-outline-variant/30">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-[10px] text-outline font-label uppercase">Draft Ready</span>
-          <button
-            class="relative inline-flex items-center cursor-pointer"
-            @click="toggleReady"
-          >
-            <div
-              class="w-11 h-6 rounded-full transition-colors"
-              :class="store.myParticipant?.is_ready ? 'bg-primary' : 'bg-surface-variant'"
-            >
-              <div
-                class="absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full shadow transition-transform"
-                :class="store.myParticipant?.is_ready ? 'translate-x-5' : 'translate-x-0'"
-              ></div>
-            </div>
-          </button>
-        </div>
-        <div class="text-[9px] text-primary-fixed font-label uppercase leading-tight">
-          Toggle when final strategy is set
-        </div>
-      </div>
+      <!-- (Ready toggle moved to ParticipantCard) -->
     </template>
 
     <!-- Ticker -->
@@ -231,6 +209,8 @@ async function stopPractice() {
             :participant="p"
             :team="teamFor(p.id)"
             :is-admin="isAdmin"
+            :is-me="p.id === store.myParticipant?.id"
+            @toggle-ready="toggleReady"
           />
           <p v-if="store.participants.length === 0" class="text-sm text-outline font-label text-center py-8">
             No participants yet — share the join code.

@@ -48,11 +48,44 @@ export const useAuctionStore = defineStore('auction', () => {
       : null,
   )
 
-  const currentHighBidder = computed(() =>
+  const currentHighBidderParticipant = computed(() =>
     auction.value?.current_high_bidder_id
-      ? teams.value.find((t) => t.id === auction.value!.current_high_bidder_id) ?? null
+      ? participants.value.find((p) => p.id === auction.value!.current_high_bidder_id) ?? null
       : null,
   )
+
+  const currentHighBidderTeam = computed(() => {
+    const p = currentHighBidderParticipant.value
+    if (!p) return null
+    if (p.team_id) return teams.value.find((t) => t.id === p.team_id) ?? null
+    return null
+  })
+
+  const currentHighBidder = computed(() => {
+    const team = currentHighBidderTeam.value
+    const participant = currentHighBidderParticipant.value
+    if (!team && !participant) return null
+    return {
+      team,
+      participant,
+      display_name: getEffectiveName(team, participant)
+    }
+  })
+
+  function getEffectiveName(team: Team | null, participant: Participant | null): string {
+    if (!team && !participant) return '—'
+    const ownerName = participant?.display_name
+    const teamName = team?.team_name
+
+    // If it's a placeholder name like "Team 1", prioritize owner name
+    if (teamName?.match(/^Team \d+$/)) {
+      return ownerName ?? teamName
+    }
+
+    // If we have a custom team name, use it (maybe with owner in parens if they differ significantly?)
+    // For now, let's just use the team name if it's custom, or owner if not.
+    return teamName ?? ownerName ?? '—'
+  }
 
   const activeTeam = computed(() =>
     isAdminMode.value && proxyTeamId.value
@@ -238,7 +271,16 @@ export const useAuctionStore = defineStore('auction', () => {
     await supabase.from('auctions').update({ status }).eq('id', auction.value.id)
   }
 
+  function getTeamDisplayName(teamId: number): string {
+    const team = teams.value.find((t) => t.id === teamId) ?? null
+    const participant = participants.value.find((p) => p.team_id === teamId) ?? null
+    return getEffectiveName(team, participant)
+  }
+
   return {
+    // helpers
+    getTeamDisplayName,
+    getEffectiveName,
     // state
     session,
     auction,
