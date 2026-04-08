@@ -21,7 +21,10 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:migrate": "supabase migration up",
-    "db:seed": "supabase db reset --seed-only"
+    "db:seed": "supabase db reset --seed-only",
+    "db:new": "supabase migration new",
+    "db:diff": "supabase db diff -f",
+    "db:push": "supabase db push"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.101.1",
@@ -57,9 +60,19 @@
     "vite": "^8.0.3",
     "vite-plugin-vue-devtools": "^8.1.1",
     "vitest": "^4.1.2",
-    "vue-tsc": "^3.2.6"
+    "vue-tsc": "^3.2.6",
+    "lint-staged": "^15.2.2"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
+  },
+  "lint-staged": {
+    "*.{ts,js,vue}": [
+      "eslint --fix --cache",
+      "prettier --write"
+    ],
+    "*.{json,md,css,html}": [
+      "prettier --write"
+    ]
   }
 }

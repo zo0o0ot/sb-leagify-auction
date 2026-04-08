@@ -1,8 +1,2 @@
-# Run unit tests
-npm run test:unit -- --run
-
-# Type check
-npm run type-check
-
-# Lint
-npm run lint
+# Run lint-staged against staged files
+npx lint-staged
