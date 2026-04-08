@@ -90,7 +90,7 @@ async function stopPractice() {
         {{ isAdmin ? 'ADMIN CONSOLE' : 'COACH VIEW' }}
       </span>
       <span class="text-on-surface-variant">MARKET</span>
-      <span class="text-on-surface-variant">ROSTERS</span>
+      <RouterLink :to="`/auction/${auctionId}/roster`" class="text-on-surface-variant hover:text-on-surface">ROSTERS</RouterLink>
     </template>
 
     <!-- Header actions -->
@@ -129,9 +129,12 @@ async function stopPractice() {
       <a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container">
         <span class="material-symbols-outlined mr-4">storefront</span> MARKET
       </a>
-      <a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container">
+      <RouterLink
+        :to="`/auction/${auctionId}/roster`"
+        class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container"
+      >
         <span class="material-symbols-outlined mr-4">groups</span> ROSTERS
-      </a>
+      </RouterLink>
     </template>
 
     <!-- Sidebar footer -->

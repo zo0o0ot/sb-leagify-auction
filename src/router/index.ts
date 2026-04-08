@@ -31,6 +31,12 @@ const router = createRouter({
       meta: { requiresSession: true },
     },
     {
+      path: '/auction/:id/roster',
+      name: 'roster',
+      component: () => import('@/views/auction/RosterView.vue'),
+      meta: { requiresSession: true },
+    },
+    {
       path: '/admin/schools',
       name: 'admin-schools',
       component: () => import('@/views/admin/MaintainSchoolsView.vue'),

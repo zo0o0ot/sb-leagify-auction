@@ -177,7 +177,7 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
       <span class="text-primary border-b-2 border-primary pb-1">WAR ROOM</span>
       <span class="text-on-surface-variant">AUCTION</span>
       <span class="text-on-surface-variant">SCHOOLS</span>
-      <span class="text-on-surface-variant">ROSTERS</span>
+      <RouterLink :to="`/auction/${auctionId}/roster`" class="text-on-surface-variant hover:text-on-surface">ROSTERS</RouterLink>
     </template>
 
     <!-- Header actions -->
@@ -230,9 +230,12 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
       <a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container">
         <span class="material-symbols-outlined mr-4">leaderboard</span> BOARD
       </a>
-      <a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container">
+      <RouterLink
+        :to="`/auction/${auctionId}/roster`"
+        class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container"
+      >
         <span class="material-symbols-outlined mr-4">groups</span> ROSTER
-      </a>
+      </RouterLink>
       <a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container">
         <span class="material-symbols-outlined mr-4">history</span> HISTORY
       </a>
