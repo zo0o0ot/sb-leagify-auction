@@ -73,8 +73,12 @@ npx playwright install
 # Copy environment file
 cp .env.example .env
 
-# Note: The application will refuse to compile or start the dev server
+# Note: The application will log warnings during build or dev server startup
 # if required environment variables (e.g. VITE_SUPABASE_URL) are missing.
+# 
+# [FUTURE IMPROVEMENT]: Ensure these environment variables are explicitly 
+# defined for "Preview" environments within the Vercel project settings, 
+# at which point we should change the warning back to a fatal build error.
 ```
 
 ### Start Development

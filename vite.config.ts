@@ -12,7 +12,8 @@ export default defineConfig(({ mode }) => {
   const missingEnvVars = requiredEnvVars.filter(key => !env[key])
   
   if (missingEnvVars.length > 0) {
-    throw new Error(`Missing required environment variables: ${missingEnvVars.join(', ')}. Please create a .env file based on .env.example.`)
+    console.warn(`\n⚠️  WARNING: Missing required environment variables: ${missingEnvVars.join(', ')}`)
+    console.warn('⚠️  The application will build, but API requests will fail. Please check your .env file or deployment settings.\n')
   }
 
   return {
