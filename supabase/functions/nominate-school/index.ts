@@ -10,7 +10,7 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
-    const { auction_id, participant_id, team_id, auction_school_id } = await req.json()
+    const { auction_id, participant_id, team_id, auction_school_id, is_admin_override } = await req.json()
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -27,7 +27,7 @@ serve(async (req) => {
     if (aErr || !auction) throw new Error('Auction not found')
     if (auction.status !== 'in_progress') throw new Error('Auction is not in progress')
     if (auction.current_school_id) throw new Error('A school is already on the block')
-    if (auction.current_nominator_id !== participant_id) throw new Error('It is not your turn to nominate')
+    if (!is_admin_override && auction.current_nominator_id !== participant_id) throw new Error('It is not your turn to nominate')
 
     // Validate school is available
     const { data: school, error: sErr } = await supabase

@@ -57,7 +57,8 @@ serve(async (req) => {
 
     const passedTeamIds = new Set((passes ?? []).map((p) => p.team_id))
 
-    // Count total active teams excluding high bidder
+    // Count active teams that have at least one participant — teams with no participant
+    // will never pass so excluding them prevents bids from getting permanently stuck.
     const { data: activeTeams } = await supabase
       .from('teams')
       .select('id')
@@ -65,7 +66,14 @@ serve(async (req) => {
       .eq('is_active', true)
       .neq('id', auction.current_high_bidder_id ?? -1)
 
-    const totalEligibleTeams = (activeTeams ?? []).length
+    const { data: participantTeams } = await supabase
+      .from('participants')
+      .select('team_id')
+      .eq('auction_id', auction_id)
+      .not('team_id', 'is', null)
+
+    const teamIdsWithParticipants = new Set((participantTeams ?? []).map((p) => p.team_id))
+    const totalEligibleTeams = (activeTeams ?? []).filter((t) => teamIdsWithParticipants.has(t.id)).length
 
     // If no one has bid yet and all teams pass, it's a no-sale (skip school)
     const hasHighBidder = !!auction.current_high_bidder_id

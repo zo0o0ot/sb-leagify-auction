@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { supabase } from '@/lib/supabase'
 import { useAuctionStore } from '@/stores/auction'
 import { useAuctionRealtime } from '@/composables/useAuctionRealtime'
 import AppShell from '@/components/AppShell.vue'
@@ -26,6 +27,7 @@ const customBidAmount = ref('')
 // Admin mode UI
 const localAdminMode = ref(false)
 const localProxyTeamId = ref<number | null>(null)
+const autoPassTeamIds = ref<Set<number>>(new Set())
 
 // ── Derived state ────────────────────────────────────────────────────────────
 const isAdmin = computed(() => store.isAuctionMaster)
@@ -70,6 +72,32 @@ watch(
 // Sync admin mode to store
 watch(localAdminMode, (v) => { store.isAdminMode = v })
 watch(localProxyTeamId, (v) => { store.proxyTeamId = v })
+
+// Auto-pass: when a new school comes on the block, immediately pass for any ticked team
+watch(
+  () => store.auction?.current_school_id,
+  async (schoolId) => {
+    if (!schoolId || !localAdminMode.value) return
+    for (const teamId of autoPassTeamIds.value) {
+      const participant = store.participants.find((p) => p.team_id === teamId)
+      if (!participant || teamId === store.auction?.current_high_bidder_id) continue
+      await supabase.functions.invoke('pass-bid', {
+        body: {
+          auction_id: store.auction!.id,
+          participant_id: participant.id,
+          team_id: teamId,
+        },
+      })
+    }
+  },
+)
+
+function toggleAutoPass(teamId: number) {
+  const next = new Set(autoPassTeamIds.value)
+  if (next.has(teamId)) next.delete(teamId)
+  else next.add(teamId)
+  autoPassTeamIds.value = next
+}
 
 // ── Actions ──────────────────────────────────────────────────────────────────
 async function bid(delta: number) {
@@ -253,9 +281,15 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
             v-for="team in store.teams"
             :key="team.id"
             class="flex items-center justify-between py-1.5 px-2 hover:bg-surface-container cursor-pointer"
+            :class="autoPassTeamIds.has(team.id) ? 'bg-secondary-container/10' : ''"
           >
             <span class="text-[10px] font-label text-on-surface-variant">{{ store.getTeamDisplayName(team.id) }}</span>
-            <input type="checkbox" class="accent-primary" />
+            <input
+              type="checkbox"
+              class="accent-primary"
+              :checked="autoPassTeamIds.has(team.id)"
+              @change="toggleAutoPass(team.id)"
+            />
           </label>
         </div>
 

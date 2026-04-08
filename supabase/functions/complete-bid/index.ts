@@ -107,20 +107,25 @@ serve(async (req) => {
       .eq('id', auction.current_nominator_id)
       .single()
 
+    // Build a map of team_id → participant_id for quick lookup (only teams with participants)
+    const { data: allParticipants } = await supabase
+      .from('participants')
+      .select('id, team_id')
+      .eq('auction_id', auction_id)
+      .not('team_id', 'is', null)
+
+    const participantByTeam = new Map((allParticipants ?? []).map((p) => [p.team_id, p.id]))
+
     let nextNominatorId = auction.current_nominator_id
     if (allTeams && nominatorParticipant) {
-      const currentTeam = allTeams.find((t) => t.id === nominatorParticipant.team_id)
-      if (currentTeam) {
-        const currentIdx = allTeams.findIndex((t) => t.id === currentTeam.id)
-        const nextTeam = allTeams[(currentIdx + 1) % allTeams.length]
-        if (nextTeam) {
-          const { data: nextParticipant } = await supabase
-            .from('participants')
-            .select('id')
-            .eq('auction_id', auction_id)
-            .eq('team_id', nextTeam.id)
-            .maybeSingle()
-          if (nextParticipant) nextNominatorId = nextParticipant.id
+      const currentIdx = allTeams.findIndex((t) => t.id === nominatorParticipant.team_id)
+      // Walk forward circularly until we find a team that has a participant
+      for (let i = 1; i <= allTeams.length; i++) {
+        const candidate = allTeams[(currentIdx + i) % allTeams.length]!
+        const candidateParticipantId = participantByTeam.get(candidate.id)
+        if (candidateParticipantId) {
+          nextNominatorId = candidateParticipantId
+          break
         }
       }
     }

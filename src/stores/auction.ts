@@ -48,17 +48,17 @@ export const useAuctionStore = defineStore('auction', () => {
       : null,
   )
 
-  const currentHighBidderParticipant = computed(() =>
+  // current_high_bidder_id stores a team ID (see migration 011)
+  const currentHighBidderTeam = computed(() =>
     auction.value?.current_high_bidder_id
-      ? participants.value.find((p) => p.id === auction.value!.current_high_bidder_id) ?? null
+      ? teams.value.find((t) => t.id === auction.value!.current_high_bidder_id) ?? null
       : null,
   )
 
-  const currentHighBidderTeam = computed(() => {
-    const p = currentHighBidderParticipant.value
-    if (!p) return null
-    if (p.team_id) return teams.value.find((t) => t.id === p.team_id) ?? null
-    return null
+  const currentHighBidderParticipant = computed(() => {
+    const team = currentHighBidderTeam.value
+    if (!team) return null
+    return participants.value.find((p) => p.team_id === team.id) ?? null
   })
 
   const currentHighBidder = computed(() => {
@@ -139,7 +139,7 @@ export const useAuctionStore = defineStore('auction', () => {
     loading.value = true
     error.value = null
 
-    const [auctionRes, teamsRes, participantsRes, schoolsRes, picksRes, positionsRes] =
+    const [auctionRes, teamsRes, participantsRes, schoolsRes, picksRes, positionsRes, historyRes] =
       await Promise.all([
         supabase.from('auctions').select('*').eq('id', auctionId).single(),
         supabase.from('teams').select('*').eq('auction_id', auctionId).order('nomination_order'),
@@ -150,6 +150,7 @@ export const useAuctionStore = defineStore('auction', () => {
           .eq('auction_id', auctionId),
         supabase.from('draft_picks').select('*, auction_school:auction_schools(*, school:schools(*))').eq('auction_id', auctionId),
         supabase.from('roster_positions').select('*').eq('auction_id', auctionId).order('display_order'),
+        supabase.from('bid_history').select('*').eq('auction_id', auctionId).eq('is_practice', false).order('id', { ascending: false }).limit(30),
       ])
 
     if (auctionRes.error) { error.value = auctionRes.error.message; loading.value = false; return }
@@ -160,6 +161,7 @@ export const useAuctionStore = defineStore('auction', () => {
     schools.value = schoolsRes.data ?? []
     draftPicks.value = picksRes.data ?? []
     rosterPositions.value = positionsRes.data ?? []
+    bidHistory.value = historyRes.data ?? []
     loading.value = false
   }
 
@@ -249,6 +251,7 @@ export const useAuctionStore = defineStore('auction', () => {
         participant_id: session.value.participantId,
         team_id: activeTeam.value?.id,
         auction_school_id: auctionSchoolId,
+        is_admin_override: isAuctionMaster.value,
       },
     })
     if (error) return { error: error.message }
