@@ -6,7 +6,7 @@ Issues identified through audit and testing. Ordered by impact on the real draft
 
 ## CRITICAL — Will visibly break the draft
 
-### [ ] 1. "Winning Coach" always shows `—` in the bid status row
+### [x] 1. "Winning Coach" always shows `—` in the bid status row
 
 **Where:** `src/stores/auction.ts` — `currentHighBidderParticipant` computed  
 **Problem:** After migration 011, `current_high_bidder_id` stores a **team ID**. The store looks for a *participant* whose `id === current_high_bidder_id` — those are different ID sequences. The lookup always returns null, so `currentHighBidder.display_name` and the "Winning Coach" cell in the bid status row always shows `—`.  
@@ -27,7 +27,7 @@ const currentHighBidderParticipant = computed(() => {
 
 ---
 
-### [ ] 2. Admin "Force Nomination" fails silently
+### [x] 2. Admin "Force Nomination" fails silently
 
 **Where:** `supabase/functions/nominate-school/index.ts`  
 **Problem:** `nominate-school` checks `auction.current_nominator_id !== participant_id` and throws. When admin clicks "Force Nomination" or "Admin: Force Nomination", they send their own `participant_id`, which will never match the current nominator. Result: nothing happens, no error shown to the user.  
@@ -36,7 +36,7 @@ const currentHighBidderParticipant = computed(() => {
 
 ---
 
-### [ ] 3. Bids never auto-complete when any team has no connected participant
+### [x] 3. Bids never auto-complete when any team has no connected participant
 
 **Where:** `supabase/functions/pass-bid/index.ts`  
 **Problem:** `pass-bid` counts ALL active teams (minus high bidder) and waits for all to pass. Teams with no participant linked (empty slots in a partially-filled league) or disconnected coaches will never press pass. Every bid in a real draft will require admin "Force End Bidding".  
@@ -59,7 +59,7 @@ const totalEligibleTeams = (activeTeams ?? [])
 
 ## IMPORTANT — Admin workarounds exist but awkward
 
-### [ ] 4. Auto-pass checkboxes are non-functional
+### [x] 4. Auto-pass checkboxes are non-functional
 
 **Where:** `src/views/auction/DraftView.vue` lines 251–260  
 **Problem:** Per-team auto-pass checkboxes in admin mode sidebar have no `v-model`, no store state, and no logic. This was in-scope per the MVP plan. Without it, admin must manually Force End Bidding on every pick where a coach is unresponsive.  
@@ -72,7 +72,7 @@ const totalEligibleTeams = (activeTeams ?? [])
 
 ---
 
-### [ ] 5. Nominator doesn't skip teams without participants
+### [x] 5. Nominator doesn't skip teams without participants
 
 **Where:** `supabase/functions/complete-bid/index.ts` — nominator advance logic  
 **Problem:** When advancing the nominator after a completed pick, if the next team in `nomination_order` has no participant row, `nextNominatorId` stays unchanged (same person nominates again). In a full 6-coach draft this won't matter, but if anyone drops mid-draft the rotation breaks.  
@@ -83,7 +83,7 @@ const totalEligibleTeams = (activeTeams ?? [])
 
 ## MINOR — Low risk if all coaches are present
 
-### [ ] 6. No bid history on initial page load
+### [x] 6. No bid history on initial page load
 
 **Where:** `src/stores/auction.ts` — `loadAuction()`  
 **Problem:** `loadAuction` does not fetch any `bid_history`. The bid log in the draft view starts empty and only fills as new bids arrive via realtime. If you load the draft mid-auction (refresh, late join) you see no prior bidding context for the current school.  
