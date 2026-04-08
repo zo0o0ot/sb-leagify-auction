@@ -23,7 +23,7 @@ jobs:
         run: npm ci
 
       - name: Verify Environment Configuration
-        run: cp .env.example .env
+        run: cp .env.local.example .env.local
 
       - name: Start Supabase
         run: |
