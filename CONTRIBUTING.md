@@ -72,6 +72,9 @@ npx playwright install
 
 # Copy environment file
 cp .env.example .env
+
+# Note: The application will refuse to compile or start the dev server
+# if required environment variables (e.g. VITE_SUPABASE_URL) are missing.
 ```
 
 ### Start Development
@@ -109,6 +112,9 @@ npm test
 | `npm run db:stop` | Stop local Supabase stack |
 | `npm run db:reset` | Reset DB with migrations + seed |
 | `npm run db:migrate` | Run pending migrations |
+| `npm run db:new` | Create a new local migration file |
+| `npm run db:diff` | Diff local db changes and generate migration |
+| `npm run db:push` | Push local migrations to remote production |
 
 ### Direct Database Access
 
@@ -134,10 +140,11 @@ This project follows **test-first development**:
 4. Update documentation
 5. Commit
 
-Pre-commit hooks automatically run:
-- Unit tests
-- Type checking
-- Linting
+**Pre-commit Hooks**:
+Husky automatically runs `lint-staged` on your commit, ensuring that only modified files are formatted (Prettier) and linted (ESLint) before code is committed.
+
+**Continuous Integration (CI)**:
+A GitHub Actions CI pipeline `.github/workflows/ci.yml` analyzes every PR and push to `main` to ensure unit tests, E2E browser tests, type checking, and linting pass successfully.
 
 ## Project Structure
 
