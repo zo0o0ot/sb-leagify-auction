@@ -123,19 +123,44 @@ watch(localProxyTeamId, (v) => {
   store.proxyTeamId = v
 })
 
-// Auto-pass: when a new school comes on the block, immediately pass for any ticked team
+// Auto-pass: when a new school comes on the block, immediately pass for:
+//   1. Admin-proxied teams that have auto-pass ticked
+//   2. The current coach if their budget is too low or their roster is full
 watch(
   () => store.auction?.current_school_id,
   async (schoolId) => {
-    if (!schoolId || !localAdminMode.value) return
-    for (const teamId of autoPassTeamIds.value) {
-      const participant = store.participants.find((p) => p.team_id === teamId)
-      if (!participant || teamId === store.auction?.current_high_bidder_id) continue
+    if (!schoolId) return
+
+    // Admin-proxied auto-pass
+    if (localAdminMode.value) {
+      for (const teamId of autoPassTeamIds.value) {
+        const participant = store.participants.find((p) => p.team_id === teamId)
+        if (!participant || teamId === store.auction?.current_high_bidder_id) continue
+        await supabase.functions.invoke('pass-bid', {
+          body: {
+            auction_id: store.auction!.id,
+            participant_id: participant.id,
+            team_id: teamId,
+          },
+        })
+      }
+    }
+
+    // Coach auto-pass: can't afford the minimum bid or roster is already full
+    const me = store.myParticipant
+    const myTeam = store.activeTeam
+    if (
+      me &&
+      myTeam &&
+      !isAdmin.value &&
+      myTeam.id !== store.auction?.current_high_bidder_id &&
+      (myRosterFull.value || isAutoPass.value)
+    ) {
       await supabase.functions.invoke('pass-bid', {
         body: {
           auction_id: store.auction!.id,
-          participant_id: participant.id,
-          team_id: teamId,
+          participant_id: me.id,
+          team_id: myTeam.id,
         },
       })
     }
