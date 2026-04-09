@@ -469,14 +469,8 @@ npm test
 #!/bin/sh
 # .husky/pre-commit
 
-# Run unit tests
-npm run test:unit -- --run
-
-# Type check
-npm run typecheck
-
-# Lint
-npm run lint
+# Run lint-staged against staged files
+npx lint-staged
 
 # If any command fails, abort commit
 ```
