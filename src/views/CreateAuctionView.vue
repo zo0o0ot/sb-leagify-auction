@@ -19,11 +19,41 @@ const creatorName = ref('')
 
 // Roster positions (editable)
 const rosterPositions = ref([
-  { position_name: 'SEC', slots_per_team: 2, is_flex: false, display_order: 1, color_code: '#DC2626' },
-  { position_name: 'Big Ten', slots_per_team: 2, is_flex: false, display_order: 2, color_code: '#2563EB' },
-  { position_name: 'ACC', slots_per_team: 1, is_flex: false, display_order: 3, color_code: '#7C3AED' },
-  { position_name: 'Big 12', slots_per_team: 1, is_flex: false, display_order: 4, color_code: '#D97706' },
-  { position_name: 'Flex', slots_per_team: 2, is_flex: true, display_order: 5, color_code: '#6B7280' },
+  {
+    position_name: 'SEC',
+    slots_per_team: 2,
+    is_flex: false,
+    display_order: 1,
+    color_code: '#DC2626',
+  },
+  {
+    position_name: 'Big Ten',
+    slots_per_team: 2,
+    is_flex: false,
+    display_order: 2,
+    color_code: '#2563EB',
+  },
+  {
+    position_name: 'ACC',
+    slots_per_team: 1,
+    is_flex: false,
+    display_order: 3,
+    color_code: '#7C3AED',
+  },
+  {
+    position_name: 'Big 12',
+    slots_per_team: 1,
+    is_flex: false,
+    display_order: 4,
+    color_code: '#D97706',
+  },
+  {
+    position_name: 'Flex',
+    slots_per_team: 2,
+    is_flex: true,
+    display_order: 5,
+    color_code: '#6B7280',
+  },
 ])
 
 const codeCopied = ref(false)
@@ -53,7 +83,9 @@ async function createAuction() {
   submitting.value = true
   errorMsg.value = ''
 
-  // 1. Anonymous auth (get a supabase_uid; no RLS-sensitive DB calls on the client)
+  // 1. Anonymous auth — sign out first to clear any stale/expired session,
+  //    then sign in fresh to ensure a valid access token for the edge function.
+  await supabase.auth.signOut()
   const { data: authData, error: authErr } = await supabase.auth.signInAnonymously()
   if (authErr || !authData.user) {
     errorMsg.value = 'Authentication failed.'
@@ -108,7 +140,6 @@ async function createAuction() {
   router.push(`/auction/${auction_id}/lobby`)
 }
 
-
 function updateSlotCount(idx: number, delta: number) {
   const rp = rosterPositions.value[idx]
   if (!rp) return
@@ -122,31 +153,35 @@ function updateSlotCount(idx: number, delta: number) {
     <!-- Simple header for this pre-session page -->
     <header
       class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 font-headline uppercase"
-      style="background: #0a0e14; border-bottom: 1px solid rgba(49,53,60,0.3);"
+      style="background: #0a0e14; border-bottom: 1px solid rgba(49, 53, 60, 0.3)"
     >
       <span class="text-2xl font-black italic tracking-widest text-primary">LEAGIFY</span>
-      <router-link to="/join" class="text-xs font-label text-outline hover:text-primary transition-colors tracking-wider uppercase">
+      <router-link
+        to="/join"
+        class="text-xs font-label text-outline hover:text-primary transition-colors tracking-wider uppercase"
+      >
         ← Join Instead
       </router-link>
     </header>
 
     <main class="pt-24 pb-32 px-4 md:px-8 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-
       <!-- Left Column -->
       <div class="lg:col-span-7 space-y-8">
-
         <!-- Title -->
         <div class="flex items-center gap-3">
           <div class="w-2 h-8 bg-tertiary" style="transform: skewX(-10deg)"></div>
-          <h1 class="text-3xl font-black font-headline uppercase tracking-tighter">Initialize New Auction</h1>
+          <h1 class="text-3xl font-black font-headline uppercase tracking-tighter">
+            Initialize New Auction
+          </h1>
         </div>
 
         <div class="glass-panel p-8 space-y-8">
-
           <!-- Auction Name + Creator Name -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
-              <label class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block">
+              <label
+                class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block"
+              >
                 Auction Name
               </label>
               <input
@@ -157,7 +192,9 @@ function updateSlotCount(idx: number, delta: number) {
               />
             </div>
             <div class="space-y-2">
-              <label class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block">
+              <label
+                class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block"
+              >
                 Your Name
               </label>
               <input
@@ -172,7 +209,9 @@ function updateSlotCount(idx: number, delta: number) {
 
           <!-- Join Code -->
           <div class="space-y-2">
-            <label class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block">
+            <label
+              class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block"
+            >
               Join Code
             </label>
             <div class="flex items-center gap-2">
@@ -196,7 +235,9 @@ function updateSlotCount(idx: number, delta: number) {
                 title="Copy code"
                 @click="copyCode"
               >
-                <span class="material-symbols-outlined">{{ codeCopied ? 'check' : 'content_copy' }}</span>
+                <span class="material-symbols-outlined">{{
+                  codeCopied ? 'check' : 'content_copy'
+                }}</span>
               </button>
             </div>
           </div>
@@ -204,7 +245,9 @@ function updateSlotCount(idx: number, delta: number) {
           <!-- Participant Count + Budget -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="bg-surface-container-low p-6">
-              <label class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block mb-4">
+              <label
+                class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block mb-4"
+              >
                 Participant Limit
               </label>
               <div class="flex items-center justify-between">
@@ -215,7 +258,9 @@ function updateSlotCount(idx: number, delta: number) {
                 >
                   <span class="material-symbols-outlined">remove</span>
                 </button>
-                <span class="text-4xl font-black font-headline">{{ String(participantCount).padStart(2, '0') }}</span>
+                <span class="text-4xl font-black font-headline">{{
+                  String(participantCount).padStart(2, '0')
+                }}</span>
                 <button
                   class="w-10 h-10 border border-outline-variant hover:border-primary flex items-center justify-center active:scale-90 transition-transform"
                   :disabled="participantCount >= 12"
@@ -224,13 +269,17 @@ function updateSlotCount(idx: number, delta: number) {
                   <span class="material-symbols-outlined">add</span>
                 </button>
               </div>
-              <p class="text-[10px] text-on-surface-variant mt-3 text-center uppercase tracking-widest font-bold">
+              <p
+                class="text-[10px] text-on-surface-variant mt-3 text-center uppercase tracking-widest font-bold"
+              >
                 Standard Coaches
               </p>
             </div>
 
             <div class="bg-surface-container-low p-6">
-              <label class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block mb-4">
+              <label
+                class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block mb-4"
+              >
                 Total Budget
               </label>
               <div class="flex items-center justify-between px-2 py-3">
@@ -245,7 +294,9 @@ function updateSlotCount(idx: number, delta: number) {
                 />
                 <span class="text-xs font-bold text-outline uppercase">USD</span>
               </div>
-              <p class="text-[10px] text-on-surface-variant mt-1 text-center uppercase tracking-widest font-bold">
+              <p
+                class="text-[10px] text-on-surface-variant mt-1 text-center uppercase tracking-widest font-bold"
+              >
                 Whole Dollars Only
               </p>
             </div>
@@ -256,46 +307,62 @@ function updateSlotCount(idx: number, delta: number) {
         <section>
           <div class="flex items-center gap-3 mb-4">
             <span class="material-symbols-outlined text-primary">database</span>
-            <h2 class="text-xl font-black font-headline uppercase tracking-tighter">School Database</h2>
+            <h2 class="text-xl font-black font-headline uppercase tracking-tighter">
+              School Database
+            </h2>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button
               class="group relative overflow-hidden p-6 text-left border transition-all"
-              :class="schoolSource === 'default'
-                ? 'bg-surface-container-high border-primary'
-                : 'bg-surface-container border-outline-variant/30 hover:border-primary/50'"
+              :class="
+                schoolSource === 'default'
+                  ? 'bg-surface-container-high border-primary'
+                  : 'bg-surface-container border-outline-variant/30 hover:border-primary/50'
+              "
               @click="schoolSource = 'default'"
             >
               <div class="flex justify-between items-start">
                 <div>
                   <h3 class="font-headline font-bold text-lg mb-1">DEFAULT 2026 SET</h3>
-                  <p class="text-xs text-on-surface-variant leading-relaxed">Use the built-in school roster from the database.</p>
+                  <p class="text-xs text-on-surface-variant leading-relaxed">
+                    Use the built-in school roster from the database.
+                  </p>
                 </div>
                 <span
                   class="material-symbols-outlined transition-colors"
                   :class="schoolSource === 'default' ? 'text-primary' : 'text-outline'"
                   :style="schoolSource === 'default' ? 'font-variation-settings: \'FILL\' 1' : ''"
-                >check_circle</span>
+                  >check_circle</span
+                >
               </div>
-              <div v-if="schoolSource === 'default'" class="absolute bottom-0 left-0 w-full h-1 bg-primary"></div>
+              <div
+                v-if="schoolSource === 'default'"
+                class="absolute bottom-0 left-0 w-full h-1 bg-primary"
+              ></div>
             </button>
 
             <button
               class="group p-6 text-left border transition-all"
-              :class="schoolSource === 'csv'
-                ? 'bg-surface-container-high border-tertiary'
-                : 'bg-surface-container border-outline-variant/30 hover:border-outline-variant'"
+              :class="
+                schoolSource === 'csv'
+                  ? 'bg-surface-container-high border-tertiary'
+                  : 'bg-surface-container border-outline-variant/30 hover:border-outline-variant'
+              "
               @click="schoolSource = 'csv'"
             >
               <div class="flex justify-between items-start">
                 <div>
                   <h3 class="font-headline font-bold text-lg mb-1">UPLOAD CSV</h3>
-                  <p class="text-xs text-on-surface-variant leading-relaxed">Import custom school data after creating. You'll be redirected to the schools manager.</p>
+                  <p class="text-xs text-on-surface-variant leading-relaxed">
+                    Import custom school data after creating. You'll be redirected to the schools
+                    manager.
+                  </p>
                 </div>
                 <span
                   class="material-symbols-outlined transition-colors"
                   :class="schoolSource === 'csv' ? 'text-tertiary' : 'text-outline'"
-                >cloud_upload</span>
+                  >cloud_upload</span
+                >
               </div>
             </button>
           </div>
@@ -319,10 +386,14 @@ function updateSlotCount(idx: number, delta: number) {
         <aside class="sticky top-24 space-y-6">
           <div
             class="px-4 py-2 flex items-center justify-between border-l-4 border-secondary font-headline font-black text-sm tracking-widest uppercase"
-            style="background: #31353c; transform: skewX(-10deg);"
+            style="background: #31353c; transform: skewX(-10deg)"
           >
             <span style="transform: skewX(10deg)">Roster Architecture</span>
-            <span class="material-symbols-outlined text-secondary text-sm" style="transform: skewX(10deg)">architecture</span>
+            <span
+              class="material-symbols-outlined text-secondary text-sm"
+              style="transform: skewX(10deg)"
+              >architecture</span
+            >
           </div>
 
           <div class="glass-panel p-6 space-y-3">
@@ -338,8 +409,12 @@ function updateSlotCount(idx: number, delta: number) {
                   {{ String(rp.slots_per_team).padStart(2, '0') }}
                 </div>
                 <div>
-                  <div class="font-headline font-bold text-sm tracking-tight">{{ rp.position_name }}</div>
-                  <div class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">
+                  <div class="font-headline font-bold text-sm tracking-tight">
+                    {{ rp.position_name }}
+                  </div>
+                  <div
+                    class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter"
+                  >
                     {{ rp.is_flex ? 'Flex — Any School' : 'Conference Primary' }}
                   </div>
                 </div>
@@ -361,7 +436,9 @@ function updateSlotCount(idx: number, delta: number) {
             </div>
 
             <div class="pt-4 border-t border-outline-variant/20">
-              <div class="flex justify-between text-xs font-label text-outline uppercase tracking-wider">
+              <div
+                class="flex justify-between text-xs font-label text-outline uppercase tracking-wider"
+              >
                 <span>Total slots per team</span>
                 <span class="text-primary font-bold">
                   {{ rosterPositions.reduce((s, rp) => s + rp.slots_per_team, 0) }}
@@ -371,7 +448,6 @@ function updateSlotCount(idx: number, delta: number) {
           </div>
         </aside>
       </div>
-
     </main>
   </div>
 </template>

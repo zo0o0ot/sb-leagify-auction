@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '@/lib/supabase'
 import { useAuctionStore } from '@/stores/auction'
@@ -17,6 +17,16 @@ const auctionId = Number(route.params.id)
 
 const { isConnected } = useAuctionRealtime(auctionId)
 
+// Suppress the connection overlay during the initial subscription handshake.
+// Navigating from Lobby tears down the old channel before the new one confirms,
+// causing a false "disconnected" flash. 5s is ample for the handshake to complete.
+const connectionReady = ref(false)
+onMounted(() => {
+  setTimeout(() => {
+    connectionReady.value = true
+  }, 5000)
+})
+
 // ── UI State ────────────────────────────────────────────────────────────────
 const showNominationGrid = ref(false)
 const pendingAssignmentPick = ref<DraftPick | null>(null)
@@ -28,6 +38,13 @@ const customBidAmount = ref('')
 const localAdminMode = ref(false)
 const localProxyTeamId = ref<number | null>(null)
 const autoPassTeamIds = ref<Set<number>>(new Set())
+
+// Admin manual pick entry
+const manualSchoolId = ref<number | null>(null)
+const manualTeamId = ref<number | null>(null)
+const manualAmount = ref('')
+const manualError = ref('')
+const manualSubmitting = ref(false)
 
 // ── Derived state ────────────────────────────────────────────────────────────
 const isAdmin = computed(() => store.isAuctionMaster)
@@ -43,8 +60,8 @@ const maxBid = computed(() => store.myMaxBid)
 const isAutoPass = computed(() => maxBid.value < nextMinBid.value)
 const isHighBidder = computed(() => store.activeTeam?.id === store.auction?.current_high_bidder_id)
 
-const isMyTurnToNominate = computed(() =>
-  store.auction?.current_nominator_id === store.myParticipant?.id,
+const isMyTurnToNominate = computed(
+  () => store.auction?.current_nominator_id === store.myParticipant?.id,
 )
 
 const nominationOrder = computed(() =>
@@ -53,25 +70,36 @@ const nominationOrder = computed(() =>
 
 const recentBids = computed(() => store.bidHistory.slice(0, 10))
 
-// Watch for new picks that need position assignment (only for this team's picks)
+// All picks missing a roster position — admin safety net
+const unassignedPicks = computed(() => store.draftPicks.filter((p) => !p.roster_position_id))
+
+// Watch for new picks that need position assignment.
+// Coaches: only their own team's picks. Admin (with proxy): proxy team's picks.
+// Admin (no proxy): any unassigned pick — so admin can always step in.
 watch(
   () => store.draftPicks,
   (picks) => {
     const myTeamId = store.activeTeam?.id
-    if (!myTeamId) return
-    const unassigned = picks.find(
-      (p) => p.team_id === myTeamId && !p.roster_position_id,
-    )
+    let unassigned: (typeof picks)[0] | undefined
+    if (myTeamId) {
+      unassigned = picks.find((p) => p.team_id === myTeamId && !p.roster_position_id)
+    } else if (isAdmin.value && localAdminMode.value) {
+      unassigned = picks.find((p) => !p.roster_position_id)
+    }
     if (unassigned && unassigned.id !== pendingAssignmentPick.value?.id) {
       pendingAssignmentPick.value = unassigned
     }
   },
-  { deep: true },
+  { deep: true, immediate: true },
 )
 
 // Sync admin mode to store
-watch(localAdminMode, (v) => { store.isAdminMode = v })
-watch(localProxyTeamId, (v) => { store.proxyTeamId = v })
+watch(localAdminMode, (v) => {
+  store.isAdminMode = v
+})
+watch(localProxyTeamId, (v) => {
+  store.proxyTeamId = v
+})
 
 // Auto-pass: when a new school comes on the block, immediately pass for any ticked team
 watch(
@@ -159,12 +187,56 @@ function participantFor(teamId: number) {
   return store.participants.find((p) => p.team_id === teamId) ?? null
 }
 
-function budgetPct(team: typeof store.teams[0]) {
+async function manualRecordPick() {
+  if (!manualSchoolId.value || !manualTeamId.value) return
+  const amount = parseInt(manualAmount.value, 10)
+  if (isNaN(amount) || amount < 1) {
+    manualError.value = 'Enter a valid bid amount'
+    return
+  }
+  if (store.auction?.current_school_id) {
+    manualError.value = 'A school is already on the block. Use Force End Bidding first.'
+    return
+  }
+  manualError.value = ''
+  manualSubmitting.value = true
+
+  // Step 1: put the school on the block with the winning bid already set
+  const { error: e1 } = await supabase
+    .from('auctions')
+    .update({
+      current_school_id: manualSchoolId.value,
+      current_high_bid: amount,
+      current_high_bidder_id: manualTeamId.value,
+    })
+    .eq('id', auctionId)
+
+  if (e1) {
+    manualError.value = e1.message
+    manualSubmitting.value = false
+    return
+  }
+
+  // Step 2: complete-bid reads auction state and creates the pick
+  const result = await store.completeBid()
+  if (result?.error) {
+    manualError.value = result.error
+    manualSubmitting.value = false
+    return
+  }
+
+  manualSchoolId.value = null
+  manualTeamId.value = null
+  manualAmount.value = ''
+  manualSubmitting.value = false
+}
+
+function budgetPct(team: (typeof store.teams)[0]) {
   if (!store.auction) return 0
   return Math.round((team.remaining_budget / store.auction.default_budget) * 100)
 }
 
-function bidderNameFor(bid: typeof store.bidHistory[0]) {
+function bidderNameFor(bid: (typeof store.bidHistory)[0]) {
   if (!bid.team_id) return 'Unknown'
   return store.getTeamDisplayName(bid.team_id)
 }
@@ -175,9 +247,17 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
     <!-- Nav -->
     <template #nav>
       <span class="text-primary border-b-2 border-primary pb-1">WAR ROOM</span>
-      <span class="text-on-surface-variant">AUCTION</span>
-      <span class="text-on-surface-variant">SCHOOLS</span>
-      <RouterLink :to="`/auction/${auctionId}/roster`" class="text-on-surface-variant hover:text-on-surface">ROSTERS</RouterLink>
+      <span class="text-on-surface-variant opacity-50 cursor-help" title="Coming soon"
+        >AUCTION</span
+      >
+      <span class="text-on-surface-variant opacity-50 cursor-help" title="Coming soon"
+        >SCHOOLS</span
+      >
+      <RouterLink
+        :to="`/auction/${auctionId}/roster`"
+        class="text-on-surface-variant hover:text-on-surface"
+        >ROSTERS</RouterLink
+      >
     </template>
 
     <!-- Header actions -->
@@ -187,9 +267,11 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
         <button
           v-if="isAdmin"
           class="flex items-center gap-2 px-3 py-1 border text-[10px] font-label font-black uppercase transition-colors"
-          :class="localAdminMode
-            ? 'bg-secondary-container/20 border-secondary/30 text-secondary'
-            : 'bg-surface-container border-outline/20 text-outline'"
+          :class="
+            localAdminMode
+              ? 'bg-secondary-container/20 border-secondary/30 text-secondary'
+              : 'bg-surface-container border-outline/20 text-outline'
+          "
           @click="localAdminMode = !localAdminMode"
         >
           <span class="material-symbols-outlined text-sm">security</span>
@@ -197,10 +279,14 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
         </button>
 
         <!-- Status badge -->
-        <div class="flex items-center gap-2 px-3 py-1 bg-surface-container border border-outline/20">
+        <div
+          class="flex items-center gap-2 px-3 py-1 bg-surface-container border border-outline/20"
+        >
           <span
             class="w-2 h-2 rounded-full"
-            :class="store.auction?.status === 'in_progress' ? 'bg-tertiary animate-pulse' : 'bg-outline'"
+            :class="
+              store.auction?.status === 'in_progress' ? 'bg-tertiary animate-pulse' : 'bg-outline'
+            "
           ></span>
           <span class="text-[10px] font-label font-black uppercase text-on-surface-variant">
             {{ store.auction?.status?.replace('_', ' ').toUpperCase() ?? 'LOADING' }}
@@ -212,22 +298,39 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
     <!-- Sidebar header -->
     <template #sidebar-header>
       <div class="flex items-center gap-3">
-        <div class="w-12 h-12 bg-surface-container-highest flex items-center justify-center border border-primary/20">
+        <div
+          class="w-12 h-12 bg-surface-container-highest flex items-center justify-center border border-primary/20"
+        >
           <span class="material-symbols-outlined text-primary text-3xl">gavel</span>
         </div>
         <div>
-          <div class="text-on-surface text-sm tracking-tight">{{ isAdmin ? 'COMMANDER' : (store.activeTeam ? store.getTeamDisplayName(store.activeTeam.id) : 'COACH') }}</div>
-          <div class="text-primary text-xs">BUDGET: ${{ store.activeTeam?.remaining_budget ?? '—' }}</div>
+          <div class="text-on-surface text-sm tracking-tight">
+            {{
+              isAdmin
+                ? 'COMMANDER'
+                : store.activeTeam
+                  ? store.getTeamDisplayName(store.activeTeam.id)
+                  : 'COACH'
+            }}
+          </div>
+          <div class="text-primary text-xs">
+            BUDGET: ${{ store.activeTeam?.remaining_budget ?? '—' }}
+          </div>
         </div>
       </div>
     </template>
 
     <!-- Sidebar nav -->
     <template #sidebar-nav>
-      <a class="flex items-center px-6 py-4 bg-gradient-to-r from-primary/20 to-transparent text-primary border-l-4 border-primary">
+      <a
+        class="flex items-center px-6 py-4 bg-gradient-to-r from-primary/20 to-transparent text-primary border-l-4 border-primary"
+      >
         <span class="material-symbols-outlined mr-4">gavel</span> WAR ROOM
       </a>
-      <a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container">
+      <a
+        class="flex items-center px-6 py-4 text-on-surface-variant opacity-50 cursor-help"
+        title="Coming soon"
+      >
         <span class="material-symbols-outlined mr-4">leaderboard</span> BOARD
       </a>
       <RouterLink
@@ -236,7 +339,10 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
       >
         <span class="material-symbols-outlined mr-4">groups</span> ROSTER
       </RouterLink>
-      <a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container">
+      <a
+        class="flex items-center px-6 py-4 text-on-surface-variant opacity-50 cursor-help"
+        title="Coming soon"
+      >
         <span class="material-symbols-outlined mr-4">history</span> HISTORY
       </a>
     </template>
@@ -245,18 +351,26 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
     <template #sidebar-footer>
       <!-- Nomination order -->
       <div class="p-4 space-y-2">
-        <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-2">Nomination Order</div>
+        <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-2">
+          Nomination Order
+        </div>
         <div
           v-for="(team, idx) in nominationOrder"
           :key="team.id"
           class="flex items-center gap-3 py-2 px-2 transition-colors"
-          :class="participantFor(team.id)?.id === store.auction?.current_nominator_id
-            ? 'bg-secondary-container/20 border-l-2 border-secondary'
-            : ''"
+          :class="
+            participantFor(team.id)?.id === store.auction?.current_nominator_id
+              ? 'bg-secondary-container/20 border-l-2 border-secondary'
+              : ''
+          "
         >
-          <span class="text-[10px] font-label text-outline w-4">{{ String(idx + 1).padStart(2, '0') }}</span>
+          <span class="text-[10px] font-label text-outline w-4">{{
+            String(idx + 1).padStart(2, '0')
+          }}</span>
           <div class="flex-1 min-w-0">
-            <div class="text-xs font-label font-bold text-on-surface truncate">{{ store.getTeamDisplayName(team.id) }}</div>
+            <div class="text-xs font-label font-bold text-on-surface truncate">
+              {{ store.getTeamDisplayName(team.id) }}
+            </div>
             <div class="text-[10px] font-label text-outline">${{ team.remaining_budget }}</div>
           </div>
           <span
@@ -267,8 +381,13 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
       </div>
 
       <!-- Admin: proxy bidding -->
-      <div v-if="isAdmin && localAdminMode" class="p-4 border-t border-outline-variant/20 space-y-3">
-        <div class="text-[10px] font-label text-outline uppercase tracking-widest">Admin Override Bid</div>
+      <div
+        v-if="isAdmin && localAdminMode"
+        class="p-4 border-t border-outline-variant/20 space-y-3"
+      >
+        <div class="text-[10px] font-label text-outline uppercase tracking-widest">
+          Admin Override Bid
+        </div>
         <select
           v-model="localProxyTeamId"
           class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label py-2 px-3 focus:outline-none focus:border-primary/50"
@@ -286,7 +405,9 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
             class="flex items-center justify-between py-1.5 px-2 hover:bg-surface-container cursor-pointer"
             :class="autoPassTeamIds.has(team.id) ? 'bg-secondary-container/10' : ''"
           >
-            <span class="text-[10px] font-label text-on-surface-variant">{{ store.getTeamDisplayName(team.id) }}</span>
+            <span class="text-[10px] font-label text-on-surface-variant">{{
+              store.getTeamDisplayName(team.id)
+            }}</span>
             <input
               type="checkbox"
               class="accent-primary"
@@ -302,14 +423,18 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
             class="w-full bg-error-container hover:bg-error/20 text-error text-[10px] py-2 border border-error/30 uppercase font-label"
             @click="store.setAuctionStatus('paused')"
           >
-            <span class="material-symbols-outlined text-sm align-text-bottom mr-1">pause_circle</span>
+            <span class="material-symbols-outlined text-sm align-text-bottom mr-1"
+              >pause_circle</span
+            >
             PAUSE AUCTION
           </button>
           <button
             v-if="store.auction?.status === 'paused'"
             class="w-full bg-surface-container hover:bg-primary/10 text-primary text-[10px] py-2 border border-primary/30 uppercase font-label"
             @click="store.setAuctionStatus('in_progress')"
-          >RESUME</button>
+          >
+            RESUME
+          </button>
           <button
             class="w-full bg-surface-container hover:bg-tertiary/10 text-tertiary text-[10px] py-2 border border-tertiary/30 uppercase font-label"
             @click="forceEndBidding"
@@ -321,7 +446,10 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
       </div>
 
       <!-- Coach: nominate button (when it's their turn and no school on block) -->
-      <div v-if="!isAdmin && isMyTurnToNominate && !currentSchool" class="p-4 border-t border-outline-variant/20">
+      <div
+        v-if="!isAdmin && isMyTurnToNominate && !currentSchool"
+        class="p-4 border-t border-outline-variant/20"
+      >
         <button
           class="w-full metallic-secondary text-on-secondary py-4 font-headline font-black text-sm uppercase tracking-widest animate-pulse"
           @click="showNominationGrid = true"
@@ -334,13 +462,19 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
 
     <!-- Ticker -->
     <template #ticker-status>
-      {{ store.auction?.status === 'in_progress' ? 'DRAFT CLOCK: ACTIVE' : store.auction?.status?.toUpperCase() ?? 'LOADING' }}
+      {{
+        store.auction?.status === 'in_progress'
+          ? 'DRAFT CLOCK: ACTIVE'
+          : (store.auction?.status?.toUpperCase() ?? 'LOADING')
+      }}
     </template>
     <template #ticker-content>
       <span>AUCTION: {{ store.auction?.name ?? '—' }}</span>
       <span class="text-tertiary">REMAINING SCHOOLS: {{ store.availableSchools.length }}</span>
       <span v-if="store.currentNominator">NEXT UP: {{ store.currentNominator.display_name }}</span>
-      <span v-if="recentBids[0]">PREVIOUS: {{ bidderNameFor(recentBids[0]) }} — ${{ recentBids[0].amount }}</span>
+      <span v-if="recentBids[0]"
+        >PREVIOUS: {{ bidderNameFor(recentBids[0]) }} — ${{ recentBids[0].amount }}</span
+      >
     </template>
 
     <!-- ── Main content ── -->
@@ -358,7 +492,6 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
         class="flex flex-col overflow-hidden border-r border-outline-variant/20"
         :class="isAdmin && localAdminMode ? 'col-span-8' : 'col-span-12'"
       >
-
         <!-- Awaiting nomination -->
         <div
           v-if="!currentSchool"
@@ -366,13 +499,13 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
         >
           <span class="material-symbols-outlined text-6xl text-outline animate-pulse">stadium</span>
           <div>
-            <div class="font-headline font-black uppercase text-on-surface-variant text-2xl tracking-tighter">
+            <div
+              class="font-headline font-black uppercase text-on-surface-variant text-2xl tracking-tighter"
+            >
               {{ isMyTurnToNominate ? 'YOUR TURN TO NOMINATE' : 'AWAITING NOMINATION' }}
             </div>
             <div class="text-sm font-label text-outline uppercase tracking-wider mt-2">
-              <template v-if="isMyTurnToNominate">
-                Select a school to put on the block
-              </template>
+              <template v-if="isMyTurnToNominate"> Select a school to put on the block </template>
               <template v-else>
                 {{ store.currentNominator?.display_name ?? '—' }} is selecting a school
               </template>
@@ -398,8 +531,12 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
         <!-- School on the block -->
         <template v-else>
           <!-- School identity hero -->
-          <div class="bg-surface-container p-6 border-b border-outline-variant/20 flex items-center gap-8">
-            <div class="w-24 h-24 bg-white p-2 shadow-2xl flex-shrink-0 flex items-center justify-center">
+          <div
+            class="bg-surface-container p-6 border-b border-outline-variant/20 flex items-center gap-8"
+          >
+            <div
+              class="w-24 h-24 bg-white p-2 shadow-2xl flex-shrink-0 flex items-center justify-center"
+            >
               <img
                 v-if="currentSchool.school?.logo_url"
                 :src="currentSchool.school.logo_url"
@@ -414,13 +551,17 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
               <div class="text-xs font-label text-outline uppercase tracking-widest mb-1">
                 {{ currentSchool.conference }} • {{ currentSchool.leagify_position }}
               </div>
-              <h2 class="font-headline font-black uppercase text-on-surface text-4xl leading-none tracking-tighter">
+              <h2
+                class="font-headline font-black uppercase text-on-surface text-4xl leading-none tracking-tighter"
+              >
                 {{ currentSchool.school?.name }}
               </h2>
               <div class="flex items-center gap-6 mt-2">
                 <div>
                   <span class="text-[10px] font-label text-outline uppercase">Proj. Points</span>
-                  <span class="ml-2 font-headline font-bold text-tertiary">{{ currentSchool.projected_points }}</span>
+                  <span class="ml-2 font-headline font-bold text-tertiary">{{
+                    currentSchool.projected_points
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -433,7 +574,9 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
           <!-- Bid status row -->
           <div class="grid grid-cols-3 bg-surface-container-low border-b border-outline-variant/20">
             <div class="p-5 border-r border-outline-variant/20 text-center">
-              <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-1">Current High Bid</div>
+              <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-1">
+                Current High Bid
+              </div>
               <div
                 class="text-4xl font-headline font-black"
                 :class="currentHighBid > 0 ? 'text-secondary animate-pulse' : 'text-outline'"
@@ -441,38 +584,57 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
                 ${{ currentHighBid || '—' }}
               </div>
             </div>
-            <div class="p-5 border-r border-outline-variant/20 text-center" :class="isHighBidder ? 'bg-secondary-container/10' : ''">
-              <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-1">Winning Coach</div>
+            <div
+              class="p-5 border-r border-outline-variant/20 text-center"
+              :class="isHighBidder ? 'bg-secondary-container/10' : ''"
+            >
+              <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-1">
+                Winning Coach
+              </div>
               <div class="text-lg font-headline font-bold text-on-surface uppercase truncate">
                 {{ store.currentHighBidder?.display_name ?? '—' }}
               </div>
             </div>
             <div class="p-5 text-center">
-              <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-1">Your Budget</div>
-              <div class="text-4xl font-headline font-black text-primary">${{ store.activeTeam?.remaining_budget ?? '—' }}</div>
+              <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-1">
+                Your Budget
+              </div>
+              <div class="text-4xl font-headline font-black text-primary">
+                ${{ store.activeTeam?.remaining_budget ?? '—' }}
+              </div>
             </div>
           </div>
 
           <!-- Bid controls + log row -->
           <div class="flex-1 overflow-hidden grid grid-cols-5">
-
             <!-- Bid controls (3/5 width) -->
-            <div class="col-span-3 p-6 space-y-4 overflow-y-auto border-r border-outline-variant/20">
-
+            <div
+              class="col-span-3 p-6 space-y-4 overflow-y-auto border-r border-outline-variant/20"
+            >
               <!-- Leading badge -->
               <div
                 v-if="isHighBidder"
                 class="text-center py-2 bg-secondary-container/20 border border-secondary/30"
               >
-                <span class="text-xs font-label font-bold text-secondary uppercase tracking-widest">YOU ARE WINNING</span>
+                <span class="text-xs font-label font-bold text-secondary uppercase tracking-widest"
+                  >YOU ARE WINNING</span
+                >
               </div>
 
               <!-- Auto-passed state -->
               <div v-if="isAutoPass" class="text-center py-6">
-                <div class="inline-flex items-center gap-3 bg-surface-container-high px-6 py-4 border border-outline-variant/30">
-                  <span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1">lock</span>
+                <div
+                  class="inline-flex items-center gap-3 bg-surface-container-high px-6 py-4 border border-outline-variant/30"
+                >
+                  <span
+                    class="material-symbols-outlined text-error"
+                    style="font-variation-settings: 'FILL' 1"
+                    >lock</span
+                  >
                   <div class="text-left">
-                    <div class="font-headline font-bold uppercase text-on-surface-variant text-sm">BIDDING LOCKED</div>
+                    <div class="font-headline font-bold uppercase text-on-surface-variant text-sm">
+                      BIDDING LOCKED
+                    </div>
                     <div class="text-[10px] font-label text-outline uppercase tracking-wider">
                       Max bid ${{ maxBid }} — below minimum ${{ nextMinBid }}
                     </div>
@@ -486,9 +648,15 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
               <template v-else>
                 <!-- Next min bid -->
                 <div class="text-center">
-                  <div class="text-xs font-label text-outline uppercase tracking-widest">Next Minimum Bid</div>
-                  <div class="text-5xl font-headline font-black text-on-surface mt-1">${{ nextMinBid }}</div>
-                  <div class="text-[10px] font-label text-outline uppercase mt-1">Max: ${{ maxBid }}</div>
+                  <div class="text-xs font-label text-outline uppercase tracking-widest">
+                    Next Minimum Bid
+                  </div>
+                  <div class="text-5xl font-headline font-black text-on-surface mt-1">
+                    ${{ nextMinBid }}
+                  </div>
+                  <div class="text-[10px] font-label text-outline uppercase mt-1">
+                    Max: ${{ maxBid }}
+                  </div>
                 </div>
 
                 <!-- Quick bid buttons -->
@@ -507,7 +675,10 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
                 <!-- Custom bid -->
                 <div class="flex gap-2">
                   <div class="flex-1 relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 font-headline font-black text-outline">$</span>
+                    <span
+                      class="absolute left-3 top-1/2 -translate-y-1/2 font-headline font-black text-outline"
+                      >$</span
+                    >
                     <input
                       v-model="customBidAmount"
                       type="number"
@@ -542,17 +713,31 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
                 class="w-full bg-surface-container hover:bg-secondary/10 border border-secondary/20 py-4 font-headline font-bold text-secondary transition-all active:scale-95 uppercase tracking-tighter disabled:opacity-40"
                 @click="pass"
               >
-                <span class="material-symbols-outlined align-text-bottom mr-1" :style="(isAutoPass || isHighBidder) ? 'font-variation-settings: \'FILL\' 1' : ''">{{ isAutoPass ? 'lock' : 'block' }}</span>
-                {{ isHighBidder ? 'Cannot Pass — You\'re Winning' : isAutoPass ? 'LOCKED IN: PASS' : 'Pass' }}
+                <span
+                  class="material-symbols-outlined align-text-bottom mr-1"
+                  :style="isAutoPass || isHighBidder ? 'font-variation-settings: \'FILL\' 1' : ''"
+                  >{{ isAutoPass ? 'lock' : 'block' }}</span
+                >
+                {{
+                  isHighBidder
+                    ? "Cannot Pass — You're Winning"
+                    : isAutoPass
+                      ? 'LOCKED IN: PASS'
+                      : 'Pass'
+                }}
               </button>
 
-              <p v-if="bidError" class="text-xs text-error font-label text-center">{{ bidError }}</p>
+              <p v-if="bidError" class="text-xs text-error font-label text-center">
+                {{ bidError }}
+              </p>
             </div>
 
             <!-- Bid log (2/5 width) -->
             <div class="col-span-2 flex flex-col overflow-hidden">
               <div class="px-4 py-3 border-b border-outline-variant/20 bg-surface-container-high">
-                <span class="text-[10px] font-label text-outline uppercase tracking-widest">Bidding Log</span>
+                <span class="text-[10px] font-label text-outline uppercase tracking-widest"
+                  >Bidding Log</span
+                >
               </div>
               <div class="flex-1 overflow-y-auto">
                 <div
@@ -562,9 +747,17 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
                   :class="entry.bid_type === 'pass' ? 'opacity-50' : ''"
                 >
                   <div>
-                    <div class="text-xs font-label font-bold text-on-surface">{{ bidderNameFor(entry) }}</div>
+                    <div class="text-xs font-label font-bold text-on-surface">
+                      {{ bidderNameFor(entry) }}
+                    </div>
                     <div class="text-[10px] font-label text-outline uppercase">
-                      {{ entry.bid_type === 'pass' ? 'PASSED' : entry.bid_type === 'nomination' ? 'NOMINATED' : `+$${entry.amount}` }}
+                      {{
+                        entry.bid_type === 'pass'
+                          ? 'PASSED'
+                          : entry.bid_type === 'nomination'
+                            ? 'NOMINATED'
+                            : `+$${entry.amount}`
+                      }}
                     </div>
                   </div>
                   <div
@@ -574,7 +767,10 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
                     {{ entry.bid_type === 'bid' ? `$${entry.amount}` : '—' }}
                   </div>
                 </div>
-                <div v-if="recentBids.length === 0" class="px-4 py-8 text-center text-outline font-label text-xs uppercase">
+                <div
+                  v-if="recentBids.length === 0"
+                  class="px-4 py-8 text-center text-outline font-label text-xs uppercase"
+                >
                   No bids yet
                 </div>
               </div>
@@ -584,22 +780,120 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
       </div>
 
       <!-- ── Admin right panel (admin mode only) ── -->
-      <div v-if="isAdmin && localAdminMode" class="col-span-4 flex flex-col overflow-hidden border-l border-outline-variant/20">
+      <div
+        v-if="isAdmin && localAdminMode"
+        class="col-span-4 flex flex-col overflow-hidden border-l border-outline-variant/20"
+      >
         <div class="px-4 py-3 border-b border-outline-variant/20 bg-surface-container-high">
-          <span class="text-[10px] font-label text-secondary uppercase tracking-widest">ADMIN CONTROL RESTRICTED</span>
+          <span class="text-[10px] font-label text-secondary uppercase tracking-widest"
+            >ADMIN CONTROL RESTRICTED</span
+          >
         </div>
 
         <!-- Team budgets overview -->
         <div class="flex-1 overflow-y-auto p-4 space-y-3">
-          <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-2">Team Budgets</div>
+          <!-- Unassigned picks alert -->
+          <div
+            v-if="unassignedPicks.length > 0"
+            class="bg-error-container/20 border border-error/40 p-3 space-y-2"
+          >
+            <div class="text-[10px] font-label text-error uppercase tracking-widest font-bold">
+              {{ unassignedPicks.length }} Unassigned Pick{{
+                unassignedPicks.length !== 1 ? 's' : ''
+              }}
+            </div>
+            <div
+              v-for="pick in unassignedPicks"
+              :key="pick.id"
+              class="flex items-center justify-between py-1"
+            >
+              <div>
+                <div class="text-xs font-label font-bold text-on-surface">
+                  {{ pick.auction_school?.school?.name ?? 'School' }}
+                </div>
+                <div class="text-[10px] font-label text-outline">
+                  {{ store.getTeamDisplayName(pick.team_id) }} — ${{ pick.winning_bid }}
+                </div>
+              </div>
+              <button
+                class="text-[10px] font-label font-bold text-primary border border-primary/30 px-2 py-1 hover:bg-primary/10 uppercase"
+                @click="pendingAssignmentPick = pick"
+              >
+                Assign
+              </button>
+            </div>
+          </div>
+
+          <!-- Manual pick entry -->
+          <details class="bg-surface-container border border-outline-variant/30">
+            <summary
+              class="px-3 py-2 text-[10px] font-label text-outline uppercase tracking-widest cursor-pointer hover:bg-surface-container-high select-none"
+            >
+              Manual Pick Entry (Emergency)
+            </summary>
+            <div class="px-3 pb-3 pt-2 space-y-2">
+              <div class="text-[10px] font-label text-outline uppercase mb-1">
+                Use if bidding happened offline or app failed
+              </div>
+              <select
+                v-model="manualSchoolId"
+                class="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface text-xs font-label py-1.5 px-2 focus:outline-none focus:border-primary/50"
+              >
+                <option :value="null">— School —</option>
+                <option v-for="s in store.availableSchools" :key="s.id" :value="s.id">
+                  {{ s.school?.name ?? s.id }}
+                </option>
+              </select>
+              <select
+                v-model="manualTeamId"
+                class="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface text-xs font-label py-1.5 px-2 focus:outline-none focus:border-primary/50"
+              >
+                <option :value="null">— Winning Team —</option>
+                <option v-for="team in store.teams" :key="team.id" :value="team.id">
+                  {{ store.getTeamDisplayName(team.id) }} (${{ team.remaining_budget }})
+                </option>
+              </select>
+              <div class="flex gap-2">
+                <div class="relative flex-1">
+                  <span
+                    class="absolute left-2 top-1/2 -translate-y-1/2 text-outline font-headline font-black text-xs"
+                    >$</span
+                  >
+                  <input
+                    v-model="manualAmount"
+                    type="number"
+                    min="1"
+                    placeholder="Winning bid"
+                    class="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface text-xs font-label py-1.5 pl-6 pr-2 focus:outline-none focus:border-primary/50"
+                  />
+                </div>
+                <button
+                  :disabled="!manualSchoolId || !manualTeamId || !manualAmount || manualSubmitting"
+                  class="px-3 bg-secondary-container hover:bg-secondary/20 text-on-secondary-container font-label font-bold text-[10px] uppercase border border-secondary/30 disabled:opacity-40"
+                  @click="manualRecordPick"
+                >
+                  {{ manualSubmitting ? '...' : 'Record' }}
+                </button>
+              </div>
+              <p v-if="manualError" class="text-[10px] text-error font-label">{{ manualError }}</p>
+            </div>
+          </details>
+
+          <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-2">
+            Team Budgets
+          </div>
           <div
             v-for="team in store.teams"
             :key="team.id"
             class="bg-surface-container p-3 border border-outline-variant/20"
           >
             <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-label font-bold text-on-surface uppercase">{{ store.getTeamDisplayName(team.id) }}</span>
-              <span class="text-xs font-headline font-bold text-primary">${{ team.remaining_budget }}</span>
+              <span class="text-xs font-label font-bold text-on-surface uppercase">{{
+                store.getTeamDisplayName(team.id)
+              }}</span>
+              <span class="text-xs font-headline font-bold text-primary"
+                >${{ team.remaining_budget }}</span
+              >
             </div>
             <!-- Budget bar -->
             <div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
@@ -615,9 +909,13 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
 
           <!-- Draft picks summary -->
           <div class="mt-4">
-            <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-2">Recent Picks</div>
+            <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-2">
+              Recent Picks
+            </div>
             <div
-              v-for="pick in [...store.draftPicks].sort((a, b) => b.pick_order - a.pick_order).slice(0, 5)"
+              v-for="pick in [...store.draftPicks]
+                .sort((a, b) => b.pick_order - a.pick_order)
+                .slice(0, 5)"
               :key="pick.id"
               class="py-2 border-b border-outline-variant/10 flex items-center justify-between"
             >
@@ -629,9 +927,14 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
                   {{ store.getTeamDisplayName(pick.team_id) }}
                 </div>
               </div>
-              <span class="font-headline font-bold text-tertiary text-sm">${{ pick.winning_bid }}</span>
+              <span class="font-headline font-bold text-tertiary text-sm"
+                >${{ pick.winning_bid }}</span
+              >
             </div>
-            <div v-if="store.draftPicks.length === 0" class="text-[10px] font-label text-outline uppercase text-center py-4">
+            <div
+              v-if="store.draftPicks.length === 0"
+              class="text-[10px] font-label text-outline uppercase text-center py-4"
+            >
               No picks yet
             </div>
           </div>
@@ -642,7 +945,11 @@ function bidderNameFor(bid: typeof store.bidHistory[0]) {
     <!-- ── Overlays ── -->
     <NominationGrid v-if="showNominationGrid" @close="showNominationGrid = false" />
     <PickIsInSting @dismissed="onStingDismissed" />
-    <PositionAssignmentModal :pick="pendingAssignmentPick" @assigned="onPositionAssigned" @close="pendingAssignmentPick = null" />
-    <ConnectionLostOverlay :visible="!isConnected" @retry="retryConnection" />
+    <PositionAssignmentModal
+      :pick="pendingAssignmentPick"
+      @assigned="onPositionAssigned"
+      @close="pendingAssignmentPick = null"
+    />
+    <ConnectionLostOverlay :visible="connectionReady && !isConnected" @retry="retryConnection" />
   </AppShell>
 </template>

@@ -10,20 +10,32 @@ const store = useAuctionStore()
 const submitting = ref(false)
 const selectedPositionId = ref<number | null>(null)
 
-// Pre-select best eligible position
+// Whether a roster position can accept this school:
+// - Flex positions accept any school
+// - Conference positions only accept schools whose leagify_position matches
+function isConferenceMatch(rp: (typeof store.rosterPositions)[0]): boolean {
+  if (rp.is_flex) return true
+  const schoolPos = school.value?.leagify_position
+  return !!schoolPos && rp.position_name === schoolPos
+}
+
+// Pre-select best eligible position: conference match first, then flex
 watch(
   () => props.pick,
   (pick) => {
     if (!pick) return
     selectedPositionId.value = null
-    // Find positions with remaining slots
+    // Eligible = conference-compatible AND has slots remaining
     const eligible = store.rosterPositions.filter((rp) => {
+      if (!isConferenceMatch(rp)) return false
       const filled = store.draftPicks.filter(
         (dp) => dp.team_id === pick.team_id && dp.roster_position_id === rp.id,
       ).length
       return filled < rp.slots_per_team
     })
-    if (eligible.length > 0) selectedPositionId.value = eligible[0]!.id
+    // Prefer exact conference match over flex
+    const exact = eligible.find((rp) => !rp.is_flex)
+    selectedPositionId.value = (exact ?? eligible[0])?.id ?? null
   },
   { immediate: true },
 )
@@ -63,15 +75,22 @@ async function confirm() {
       v-if="pick"
       class="fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
     >
-      <div class="bg-surface-container-low border border-outline-variant/30 w-full max-w-md shadow-2xl">
-
+      <div
+        class="bg-surface-container-low border border-outline-variant/30 w-full max-w-md shadow-2xl"
+      >
         <!-- Header -->
-        <div class="px-6 py-4 border-b border-outline-variant/20 bg-surface-container-high text-center">
-          <div class="text-xs font-label text-tertiary uppercase tracking-[0.2em] mb-1">AUCTION CLOSED</div>
+        <div
+          class="px-6 py-4 border-b border-outline-variant/20 bg-surface-container-high text-center"
+        >
+          <div class="text-xs font-label text-tertiary uppercase tracking-[0.2em] mb-1">
+            AUCTION CLOSED
+          </div>
           <div class="font-headline font-black uppercase text-on-surface text-lg">
             YOU WON {{ school?.school?.name ?? 'SCHOOL' }} FOR ${{ pick.winning_bid }}!
           </div>
-          <div class="text-[10px] font-label text-outline uppercase mt-1">{{ store.getTeamDisplayName(winningTeam!.id) }}</div>
+          <div class="text-[10px] font-label text-outline uppercase mt-1">
+            {{ store.getTeamDisplayName(winningTeam!.id) }}
+          </div>
         </div>
 
         <!-- School badge -->
@@ -88,25 +107,31 @@ async function confirm() {
             </span>
           </div>
           <div>
-            <div class="font-headline font-bold uppercase text-on-surface">{{ school?.school?.name }}</div>
-            <div class="text-[10px] font-label text-outline uppercase">{{ school?.conference }} • {{ school?.leagify_position }}</div>
+            <div class="font-headline font-bold uppercase text-on-surface">
+              {{ school?.school?.name }}
+            </div>
+            <div class="text-[10px] font-label text-outline uppercase">
+              {{ school?.conference }} • {{ school?.leagify_position }}
+            </div>
           </div>
         </div>
 
         <!-- Position picker -->
         <div class="px-6 py-4">
-          <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-3">SELECT ROSTER SLOT</div>
+          <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-3">
+            SELECT ROSTER SLOT
+          </div>
           <div class="space-y-2">
             <label
               v-for="rp in store.rosterPositions"
               :key="rp.id"
-              class="flex items-center justify-between p-3 border cursor-pointer transition-colors"
+              class="flex items-center justify-between p-3 border transition-colors"
               :class="[
-                selectedPositionId === rp.id
-                  ? 'border-primary bg-primary/10'
-                  : slotsRemaining(rp.id) > 0
-                    ? 'border-outline-variant/30 hover:border-primary/30 hover:bg-surface-container'
-                    : 'border-outline-variant/10 opacity-40 cursor-not-allowed',
+                !isConferenceMatch(rp) || slotsRemaining(rp.id) === 0
+                  ? 'border-outline-variant/10 opacity-40 cursor-not-allowed'
+                  : selectedPositionId === rp.id
+                    ? 'border-primary bg-primary/10 cursor-pointer'
+                    : 'border-outline-variant/30 hover:border-primary/30 hover:bg-surface-container cursor-pointer',
               ]"
             >
               <div class="flex items-center gap-3">
@@ -114,22 +139,41 @@ async function confirm() {
                   type="radio"
                   :value="rp.id"
                   v-model="selectedPositionId"
-                  :disabled="slotsRemaining(rp.id) === 0"
+                  :disabled="!isConferenceMatch(rp) || slotsRemaining(rp.id) === 0"
                   class="accent-primary"
                 />
                 <div>
-                  <div class="font-label font-bold text-sm text-on-surface uppercase">{{ rp.position_name }}</div>
+                  <div class="font-label font-bold text-sm text-on-surface uppercase">
+                    {{ rp.position_name }}
+                  </div>
                   <div class="text-[10px] font-label text-outline uppercase">
-                    {{ rp.is_flex ? 'Flex — Any School' : school?.conference ?? 'Conference Primary' }}
+                    {{
+                      rp.is_flex
+                        ? 'Flex — Any School'
+                        : (school?.conference ?? 'Conference Primary')
+                    }}
                   </div>
                 </div>
               </div>
               <div class="text-right">
                 <div
                   class="text-xs font-label font-bold uppercase"
-                  :class="slotsRemaining(rp.id) > 0 ? 'text-tertiary' : 'text-error'"
+                  :class="
+                    !isConferenceMatch(rp)
+                      ? 'text-error'
+                      : slotsRemaining(rp.id) > 0
+                        ? 'text-tertiary'
+                        : 'text-error'
+                  "
                 >
-                  {{ slotsRemaining(rp.id) > 0 ? `${slotsRemaining(rp.id)} SLOT${slotsRemaining(rp.id) !== 1 ? 'S' : ''} REMAINING` : 'FULL' }}
+                  <template v-if="!isConferenceMatch(rp)">WRONG CONFERENCE</template>
+                  <template v-else-if="slotsRemaining(rp.id) > 0"
+                    >{{ slotsRemaining(rp.id) }} SLOT{{
+                      slotsRemaining(rp.id) !== 1 ? 'S' : ''
+                    }}
+                    REMAINING</template
+                  >
+                  <template v-else>FULL</template>
                 </div>
               </div>
             </label>

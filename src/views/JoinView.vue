@@ -66,11 +66,8 @@ async function lookupAuction() {
     .eq('display_name', displayName.value)
     .maybeSingle()
 
-  if (existing?.is_connected) {
-    errorMsg.value = 'That name is already in use by a connected player.'
-    submitting.value = false
-    return
-  }
+  // We intentionally allow reconnection even if is_connected is still true —
+  // the flag may not have been cleared if the previous session crashed.
 
   // Find unclaimed team slots (teams with no participant linked)
   const { data: teams } = await supabase
@@ -104,7 +101,8 @@ async function joinAuction() {
   errorMsg.value = ''
   submitting.value = true
 
-  // Anonymous auth
+  // Anonymous auth — sign out first to clear any stale session from a previous join or admin flow
+  await supabase.auth.signOut()
   const { data: authData, error: authErr } = await supabase.auth.signInAnonymously()
   if (authErr || !authData.user) {
     errorMsg.value = 'Authentication failed. Please try again.'
@@ -193,13 +191,17 @@ async function joinAuction() {
     <!-- Background accent -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl"></div>
+      <div
+        class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl"
+      ></div>
     </div>
 
     <div class="relative w-full max-w-md">
       <!-- Logo -->
       <div class="text-center mb-10">
-        <h1 class="text-4xl font-black italic tracking-widest text-primary font-headline uppercase mb-2">
+        <h1
+          class="text-4xl font-black italic tracking-widest text-primary font-headline uppercase mb-2"
+        >
           LEAGIFY DRAFT COMMAND
         </h1>
         <p class="text-xs font-label text-outline uppercase tracking-[0.3em]">
@@ -221,7 +223,9 @@ async function joinAuction() {
         <div class="space-y-6">
           <!-- Join Code -->
           <div class="space-y-2">
-            <label class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block">
+            <label
+              class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block"
+            >
               Join Code
             </label>
             <input
@@ -238,7 +242,9 @@ async function joinAuction() {
 
           <!-- Display Name -->
           <div class="space-y-2">
-            <label class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block">
+            <label
+              class="font-label text-xs font-bold text-tertiary uppercase tracking-wider block"
+            >
               Your Name
             </label>
             <input
@@ -309,7 +315,8 @@ async function joinAuction() {
                 v-if="selectedTeamId === team.id"
                 class="material-symbols-outlined text-primary text-lg"
                 style="font-variation-settings: 'FILL' 1"
-              >check_circle</span>
+                >check_circle</span
+              >
             </button>
           </div>
           <p v-if="unclaimedTeams.length === 0" class="text-sm text-error font-label py-2">

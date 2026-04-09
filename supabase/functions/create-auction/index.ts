@@ -3,13 +3,16 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-session-token',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-session-token',
 }
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
+    console.log('[create-auction] request received')
+    const body = await req.json()
     const {
       auction_name,
       join_code,
@@ -19,7 +22,13 @@ serve(async (req) => {
       school_source,
       roster_positions,
       supabase_uid,
-    } = await req.json()
+    } = body
+    console.log(
+      '[create-auction] parsed body ok, school_source=',
+      school_source,
+      'join_code=',
+      join_code,
+    )
 
     if (!auction_name || !join_code || !creator_name || !supabase_uid) {
       throw new Error('Missing required fields')
@@ -29,6 +38,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     )
+    console.log('[create-auction] supabase client created')
 
     // 1. Upsert user record
     const { data: userData, error: userErr } = await supabase
@@ -39,6 +49,7 @@ serve(async (req) => {
 
     if (userErr || !userData) throw new Error('Failed to upsert user: ' + (userErr?.message ?? ''))
     const userId = userData.id
+    console.log('[create-auction] user upserted, userId=', userId)
 
     // 2. Create auction
     const { data: auction, error: auctionErr } = await supabase
@@ -59,12 +70,15 @@ serve(async (req) => {
     }
 
     const auctionId = auction.id
+    console.log('[create-auction] auction created, auctionId=', auctionId)
 
     // 3. Create roster positions
     if (roster_positions?.length) {
       const { error: rpErr } = await supabase
         .from('roster_positions')
-        .insert(roster_positions.map((rp: Record<string, unknown>) => ({ ...rp, auction_id: auctionId })))
+        .insert(
+          roster_positions.map((rp: Record<string, unknown>) => ({ ...rp, auction_id: auctionId })),
+        )
 
       if (rpErr) throw new Error('Failed to create roster positions: ' + rpErr.message)
     }
@@ -108,25 +122,40 @@ serve(async (req) => {
 
     // 6. Rename team 1 to creator's name
     if (creatorTeamId) {
-      await supabase
-        .from('teams')
-        .update({ team_name: creator_name })
-        .eq('id', creatorTeamId)
+      await supabase.from('teams').update({ team_name: creator_name }).eq('id', creatorTeamId)
     }
 
     // 7. If default school set, copy from master schools table
     if (school_source === 'default') {
-      const { data: allSchools } = await supabase.from('schools').select('id, name')
+      console.log('[create-auction] fetching schools...')
+      const { data: allSchools, error: schoolsErr } = await supabase
+        .from('schools')
+        .select(
+          'id, conference, leagify_position, projected_points, number_of_prospects, points_above_average, points_above_replacement',
+        )
+        .order('projected_points', { ascending: false })
+      console.log(
+        '[create-auction] schools fetched, count=',
+        allSchools?.length,
+        'err=',
+        schoolsErr?.message,
+      )
       if (allSchools?.length) {
-        const schoolInserts = allSchools.map((s: { id: unknown; name: string }, i: number) => ({
+        const schoolInserts = allSchools.map((s: Record<string, unknown>, i: number) => ({
           auction_id: auctionId,
           school_id: s.id,
-          leagify_position: guessPosition(s.name),
-          conference: guessConference(s.name),
-          projected_points: 100,
+          leagify_position: s.leagify_position ?? 'Flex',
+          conference: s.conference ?? 'Independent',
+          projected_points: s.projected_points ?? 0,
+          number_of_prospects: s.number_of_prospects ?? 0,
+          points_above_average: s.points_above_average ?? null,
+          points_above_replacement: s.points_above_replacement ?? null,
           import_order: i,
         }))
-        await supabase.from('auction_schools').insert(schoolInserts)
+        console.log('[create-auction] inserting', schoolInserts.length, 'auction_schools...')
+        const { error: asErr } = await supabase.from('auction_schools').insert(schoolInserts)
+        if (asErr) console.error('[create-auction] auction_schools insert error:', asErr.message)
+        else console.log('[create-auction] auction_schools inserted ok')
       }
     }
 
@@ -143,6 +172,7 @@ serve(async (req) => {
     )
   } catch (err) {
     const msg = (err as Error).message
+    console.error('[create-auction] CAUGHT ERROR:', msg)
     // Always return 200 so the Supabase JS client passes the body back to the caller.
     // A 4xx causes the client to throw FunctionsHttpError with a generic message,
     // discarding the actual error detail.
@@ -152,21 +182,3 @@ serve(async (req) => {
     })
   }
 })
-
-function guessPosition(name: string): string {
-  const sec = ['Alabama', 'Georgia', 'LSU', 'Tennessee', 'Auburn', 'Ole Miss', 'Texas A&M', 'Mississippi State', 'Arkansas', 'Kentucky', 'Missouri', 'Vanderbilt', 'South Carolina', 'Florida']
-  const bigTen = ['Ohio State', 'Michigan', 'Penn State', 'Wisconsin', 'Iowa', 'Minnesota', 'Illinois', 'Northwestern', 'Indiana', 'Purdue', 'Rutgers', 'Maryland', 'Nebraska', 'Michigan State']
-  const acc = ['Clemson', 'Florida State', 'Miami', 'North Carolina', 'NC State', 'Virginia', 'Virginia Tech', 'Georgia Tech', 'Pittsburgh', 'Boston College', 'Wake Forest', 'Duke', 'Syracuse', 'Louisville', 'Notre Dame']
-  const big12 = ['Texas', 'Oklahoma', 'Texas Tech', 'TCU', 'Baylor', 'Kansas State', 'Kansas', 'Iowa State', 'Oklahoma State', 'West Virginia', 'UCF', 'BYU', 'Cincinnati', 'Houston']
-  if (sec.includes(name)) return 'SEC'
-  if (bigTen.includes(name)) return 'Big Ten'
-  if (acc.includes(name)) return 'ACC'
-  if (big12.includes(name)) return 'Big 12'
-  return 'Flex'
-}
-
-function guessConference(name: string): string {
-  const pos = guessPosition(name)
-  if (pos === 'Flex') return 'Independent'
-  return pos
-}

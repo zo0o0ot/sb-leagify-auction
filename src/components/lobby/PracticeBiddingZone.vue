@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useAuctionStore } from '@/stores/auction'
 import { supabase } from '@/lib/supabase'
 
@@ -27,7 +27,9 @@ function showPracticeResult() {
     amount: store.auction.current_high_bid,
     schoolName: school.school?.name ?? 'School',
   }
-  practiceResultTimer = setTimeout(() => { practiceResult.value = null }, 6000)
+  practiceResultTimer = setTimeout(() => {
+    practiceResult.value = null
+  }, 6000)
 }
 
 const practiceSchool = computed(() => {
@@ -135,29 +137,49 @@ async function endBidding() {
   adminError.value = ''
   submitting.value = true
 
-  // Capture result before clearing so we can show who had the winning bid
-  showPracticeResult()
+  // Step 1: flip status to draft — realtime fires on ALL clients.
+  // They each call showPracticeResult() via the status watcher while bid data is still present.
+  const { error: statusErr } = await supabase
+    .from('auctions')
+    .update({ status: 'draft' })
+    .eq('id', auction.id)
 
-  // Clear all practice bids and stop practice
-  await supabase
-    .from('bid_history')
-    .delete()
-    .eq('auction_id', auction.id)
-    .eq('is_practice', true)
+  if (statusErr) {
+    adminError.value = statusErr.message
+    submitting.value = false
+    return
+  }
+
+  // Step 2: after result banner has been visible, clear bid data and practice bids
+  await new Promise<void>((r) => setTimeout(r, 6000))
+
+  await supabase.from('bid_history').delete().eq('auction_id', auction.id).eq('is_practice', true)
 
   const { error } = await supabase
     .from('auctions')
-    .update({ status: 'draft', current_school_id: null, current_high_bid: null, current_high_bidder_id: null })
+    .update({ current_school_id: null, current_high_bid: null, current_high_bidder_id: null })
     .eq('id', auction.id)
 
   if (error) adminError.value = error.message
   submitting.value = false
 }
+
+// Show result banner on ALL clients when practice ends (status: practice → draft).
+// At that moment current_high_bid/bidder are still set (cleared 6s later).
+watch(
+  () => store.auction?.status,
+  (newStatus, oldStatus) => {
+    if (oldStatus === 'practice' && newStatus === 'draft') {
+      showPracticeResult()
+    }
+  },
+)
 </script>
 
 <template>
-  <div class="flex-1 glass-panel overflow-hidden flex flex-col border border-outline-variant/30">
-
+  <div
+    class="flex-1 min-h-0 glass-panel overflow-hidden flex flex-col border border-outline-variant/30"
+  >
     <!-- No practice school selected yet -->
     <div
       v-if="!practiceSchool"
@@ -176,11 +198,19 @@ async function endBidding() {
           v-if="practiceResult"
           class="w-full max-w-sm bg-secondary-container/20 border border-secondary/30 px-6 py-4 text-center mb-2"
         >
-          <div class="text-[10px] font-label text-secondary uppercase tracking-[0.3em] mb-1">Practice Result</div>
-          <div class="font-headline font-black text-on-surface text-lg uppercase">{{ practiceResult.schoolName }}</div>
+          <div class="text-[10px] font-label text-secondary uppercase tracking-[0.3em] mb-1">
+            Practice Result
+          </div>
+          <div class="font-headline font-black text-on-surface text-lg uppercase">
+            {{ practiceResult.schoolName }}
+          </div>
           <div class="flex items-center justify-center gap-4 mt-1">
-            <span class="font-label text-sm text-on-surface-variant uppercase">{{ practiceResult.teamName }}</span>
-            <span class="font-headline font-bold text-secondary text-sm">${{ practiceResult.amount }}</span>
+            <span class="font-label text-sm text-on-surface-variant uppercase">{{
+              practiceResult.teamName
+            }}</span>
+            <span class="font-headline font-bold text-secondary text-sm"
+              >${{ practiceResult.amount }}</span
+            >
           </div>
         </div>
       </Transition>
@@ -190,15 +220,23 @@ async function endBidding() {
         {{ isAdmin ? 'No school on the block yet' : 'Waiting for practice to begin...' }}
       </p>
       <p class="text-xs font-label text-outline uppercase tracking-wider">
-        {{ isAdmin ? 'Use the nomination grid to put a school on the clock' : 'The admin will start practice shortly' }}
+        {{
+          isAdmin
+            ? 'Use the nomination grid to put a school on the clock'
+            : 'The admin will start practice shortly'
+        }}
       </p>
     </div>
 
     <template v-else>
       <!-- School Identity -->
-      <div class="bg-surface-container p-6 border-b border-outline-variant/30 flex items-center justify-between">
+      <div
+        class="bg-surface-container p-6 border-b border-outline-variant/30 flex items-center justify-between"
+      >
         <div class="flex items-center gap-6">
-          <div class="w-20 h-20 bg-white p-2 shadow-2xl flex-shrink-0 flex items-center justify-center">
+          <div
+            class="w-20 h-20 bg-white p-2 shadow-2xl flex-shrink-0 flex items-center justify-center"
+          >
             <img
               v-if="practiceSchool.school?.logo_url"
               :src="practiceSchool.school.logo_url"
@@ -210,11 +248,15 @@ async function endBidding() {
             </span>
           </div>
           <div>
-            <h3 class="text-4xl font-headline font-black uppercase text-on-surface tracking-tighter">
+            <h3
+              class="text-4xl font-headline font-black uppercase text-on-surface tracking-tighter"
+            >
               {{ practiceSchool.school?.name }}
             </h3>
             <div class="flex items-center gap-4 mt-1">
-              <span class="text-sm font-label text-outline uppercase">{{ practiceSchool.leagify_position }}</span>
+              <span class="text-sm font-label text-outline uppercase">{{
+                practiceSchool.leagify_position
+              }}</span>
               <span class="text-sm font-label text-tertiary uppercase font-bold">
                 {{ practiceSchool.projected_points }} PROJ PTS
               </span>
@@ -230,28 +272,46 @@ async function endBidding() {
       <!-- Financials -->
       <div class="bg-surface-container-low border-b border-outline-variant/20">
         <!-- Row 1: Current high bidder + current high bid -->
-        <div class="grid grid-cols-2 border-b border-outline-variant/20" :class="currentHighBid > 0 ? 'bg-secondary-container/10' : ''">
-          <div class="p-4 border-r border-outline-variant/20 flex flex-col items-center justify-center">
-            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1">Current High Bidder</span>
+        <div
+          class="grid grid-cols-2 border-b border-outline-variant/20"
+          :class="currentHighBid > 0 ? 'bg-secondary-container/10' : ''"
+        >
+          <div
+            class="p-4 border-r border-outline-variant/20 flex flex-col items-center justify-center"
+          >
+            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1"
+              >Current High Bidder</span
+            >
             <span class="text-xl font-headline font-black text-on-surface uppercase truncate">
               {{ store.currentHighBidder?.display_name ?? '—' }}
             </span>
           </div>
           <div class="p-4 flex flex-col items-center justify-center">
-            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1">Current High Bid</span>
-            <span class="text-xl font-headline font-black" :class="currentHighBid > 0 ? 'text-secondary animate-pulse' : 'text-outline'">
+            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1"
+              >Current High Bid</span
+            >
+            <span
+              class="text-xl font-headline font-black"
+              :class="currentHighBid > 0 ? 'text-secondary animate-pulse' : 'text-outline'"
+            >
               ${{ currentHighBid || '—' }}
             </span>
           </div>
         </div>
         <!-- Row 2: Your budget + next minimum bid -->
         <div class="grid grid-cols-2">
-          <div class="p-4 border-r border-outline-variant/20 flex flex-col items-center justify-center">
-            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1">Your Budget</span>
+          <div
+            class="p-4 border-r border-outline-variant/20 flex flex-col items-center justify-center"
+          >
+            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1"
+              >Your Budget</span
+            >
             <span class="text-xl font-headline font-black text-primary">${{ myBudget }}</span>
           </div>
           <div class="p-4 flex flex-col items-center justify-center">
-            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1">Next Minimum Bid</span>
+            <span class="text-xs font-label text-outline uppercase tracking-widest mb-1"
+              >Next Minimum Bid</span
+            >
             <span class="text-xl font-headline font-black text-on-surface">${{ nextMinBid }}</span>
           </div>
         </div>
@@ -259,14 +319,19 @@ async function endBidding() {
 
       <!-- Bidding Controls -->
       <div class="p-8 space-y-6 flex-1 overflow-y-auto">
-
         <!-- Auto-passed state -->
         <div v-if="isAutoPass" class="text-center py-4">
-          <div class="inline-flex items-center gap-3 bg-surface-container-high px-6 py-4 border border-outline-variant/30">
+          <div
+            class="inline-flex items-center gap-3 bg-surface-container-high px-6 py-4 border border-outline-variant/30"
+          >
             <span class="material-symbols-outlined text-outline">block</span>
             <div>
-              <div class="font-headline font-bold uppercase text-on-surface-variant text-sm">AUTO-PASSED</div>
-              <div class="text-[10px] font-label text-outline uppercase tracking-wider">Max bid ${{ maxBid }} — below current</div>
+              <div class="font-headline font-bold uppercase text-on-surface-variant text-sm">
+                AUTO-PASSED
+              </div>
+              <div class="text-[10px] font-label text-outline uppercase tracking-wider">
+                Max bid ${{ maxBid }} — below current
+              </div>
             </div>
           </div>
         </div>
@@ -306,34 +371,49 @@ async function endBidding() {
       </div>
 
       <!-- Admin-only override controls -->
-      <div v-if="isAdmin" class="p-6 border-t border-outline-variant/20 bg-surface-container-high/50 space-y-3">
-        <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-2">Admin Controls</div>
+      <div
+        v-if="isAdmin"
+        class="p-6 border-t border-outline-variant/20 bg-surface-container-high/50 space-y-3"
+      >
+        <div class="text-[10px] font-label text-outline uppercase tracking-widest mb-2">
+          Admin Controls
+        </div>
         <div class="grid grid-cols-2 gap-2 mb-2">
           <button
             class="bg-surface-container hover:bg-primary/20 border border-primary/30 py-3 font-headline font-black text-primary transition-all text-xs uppercase"
             @click="forceBid(1)"
-          >Force +$1</button>
+          >
+            Force +$1
+          </button>
           <button
             class="bg-surface-container hover:bg-primary/20 border border-primary/30 py-3 font-headline font-black text-primary transition-all text-xs uppercase"
             @click="forceBid(5)"
-          >Force +$5</button>
+          >
+            Force +$5
+          </button>
         </div>
         <div class="grid grid-cols-3 gap-2">
           <button
             :disabled="submitting"
             class="bg-surface-container hover:bg-secondary/20 border border-secondary/30 py-3 font-headline font-bold text-secondary transition-all text-xs uppercase disabled:opacity-40"
             @click="clearLastBid"
-          >Clear Last Bid</button>
+          >
+            Clear Last Bid
+          </button>
           <button
             :disabled="submitting"
             class="bg-surface-container hover:bg-secondary/20 border border-secondary/30 py-3 font-headline font-bold text-secondary transition-all text-xs uppercase disabled:opacity-40"
             @click="clearAllBids"
-          >Clear All Bids</button>
+          >
+            Clear All Bids
+          </button>
           <button
             :disabled="submitting"
             class="bg-error-container/30 hover:bg-error/20 border border-error/30 py-3 font-headline font-bold text-error transition-all text-xs uppercase disabled:opacity-40"
             @click="endBidding"
-          >End Bidding</button>
+          >
+            End Bidding
+          </button>
         </div>
         <p v-if="adminError" class="text-xs text-error font-label text-center">{{ adminError }}</p>
       </div>

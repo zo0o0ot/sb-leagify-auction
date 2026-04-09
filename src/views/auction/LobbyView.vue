@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabase'
 import { useAuctionStore } from '@/stores/auction'
@@ -18,13 +18,21 @@ useAuctionRealtime(auctionId)
 const isAdmin = computed(() => store.isAuctionMaster)
 const submitting = ref(false)
 
-const coaches = computed(() =>
-  store.participants.filter((p) => p.role === 'team_coach'),
+// Redirect all clients (not just admin) when the draft starts
+watch(
+  () => store.auction?.status,
+  (status) => {
+    if (status === 'in_progress') {
+      router.push(`/auction/${auctionId}/draft`)
+    }
+  },
 )
+
+const coaches = computed(() => store.participants.filter((p) => p.role === 'team_coach'))
 
 function teamFor(participantId: number) {
   const p = store.participants.find((x) => x.id === participantId)
-  return p?.team_id ? store.teams.find((t) => t.id === p.team_id) ?? null : null
+  return p?.team_id ? (store.teams.find((t) => t.id === p.team_id) ?? null) : null
 }
 
 const connectedCount = computed(() => store.participants.filter((p) => p.is_connected).length)
@@ -65,7 +73,12 @@ async function startPractice() {
   practiceSubmitting.value = true
   const { error } = await supabase
     .from('auctions')
-    .update({ status: 'practice', current_school_id: practiceSchoolId.value, current_high_bid: 0, current_high_bidder_id: null })
+    .update({
+      status: 'practice',
+      current_school_id: practiceSchoolId.value,
+      current_high_bid: 0,
+      current_high_bidder_id: null,
+    })
     .eq('id', auctionId)
   if (error) practiceError.value = error.message
   practiceSubmitting.value = false
@@ -75,7 +88,12 @@ async function stopPractice() {
   practiceError.value = ''
   const { error } = await supabase
     .from('auctions')
-    .update({ status: 'draft', current_school_id: null, current_high_bid: null, current_high_bidder_id: null })
+    .update({
+      status: 'draft',
+      current_school_id: null,
+      current_high_bid: null,
+      current_high_bidder_id: null,
+    })
     .eq('id', auctionId)
   if (!error) practiceSchoolId.value = null
   else practiceError.value = error.message
@@ -89,8 +107,12 @@ async function stopPractice() {
       <span class="text-primary border-b-2 border-primary pb-1">
         {{ isAdmin ? 'ADMIN CONSOLE' : 'COACH VIEW' }}
       </span>
-      <span class="text-on-surface-variant">MARKET</span>
-      <RouterLink :to="`/auction/${auctionId}/roster`" class="text-on-surface-variant hover:text-on-surface">ROSTERS</RouterLink>
+      <span class="text-on-surface-variant opacity-50 cursor-help" title="Coming soon">MARKET</span>
+      <RouterLink
+        :to="`/auction/${auctionId}/roster`"
+        class="text-on-surface-variant hover:text-on-surface"
+        >ROSTERS</RouterLink
+      >
     </template>
 
     <!-- Header actions -->
@@ -107,7 +129,9 @@ async function stopPractice() {
     <!-- Sidebar header -->
     <template #sidebar-header>
       <div class="flex items-center gap-3">
-        <div class="w-12 h-12 bg-surface-container-highest flex items-center justify-center border border-primary/20">
+        <div
+          class="w-12 h-12 bg-surface-container-highest flex items-center justify-center border border-primary/20"
+        >
           <span class="material-symbols-outlined text-primary text-3xl">
             {{ isAdmin ? 'admin_panel_settings' : 'sports_football' }}
           </span>
@@ -123,10 +147,15 @@ async function stopPractice() {
 
     <!-- Sidebar nav -->
     <template #sidebar-nav>
-      <a class="flex items-center px-6 py-4 bg-gradient-to-r from-primary/20 to-transparent text-primary border-l-4 border-primary">
+      <a
+        class="flex items-center px-6 py-4 bg-gradient-to-r from-primary/20 to-transparent text-primary border-l-4 border-primary"
+      >
         <span class="material-symbols-outlined mr-4">stadium</span> WAR ROOM
       </a>
-      <a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container">
+      <a
+        class="flex items-center px-6 py-4 text-on-surface-variant opacity-50 cursor-help"
+        title="Coming soon"
+      >
         <span class="material-symbols-outlined mr-4">storefront</span> MARKET
       </a>
       <RouterLink
@@ -146,11 +175,15 @@ async function stopPractice() {
           <button
             class="flex-1 bg-error-container hover:bg-error/20 text-error text-[10px] py-2 border border-error/30 uppercase font-label"
             @click="store.setAuctionStatus('paused')"
-          >Pause</button>
+          >
+            Pause
+          </button>
           <button
             class="flex-1 bg-surface-container-highest hover:bg-white/10 text-on-surface text-[10px] py-2 border border-outline/30 uppercase font-label"
             @click="store.setAuctionStatus('practice')"
-          >Reset</button>
+          >
+            Reset
+          </button>
         </div>
       </div>
 
@@ -169,10 +202,7 @@ async function stopPractice() {
     </template>
 
     <!-- ── Main content ── -->
-    <div
-      v-if="store.loading"
-      class="h-[calc(100vh-104px)] flex items-center justify-center"
-    >
+    <div v-if="store.loading" class="h-[calc(100vh-104px)] flex items-center justify-center">
       <span class="material-symbols-outlined text-4xl text-primary animate-spin">autorenew</span>
     </div>
 
@@ -190,10 +220,7 @@ async function stopPractice() {
       </button>
     </div>
 
-    <div
-      v-else
-      class="p-8 h-[calc(100vh-104px)] overflow-hidden grid grid-cols-12 gap-8"
-    >
+    <div v-else class="p-8 h-[calc(100vh-104px)] overflow-hidden grid grid-cols-12 gap-8">
       <!-- ── Left column: participant list ── -->
       <section class="col-span-4 flex flex-col space-y-6">
         <div class="flex items-center justify-between">
@@ -215,7 +242,10 @@ async function stopPractice() {
             :is-me="p.id === store.myParticipant?.id"
             @toggle-ready="toggleReady"
           />
-          <p v-if="store.participants.length === 0" class="text-sm text-outline font-label text-center py-8">
+          <p
+            v-if="store.participants.length === 0"
+            class="text-sm text-outline font-label text-center py-8"
+          >
             No participants yet — share the join code.
           </p>
         </div>
@@ -224,15 +254,17 @@ async function stopPractice() {
       <!-- ── Right column: practice zone or admin console ── -->
 
       <!-- COACH: practice bidding zone -->
-      <section v-if="!isAdmin" class="col-span-8 flex flex-col space-y-6">
-        <h2 class="font-headline text-2xl font-black uppercase tracking-tighter text-on-surface">
+      <section v-if="!isAdmin" class="col-span-8 flex flex-col space-y-6 min-h-0">
+        <h2
+          class="font-headline text-2xl font-black uppercase tracking-tighter text-on-surface flex-shrink-0"
+        >
           Practice Bidding Zone
         </h2>
         <PracticeBiddingZone />
       </section>
 
       <!-- ADMIN: draft management console -->
-      <section v-else class="col-span-8 flex flex-col space-y-6">
+      <section v-else class="col-span-8 flex flex-col space-y-6 min-h-0 overflow-y-auto">
         <div class="flex items-center justify-between">
           <h2 class="font-headline text-2xl font-black uppercase tracking-tighter text-on-surface">
             Draft Management Console
@@ -240,7 +272,9 @@ async function stopPractice() {
           <div class="flex items-center gap-4">
             <div class="bg-surface-container-high px-4 py-1 flex flex-col items-end">
               <span class="text-[10px] font-label text-outline">REMAINING SCHOOLS</span>
-              <span class="text-xl font-headline font-black text-primary">{{ store.availableSchools.length }}</span>
+              <span class="text-xl font-headline font-black text-primary">{{
+                store.availableSchools.length
+              }}</span>
             </div>
             <div class="bg-secondary-container px-4 py-1 flex flex-col items-end">
               <span class="text-[10px] font-label text-on-secondary-container">COACHES READY</span>
@@ -261,7 +295,10 @@ async function stopPractice() {
               <div>
                 <div class="text-[10px] font-label text-outline mb-1 uppercase">On The Block</div>
                 <div class="text-lg font-headline font-bold text-on-surface">
-                  {{ store.schools.find(s => s.id === store.auction!.current_school_id)?.school?.name ?? '—' }}
+                  {{
+                    store.schools.find((s) => s.id === store.auction!.current_school_id)?.school
+                      ?.name ?? '—'
+                  }}
                 </div>
               </div>
               <div>
@@ -283,9 +320,13 @@ async function stopPractice() {
           <PracticeBiddingZone :is-admin="true" />
 
           <!-- Global action center -->
-          <div class="bg-surface-container-high p-8 border-t-4 border-secondary flex flex-col items-center space-y-6">
+          <div
+            class="bg-surface-container-high p-8 border-t-4 border-secondary flex flex-col items-center space-y-6"
+          >
             <div class="text-center">
-              <div class="text-xs font-label text-outline uppercase tracking-[0.2em] mb-2">Pre-Draft Status</div>
+              <div class="text-xs font-label text-outline uppercase tracking-[0.2em] mb-2">
+                Pre-Draft Status
+              </div>
               <div
                 v-if="notReadyCoach"
                 class="text-lg font-headline font-bold text-error uppercase italic"
@@ -310,7 +351,9 @@ async function stopPractice() {
                     v-for="s in store.availableSchools.slice(0, 20)"
                     :key="s.id"
                     :value="s.id"
-                  >{{ s.school?.name ?? s.id }}</option>
+                  >
+                    {{ s.school?.name ?? s.id }}
+                  </option>
                 </select>
                 <button
                   :disabled="!practiceSchoolId || practiceSubmitting"
