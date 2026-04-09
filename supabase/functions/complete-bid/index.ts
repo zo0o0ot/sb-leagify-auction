@@ -3,7 +3,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-session-token',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-session-token',
 }
 
 serve(async (req) => {
@@ -20,7 +21,9 @@ serve(async (req) => {
     // Get current auction state
     const { data: auction, error: aErr } = await supabase
       .from('auctions')
-      .select('id, status, current_school_id, current_high_bid, current_high_bidder_id, current_nominator_id')
+      .select(
+        'id, status, current_school_id, current_high_bid, current_high_bidder_id, current_nominator_id',
+      )
       .eq('id', auction_id)
       .single()
 
@@ -77,10 +80,7 @@ serve(async (req) => {
     if (dpErr) throw dpErr
 
     // 5. Mark school as unavailable
-    await supabase
-      .from('auction_schools')
-      .update({ is_available: false })
-      .eq('id', schoolId)
+    await supabase.from('auction_schools').update({ is_available: false }).eq('id', schoolId)
 
     // 6. Mark the winning bid in bid_history
     await supabase
@@ -93,44 +93,67 @@ serve(async (req) => {
       .order('created_at', { ascending: false })
       .limit(1)
 
-    // 7. Advance nominator (circular by nomination_order)
-    const { data: allTeams } = await supabase
-      .from('teams')
-      .select('id, nomination_order')
-      .eq('auction_id', auction_id)
-      .eq('is_active', true)
-      .order('nomination_order')
+    // 7. Advance nominator — skip teams whose rosters are full
+    const [teamsRes, participantsRes, rosterPositionsRes, allPicksRes, nominatorRes] =
+      await Promise.all([
+        supabase
+          .from('teams')
+          .select('id, nomination_order')
+          .eq('auction_id', auction_id)
+          .eq('is_active', true)
+          .order('nomination_order'),
+        supabase
+          .from('participants')
+          .select('id, team_id')
+          .eq('auction_id', auction_id)
+          .not('team_id', 'is', null),
+        supabase.from('roster_positions').select('slots_per_team').eq('auction_id', auction_id),
+        supabase.from('draft_picks').select('team_id').eq('auction_id', auction_id),
+        supabase
+          .from('participants')
+          .select('id, team_id')
+          .eq('id', auction.current_nominator_id)
+          .single(),
+      ])
 
-    const { data: nominatorParticipant } = await supabase
-      .from('participants')
-      .select('id, team_id')
-      .eq('id', auction.current_nominator_id)
-      .single()
+    const allTeams = teamsRes.data ?? []
+    const allParticipants = participantsRes.data ?? []
+    const participantByTeam = new Map(allParticipants.map((p) => [p.team_id, p.id]))
+    const nominatorParticipant = nominatorRes.data
 
-    // Build a map of team_id → participant_id for quick lookup (only teams with participants)
-    const { data: allParticipants } = await supabase
-      .from('participants')
-      .select('id, team_id')
-      .eq('auction_id', auction_id)
-      .not('team_id', 'is', null)
+    // Total roster slots per team
+    const slotsPerTeam = (rosterPositionsRes.data ?? []).reduce(
+      (sum, rp) => sum + rp.slots_per_team,
+      0,
+    )
 
-    const participantByTeam = new Map((allParticipants ?? []).map((p) => [p.team_id, p.id]))
+    // Count picks per team (includes the pick just inserted above)
+    const pickCountByTeam = new Map<number, number>()
+    for (const pick of allPicksRes.data ?? []) {
+      pickCountByTeam.set(pick.team_id, (pickCountByTeam.get(pick.team_id) ?? 0) + 1)
+    }
 
-    let nextNominatorId = auction.current_nominator_id
-    if (allTeams && nominatorParticipant) {
+    const isRosterFull = (teamId: number) =>
+      slotsPerTeam > 0 && (pickCountByTeam.get(teamId) ?? 0) >= slotsPerTeam
+
+    let nextNominatorId: number | null = null
+    if (nominatorParticipant) {
       const currentIdx = allTeams.findIndex((t) => t.id === nominatorParticipant.team_id)
-      // Walk forward circularly until we find a team that has a participant
+      // Walk forward circularly; skip teams with no participant or a full roster
       for (let i = 1; i <= allTeams.length; i++) {
         const candidate = allTeams[(currentIdx + i) % allTeams.length]!
         const candidateParticipantId = participantByTeam.get(candidate.id)
-        if (candidateParticipantId) {
+        if (candidateParticipantId && !isRosterFull(candidate.id)) {
           nextNominatorId = candidateParticipantId
           break
         }
       }
     }
 
-    // 8. Reset auction state, advance nominator
+    // If no eligible nominator remains all rosters are full — draft is complete
+    const draftComplete = nextNominatorId === null
+
+    // 8. Reset auction state, advance nominator (or complete the draft)
     await supabase
       .from('auctions')
       .update({
@@ -138,6 +161,7 @@ serve(async (req) => {
         current_high_bid: null,
         current_high_bidder_id: null,
         current_nominator_id: nextNominatorId,
+        ...(draftComplete ? { status: 'completed' } : {}),
       })
       .eq('id', auction_id)
 

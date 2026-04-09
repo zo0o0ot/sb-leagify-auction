@@ -60,8 +60,15 @@ const maxBid = computed(() => store.myMaxBid)
 const isAutoPass = computed(() => maxBid.value < nextMinBid.value)
 const isHighBidder = computed(() => store.activeTeam?.id === store.auction?.current_high_bidder_id)
 
+const myRosterFull = computed(() => {
+  const team = store.activeTeam
+  if (!team) return false
+  const totalSlots = store.rosterPositions.reduce((sum, rp) => sum + rp.slots_per_team, 0)
+  return store.draftPicks.filter((p) => p.team_id === team.id).length >= totalSlots
+})
+
 const isMyTurnToNominate = computed(
-  () => store.auction?.current_nominator_id === store.myParticipant?.id,
+  () => !myRosterFull.value && store.auction?.current_nominator_id === store.myParticipant?.id,
 )
 
 const nominationOrder = computed(() =>
@@ -480,6 +487,32 @@ function bidderNameFor(bid: (typeof store.bidHistory)[0]) {
     <!-- ── Main content ── -->
     <div v-if="store.loading" class="h-[calc(100vh-104px)] flex items-center justify-center">
       <span class="material-symbols-outlined text-4xl text-primary animate-spin">autorenew</span>
+    </div>
+
+    <!-- Draft complete -->
+    <div
+      v-else-if="store.auction?.status === 'completed'"
+      class="h-[calc(100vh-104px)] flex flex-col items-center justify-center gap-6 text-center p-8"
+    >
+      <span
+        class="material-symbols-outlined text-6xl text-tertiary"
+        style="font-variation-settings: 'FILL' 1"
+        >emoji_events</span
+      >
+      <div>
+        <div class="font-headline font-black uppercase text-on-surface text-4xl tracking-tighter">
+          DRAFT COMPLETE
+        </div>
+        <div class="text-sm font-label text-outline uppercase tracking-wider mt-2">
+          All rosters are full
+        </div>
+      </div>
+      <RouterLink
+        :to="`/auction/${auctionId}/roster`"
+        class="px-8 py-4 metallic-primary text-on-primary-fixed font-headline font-black text-lg uppercase tracking-widest active:scale-[0.98] transition-transform"
+      >
+        View Final Rosters
+      </RouterLink>
     </div>
 
     <div
