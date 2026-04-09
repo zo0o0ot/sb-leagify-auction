@@ -56,7 +56,13 @@ async function startDraft(skipCheck = false) {
 
   await supabase
     .from('auctions')
-    .update({ status: 'in_progress', current_nominator_id: firstNominator?.id ?? null })
+    .update({
+      status: 'in_progress',
+      current_nominator_id: firstNominator?.id ?? null,
+      current_school_id: null,
+      current_high_bid: null,
+      current_high_bidder_id: null,
+    })
     .eq('id', auctionId)
 
   router.push(`/auction/${auctionId}/draft`)
