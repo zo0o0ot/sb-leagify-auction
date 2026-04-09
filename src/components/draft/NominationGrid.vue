@@ -9,6 +9,18 @@ const submitting = ref(false)
 const selectedConference = ref('ALL')
 const searchQuery = ref('')
 
+const rosterSlots = computed(() => {
+  const teamId = store.activeTeam?.id
+  if (!teamId) return []
+  return store.rosterPositions.map((rp) => {
+    const filled = store.draftPicks.filter(
+      (dp) => dp.team_id === teamId && dp.roster_position_id === rp.id,
+    ).length
+    const open = Math.max(0, rp.slots_per_team - filled)
+    return { ...rp, filled, open }
+  })
+})
+
 const conferences = computed(() => {
   const confs = new Set<string>()
   store.availableSchools.forEach((s) => {
@@ -42,27 +54,60 @@ async function nominate(auctionSchoolId: number) {
     class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
     @click.self="emit('close')"
   >
-    <div class="bg-surface-container-low border border-outline-variant/30 w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl">
-
+    <div
+      class="bg-surface-container-low border border-outline-variant/30 w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl"
+    >
       <!-- Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/20 bg-surface-container-high">
+      <div
+        class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/20 bg-surface-container-high"
+      >
         <div>
           <div class="font-headline font-black uppercase text-on-surface tracking-tight text-xl">
             YOUR TURN TO NOMINATE
           </div>
           <div class="text-[10px] font-label text-outline uppercase tracking-widest">
-            Remaining Budget: ${{ store.activeTeam?.remaining_budget ?? 0 }} &bull; {{ store.availableSchools.length }} schools available
+            Remaining Budget: ${{ store.activeTeam?.remaining_budget ?? 0 }} &bull;
+            {{ store.availableSchools.length }} schools available
           </div>
         </div>
-        <button class="p-2 hover:bg-surface-container text-outline transition-colors" @click="emit('close')">
+        <button
+          class="p-2 hover:bg-surface-container text-outline transition-colors"
+          @click="emit('close')"
+        >
           <span class="material-symbols-outlined">close</span>
         </button>
+      </div>
+
+      <!-- Roster summary -->
+      <div
+        class="px-6 py-3 border-b border-outline-variant/20 bg-surface-container-lowest flex items-center gap-2 flex-wrap"
+      >
+        <span class="text-[10px] font-label text-outline uppercase tracking-widest mr-1"
+          >My Roster</span
+        >
+        <div
+          v-for="slot in rosterSlots"
+          :key="slot.id"
+          class="flex items-center gap-1.5 px-2.5 py-1 border text-[10px] font-label font-bold uppercase"
+          :class="
+            slot.open > 0
+              ? 'border-primary/30 bg-primary/10 text-primary'
+              : 'border-outline-variant/20 bg-surface-container text-outline'
+          "
+        >
+          <span>{{ slot.position_name }}</span>
+          <span class="opacity-60">{{ slot.filled }}/{{ slot.slots_per_team }}</span>
+          <span v-if="slot.open > 0" class="text-tertiary">· {{ slot.open }} open</span>
+        </div>
       </div>
 
       <!-- Search + conference filter -->
       <div class="px-6 py-3 border-b border-outline-variant/20 flex items-center gap-4">
         <div class="relative flex-1">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm"
+            >search</span
+          >
           <input
             v-model="searchQuery"
             type="text"
@@ -75,9 +120,11 @@ async function nominate(auctionSchoolId: number) {
             v-for="conf in conferences"
             :key="conf"
             class="px-3 py-1 text-[10px] font-label font-bold uppercase transition-colors"
-            :class="selectedConference === conf
-              ? 'bg-secondary text-on-secondary'
-              : 'bg-surface-container text-outline hover:bg-surface-container-high'"
+            :class="
+              selectedConference === conf
+                ? 'bg-secondary text-on-secondary'
+                : 'bg-surface-container text-outline hover:bg-surface-container-high'
+            "
             @click="selectedConference = conf"
           >
             {{ conf }}
@@ -107,12 +154,18 @@ async function nominate(auctionSchoolId: number) {
 
           <!-- Info -->
           <div class="flex-1 min-w-0">
-            <div class="font-headline font-bold uppercase text-on-surface text-sm tracking-tight truncate">
+            <div
+              class="font-headline font-bold uppercase text-on-surface text-sm tracking-tight truncate"
+            >
               {{ school.school?.name }}
             </div>
             <div class="flex items-center gap-2 mt-0.5">
-              <span class="text-[10px] font-label text-outline uppercase">{{ school.conference }}</span>
-              <span class="text-[10px] font-label text-tertiary font-bold uppercase">{{ school.projected_points }} PTS</span>
+              <span class="text-[10px] font-label text-outline uppercase">{{
+                school.conference
+              }}</span>
+              <span class="text-[10px] font-label text-tertiary font-bold uppercase"
+                >{{ school.projected_points }} PTS</span
+              >
             </div>
             <div class="text-[10px] font-label text-on-surface-variant uppercase mt-0.5">
               {{ school.leagify_position }}
@@ -129,7 +182,10 @@ async function nominate(auctionSchoolId: number) {
           </button>
         </div>
 
-        <div v-if="filteredSchools.length === 0" class="col-span-2 py-16 text-center text-outline font-label uppercase text-sm">
+        <div
+          v-if="filteredSchools.length === 0"
+          class="col-span-2 py-16 text-center text-outline font-label uppercase text-sm"
+        >
           No schools match — try a different conference or search
         </div>
       </div>
