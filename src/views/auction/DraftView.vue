@@ -67,6 +67,11 @@ const myRosterFull = computed(() => {
   return store.draftPicks.filter((p) => p.team_id === team.id).length >= totalSlots
 })
 
+const totalDraftSlots = computed(() => {
+  const slotsPerTeam = store.rosterPositions.reduce((sum, rp) => sum + rp.slots_per_team, 0)
+  return slotsPerTeam * store.teams.filter((t) => t.is_active).length
+})
+
 const isMyTurnToNominate = computed(
   () => !myRosterFull.value && store.auction?.current_nominator_id === store.myParticipant?.id,
 )
@@ -76,6 +81,16 @@ const nominationOrder = computed(() =>
 )
 
 const recentBids = computed(() => store.bidHistory.slice(0, 10))
+
+const currentNominatorName = computed(() => {
+  if (!store.auction?.current_school_id) return null
+  const nomination = store.bidHistory.find(
+    (b) => b.auction_school_id === store.auction!.current_school_id && b.bid_type === 'nomination',
+  )
+  if (!nomination) return null
+  const participant = store.participants.find((p) => p.id === nomination.participant_id)
+  return participant?.display_name ?? null
+})
 
 // All picks missing a roster position — admin safety net
 const unassignedPicks = computed(() => store.draftPicks.filter((p) => !p.roster_position_id))
@@ -478,6 +493,7 @@ function bidderNameFor(bid: (typeof store.bidHistory)[0]) {
     <template #ticker-content>
       <span>AUCTION: {{ store.auction?.name ?? '—' }}</span>
       <span class="text-tertiary">REMAINING SCHOOLS: {{ store.availableSchools.length }}</span>
+      <span>PICKS: {{ store.draftPicks.length }} / {{ totalDraftSlots }}</span>
       <span v-if="store.currentNominator">NEXT UP: {{ store.currentNominator.display_name }}</span>
       <span v-if="recentBids[0]"
         >PREVIOUS: {{ bidderNameFor(recentBids[0]) }} — ${{ recentBids[0].amount }}</span
@@ -596,6 +612,12 @@ function bidderNameFor(bid: (typeof store.bidHistory)[0]) {
                     currentSchool.projected_points
                   }}</span>
                 </div>
+                <div v-if="currentNominatorName">
+                  <span class="text-[10px] font-label text-outline uppercase">Nominated by</span>
+                  <span class="ml-2 font-headline font-bold text-on-surface-variant">{{
+                    currentNominatorName
+                  }}</span>
+                </div>
               </div>
             </div>
             <div class="text-right">
@@ -654,8 +676,29 @@ function bidderNameFor(bid: (typeof store.bidHistory)[0]) {
                 >
               </div>
 
+              <!-- Roster full state -->
+              <div v-if="myRosterFull && !isHighBidder" class="text-center py-6">
+                <div
+                  class="inline-flex items-center gap-3 bg-surface-container-high px-6 py-4 border border-outline-variant/30"
+                >
+                  <span
+                    class="material-symbols-outlined text-tertiary"
+                    style="font-variation-settings: 'FILL' 1"
+                    >check_circle</span
+                  >
+                  <div class="text-left">
+                    <div class="font-headline font-bold uppercase text-on-surface-variant text-sm">
+                      ROSTER FULL
+                    </div>
+                    <div class="text-[10px] font-label text-outline uppercase tracking-wider">
+                      Your team cannot bid on more schools
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Auto-passed state -->
-              <div v-if="isAutoPass" class="text-center py-6">
+              <div v-else-if="isAutoPass && !myRosterFull" class="text-center py-6">
                 <div
                   class="inline-flex items-center gap-3 bg-surface-container-high px-6 py-4 border border-outline-variant/30"
                 >
@@ -678,7 +721,7 @@ function bidderNameFor(bid: (typeof store.bidHistory)[0]) {
                 </div>
               </div>
 
-              <template v-else>
+              <template v-else-if="!myRosterFull">
                 <!-- Next min bid -->
                 <div class="text-center">
                   <div class="text-xs font-label text-outline uppercase tracking-widest">

@@ -32,6 +32,16 @@ serve(async (req) => {
     if (!is_admin_override && auction.current_nominator_id !== participant_id)
       throw new Error('It is not your turn to nominate')
 
+    // Validate team has at least $1 to cover the opening bid
+    const { data: nominatingTeam, error: tErr } = await supabase
+      .from('teams')
+      .select('remaining_budget')
+      .eq('id', team_id)
+      .single()
+
+    if (tErr || !nominatingTeam) throw new Error('Team not found')
+    if (nominatingTeam.remaining_budget < 1) throw new Error('Insufficient budget to nominate')
+
     // Validate school is available
     const { data: school, error: sErr } = await supabase
       .from('auction_schools')

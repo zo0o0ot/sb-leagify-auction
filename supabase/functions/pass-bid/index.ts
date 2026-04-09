@@ -3,7 +3,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-session-token',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-session-token',
 }
 
 serve(async (req) => {
@@ -57,23 +58,42 @@ serve(async (req) => {
 
     const passedTeamIds = new Set((passes ?? []).map((p) => p.team_id))
 
-    // Count active teams that have at least one participant — teams with no participant
-    // will never pass so excluding them prevents bids from getting permanently stuck.
-    const { data: activeTeams } = await supabase
-      .from('teams')
-      .select('id')
-      .eq('auction_id', auction_id)
-      .eq('is_active', true)
-      .neq('id', auction.current_high_bidder_id ?? -1)
+    // Count active teams that have at least one participant and a non-full roster.
+    // Teams with no participant will never pass — excluding them prevents deadlocks.
+    // Teams with a full roster can't use any more schools — excluding them too.
+    const [activeTeamsRes, participantTeamsRes, rosterPositionsRes, allPicksRes] =
+      await Promise.all([
+        supabase
+          .from('teams')
+          .select('id')
+          .eq('auction_id', auction_id)
+          .eq('is_active', true)
+          .neq('id', auction.current_high_bidder_id ?? -1),
+        supabase
+          .from('participants')
+          .select('team_id')
+          .eq('auction_id', auction_id)
+          .not('team_id', 'is', null),
+        supabase.from('roster_positions').select('slots_per_team').eq('auction_id', auction_id),
+        supabase.from('draft_picks').select('team_id').eq('auction_id', auction_id),
+      ])
 
-    const { data: participantTeams } = await supabase
-      .from('participants')
-      .select('team_id')
-      .eq('auction_id', auction_id)
-      .not('team_id', 'is', null)
+    const teamIdsWithParticipants = new Set((participantTeamsRes.data ?? []).map((p) => p.team_id))
 
-    const teamIdsWithParticipants = new Set((participantTeams ?? []).map((p) => p.team_id))
-    const totalEligibleTeams = (activeTeams ?? []).filter((t) => teamIdsWithParticipants.has(t.id)).length
+    const slotsPerTeam = (rosterPositionsRes.data ?? []).reduce(
+      (sum, rp) => sum + rp.slots_per_team,
+      0,
+    )
+    const pickCountByTeam = new Map<number, number>()
+    for (const pick of allPicksRes.data ?? []) {
+      pickCountByTeam.set(pick.team_id, (pickCountByTeam.get(pick.team_id) ?? 0) + 1)
+    }
+    const isRosterFull = (teamId: number) =>
+      slotsPerTeam > 0 && (pickCountByTeam.get(teamId) ?? 0) >= slotsPerTeam
+
+    const totalEligibleTeams = (activeTeamsRes.data ?? []).filter(
+      (t) => teamIdsWithParticipants.has(t.id) && !isRosterFull(t.id),
+    ).length
 
     // If no one has bid yet and all teams pass, it's a no-sale (skip school)
     const hasHighBidder = !!auction.current_high_bidder_id
