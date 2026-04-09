@@ -95,6 +95,89 @@ const currentNominatorName = computed(() => {
 // All picks missing a roster position — admin safety net
 const unassignedPicks = computed(() => store.draftPicks.filter((p) => !p.roster_position_id))
 
+// ── Post-draft assignment ─────────────────────────────────────────────────────
+const assignSchoolId = ref<number | null>(null)
+const assignTeamId = ref<number | null>(null)
+const assignPositionId = ref<number | null>(null)
+const assignPrice = ref('0')
+const assignSubmitting = ref(false)
+const assignError = ref('')
+
+const teamsWithOpenSlots = computed(() => {
+  const slotsPerTeam = store.rosterPositions.reduce((sum, rp) => sum + rp.slots_per_team, 0)
+  return store.teams
+    .filter((t) => t.is_active)
+    .map((t) => ({
+      ...t,
+      openSlots: slotsPerTeam - store.draftPicks.filter((p) => p.team_id === t.id).length,
+    }))
+    .filter((t) => t.openSlots > 0)
+    .sort((a, b) => a.nomination_order - b.nomination_order)
+})
+
+const openPositionsForAssignTeam = computed(() => {
+  if (!assignTeamId.value) return []
+  return store.rosterPositions.filter((rp) => {
+    const filled = store.draftPicks.filter(
+      (p) => p.team_id === assignTeamId.value && p.roster_position_id === rp.id,
+    ).length
+    return filled < rp.slots_per_team
+  })
+})
+
+watch(assignTeamId, () => {
+  assignPositionId.value = null
+})
+
+async function directAssign() {
+  if (!assignSchoolId.value || !assignTeamId.value || !assignPositionId.value) {
+    assignError.value = 'Select a school, team, and position'
+    return
+  }
+  assignError.value = ''
+  assignSubmitting.value = true
+
+  const price = Math.max(0, parseInt(assignPrice.value) || 0)
+  const pickOrder = store.draftPicks.length + 1
+
+  const { error: pickErr } = await supabase.from('draft_picks').insert({
+    auction_id: auctionId,
+    team_id: assignTeamId.value,
+    auction_school_id: assignSchoolId.value,
+    roster_position_id: assignPositionId.value,
+    winning_bid: price,
+    pick_order: pickOrder,
+    won_by_id: null,
+  })
+
+  if (pickErr) {
+    assignError.value = pickErr.message
+    assignSubmitting.value = false
+    return
+  }
+
+  await supabase
+    .from('auction_schools')
+    .update({ is_available: false })
+    .eq('id', assignSchoolId.value)
+
+  if (price > 0) {
+    const team = store.teams.find((t) => t.id === assignTeamId.value)
+    if (team) {
+      await supabase
+        .from('teams')
+        .update({ remaining_budget: team.remaining_budget - price })
+        .eq('id', assignTeamId.value)
+    }
+  }
+
+  assignSchoolId.value = null
+  assignTeamId.value = null
+  assignPositionId.value = null
+  assignPrice.value = '0'
+  assignSubmitting.value = false
+}
+
 // Watch for new picks that need position assignment.
 // Coaches: only their own team's picks. Admin (with proxy): proxy team's picks.
 // Admin (no proxy): any unassigned pick — so admin can always step in.
@@ -533,27 +616,180 @@ function bidderNameFor(bid: (typeof store.bidHistory)[0]) {
     <!-- Draft complete -->
     <div
       v-else-if="store.auction?.status === 'completed'"
-      class="h-[calc(100vh-104px)] flex flex-col items-center justify-center gap-6 text-center p-8"
+      class="h-[calc(100vh-104px)] overflow-y-auto"
     >
-      <span
-        class="material-symbols-outlined text-6xl text-tertiary"
-        style="font-variation-settings: 'FILL' 1"
-        >emoji_events</span
-      >
-      <div>
-        <div class="font-headline font-black uppercase text-on-surface text-4xl tracking-tighter">
-          DRAFT COMPLETE
+      <div class="grid gap-0" :class="isAdmin ? 'grid-cols-12' : 'grid-cols-1'">
+        <!-- Trophy / completion summary -->
+        <div
+          class="flex flex-col items-center justify-center gap-6 text-center p-12"
+          :class="isAdmin ? 'col-span-5 border-r border-outline-variant/20' : ''"
+        >
+          <span
+            class="material-symbols-outlined text-6xl text-tertiary"
+            style="font-variation-settings: 'FILL' 1"
+            >emoji_events</span
+          >
+          <div>
+            <div
+              class="font-headline font-black uppercase text-on-surface text-4xl tracking-tighter"
+            >
+              DRAFT COMPLETE
+            </div>
+            <div class="text-sm font-label text-outline uppercase tracking-wider mt-2">
+              {{
+                teamsWithOpenSlots.length > 0
+                  ? 'Some rosters still have open slots'
+                  : 'All rosters are full'
+              }}
+            </div>
+          </div>
+          <RouterLink
+            :to="`/auction/${auctionId}/roster`"
+            class="px-8 py-4 metallic-primary text-on-primary-fixed font-headline font-black text-lg uppercase tracking-widest active:scale-[0.98] transition-transform"
+          >
+            View Final Rosters
+          </RouterLink>
         </div>
-        <div class="text-sm font-label text-outline uppercase tracking-wider mt-2">
-          All rosters are full
+
+        <!-- Admin: post-draft assignment panel -->
+        <div v-if="isAdmin" class="col-span-7 p-8 space-y-6">
+          <div>
+            <div
+              class="font-headline font-black uppercase text-on-surface text-xl tracking-tighter"
+            >
+              Finalize Roster Assignments
+            </div>
+            <div class="text-[10px] font-label text-outline uppercase tracking-widest mt-1">
+              Assign remaining schools to teams with open slots
+            </div>
+          </div>
+
+          <!-- All done -->
+          <div
+            v-if="teamsWithOpenSlots.length === 0 || store.availableSchools.length === 0"
+            class="flex items-center gap-3 p-4 bg-surface-container border border-outline-variant/20"
+          >
+            <span
+              class="material-symbols-outlined text-tertiary"
+              style="font-variation-settings: 'FILL' 1"
+              >check_circle</span
+            >
+            <span class="text-sm font-label text-outline uppercase">
+              {{
+                store.availableSchools.length === 0
+                  ? 'No schools remaining'
+                  : 'All teams have full rosters'
+              }}
+            </span>
+          </div>
+
+          <!-- Assignment form -->
+          <template v-else>
+            <!-- Teams with open slots summary -->
+            <div class="space-y-2">
+              <div class="text-[10px] font-label text-outline uppercase tracking-widest">
+                Teams with open slots
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <div
+                  v-for="team in teamsWithOpenSlots"
+                  :key="team.id"
+                  class="px-3 py-1.5 border text-[10px] font-label font-bold uppercase cursor-pointer transition-colors"
+                  :class="
+                    assignTeamId === team.id
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-outline-variant/30 bg-surface-container text-on-surface-variant hover:border-primary/40'
+                  "
+                  @click="assignTeamId = team.id"
+                >
+                  {{ store.getTeamDisplayName(team.id) }} · {{ team.openSlots }} open
+                </div>
+              </div>
+            </div>
+
+            <!-- Form fields -->
+            <div class="grid grid-cols-2 gap-4">
+              <!-- School -->
+              <div class="space-y-1">
+                <div class="text-[10px] font-label text-outline uppercase tracking-widest">
+                  School
+                </div>
+                <select
+                  v-model="assignSchoolId"
+                  class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label px-3 py-2.5 focus:outline-none focus:border-primary"
+                >
+                  <option :value="null">— Select school —</option>
+                  <option v-for="s in store.availableSchools" :key="s.id" :value="s.id">
+                    {{ s.school?.name ?? s.id }} ({{ s.conference }})
+                  </option>
+                </select>
+              </div>
+
+              <!-- Team -->
+              <div class="space-y-1">
+                <div class="text-[10px] font-label text-outline uppercase tracking-widest">
+                  Team
+                </div>
+                <select
+                  v-model="assignTeamId"
+                  class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label px-3 py-2.5 focus:outline-none focus:border-primary"
+                >
+                  <option :value="null">— Select team —</option>
+                  <option v-for="team in teamsWithOpenSlots" :key="team.id" :value="team.id">
+                    {{ store.getTeamDisplayName(team.id) }} ({{ team.openSlots }} open)
+                  </option>
+                </select>
+              </div>
+
+              <!-- Position -->
+              <div class="space-y-1">
+                <div class="text-[10px] font-label text-outline uppercase tracking-widest">
+                  Position
+                </div>
+                <select
+                  v-model="assignPositionId"
+                  :disabled="!assignTeamId"
+                  class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label px-3 py-2.5 focus:outline-none focus:border-primary disabled:opacity-40"
+                >
+                  <option :value="null">— Select position —</option>
+                  <option v-for="rp in openPositionsForAssignTeam" :key="rp.id" :value="rp.id">
+                    {{ rp.position_name }}{{ rp.is_flex ? ' (FLEX)' : '' }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Price -->
+              <div class="space-y-1">
+                <div class="text-[10px] font-label text-outline uppercase tracking-widest">
+                  Price ($0 = uncontested)
+                </div>
+                <div class="relative">
+                  <span
+                    class="absolute left-3 top-1/2 -translate-y-1/2 font-headline font-black text-outline"
+                    >$</span
+                  >
+                  <input
+                    v-model="assignPrice"
+                    type="number"
+                    min="0"
+                    class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label pl-7 pr-3 py-2.5 focus:outline-none focus:border-primary"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <p v-if="assignError" class="text-xs text-error font-label">{{ assignError }}</p>
+
+            <button
+              :disabled="!assignSchoolId || !assignTeamId || !assignPositionId || assignSubmitting"
+              class="px-8 py-3 metallic-primary text-on-primary-fixed font-headline font-black text-sm uppercase tracking-widest active:scale-[0.98] transition-transform disabled:opacity-40"
+              @click="directAssign"
+            >
+              {{ assignSubmitting ? 'ASSIGNING...' : 'ASSIGN PICK' }}
+            </button>
+          </template>
         </div>
       </div>
-      <RouterLink
-        :to="`/auction/${auctionId}/roster`"
-        class="px-8 py-4 metallic-primary text-on-primary-fixed font-headline font-black text-lg uppercase tracking-widest active:scale-[0.98] transition-transform"
-      >
-        View Final Rosters
-      </RouterLink>
     </div>
 
     <div
