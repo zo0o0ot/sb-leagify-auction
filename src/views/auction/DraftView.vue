@@ -214,37 +214,21 @@ async function directAssign() {
   assignSubmitting.value = true
 
   const price = Math.max(0, parseInt(assignPrice.value) || 0)
-  const pickOrder = store.draftPicks.length + 1
 
-  const { error: pickErr } = await supabase.from('draft_picks').insert({
-    auction_id: auctionId,
-    team_id: assignTeamId.value,
-    auction_school_id: assignSchoolId.value,
-    roster_position_id: assignPositionId.value,
-    winning_bid: price,
-    pick_order: pickOrder,
-    won_by_id: null,
+  const { data, error } = await supabase.functions.invoke('admin-assign', {
+    body: {
+      auction_id: auctionId,
+      auction_school_id: assignSchoolId.value,
+      team_id: assignTeamId.value,
+      roster_position_id: assignPositionId.value,
+      winning_bid: price,
+    },
   })
 
-  if (pickErr) {
-    assignError.value = pickErr.message
+  if (error || data?.ok === false) {
+    assignError.value = data?.error ?? error?.message ?? 'Assignment failed'
     assignSubmitting.value = false
     return
-  }
-
-  await supabase
-    .from('auction_schools')
-    .update({ is_available: false })
-    .eq('id', assignSchoolId.value)
-
-  if (price > 0) {
-    const team = store.teams.find((t) => t.id === assignTeamId.value)
-    if (team) {
-      await supabase
-        .from('teams')
-        .update({ remaining_budget: team.remaining_budget - price })
-        .eq('id', assignTeamId.value)
-    }
   }
 
   assignSchoolId.value = null
