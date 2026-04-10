@@ -64,6 +64,43 @@ function schoolFor(pick: ReturnType<typeof rosterSlots>[0]['pick']) {
   if (!pick) return null
   return store.schools.find((s) => s.id === pick.auction_school_id) ?? null
 }
+
+function exportCsv() {
+  const rows: string[][] = [
+    ['Team', 'School', 'Conference', 'Position', 'Price Paid', 'Projected Points'],
+  ]
+
+  for (const team of sortedTeams.value) {
+    const teamName = store.getTeamDisplayName(team.id)
+    for (const slot of rosterSlots(team.id)) {
+      if (!slot.pick) {
+        rows.push([teamName, '(empty)', '', slot.position.position_name, '', ''])
+      } else {
+        const school = schoolFor(slot.pick)
+        rows.push([
+          teamName,
+          school?.school?.name ?? '',
+          school?.conference ?? '',
+          slot.position.position_name + (slot.position.is_flex ? ' (FLEX)' : ''),
+          String(slot.pick.winning_bid ?? 0),
+          String(school?.projected_points ?? ''),
+        ])
+      }
+    }
+  }
+
+  const csv = rows
+    .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    .join('\n')
+
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${store.auction?.name ?? 'draft'}-results.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
 </script>
 
 <template>
@@ -156,20 +193,29 @@ function schoolFor(pick: ReturnType<typeof rosterSlots>[0]['pick']) {
     <div v-else class="h-[calc(100vh-104px)] flex flex-col overflow-hidden">
       <!-- Team tabs -->
       <div
-        class="flex items-end gap-0 border-b border-outline-variant/20 bg-surface-container-low px-6 overflow-x-auto flex-shrink-0"
+        class="flex items-end gap-0 border-b border-outline-variant/20 bg-surface-container-low px-6 overflow-x-auto flex-shrink-0 justify-between"
       >
+        <div class="flex items-end gap-0">
+          <button
+            v-for="team in sortedTeams"
+            :key="team.id"
+            class="px-6 py-3 font-headline font-bold text-xs uppercase tracking-wider whitespace-nowrap transition-colors border-b-2 -mb-px"
+            :class="
+              selectedTeam?.id === team.id
+                ? 'text-primary border-primary bg-surface-container'
+                : 'text-on-surface-variant border-transparent hover:text-on-surface hover:border-outline-variant/50'
+            "
+            @click="activeTeamId = team.id"
+          >
+            {{ store.getTeamDisplayName(team.id) }}
+          </button>
+        </div>
         <button
-          v-for="team in sortedTeams"
-          :key="team.id"
-          class="px-6 py-3 font-headline font-bold text-xs uppercase tracking-wider whitespace-nowrap transition-colors border-b-2 -mb-px"
-          :class="
-            selectedTeam?.id === team.id
-              ? 'text-primary border-primary bg-surface-container'
-              : 'text-on-surface-variant border-transparent hover:text-on-surface hover:border-outline-variant/50'
-          "
-          @click="activeTeamId = team.id"
+          class="flex-shrink-0 flex items-center gap-2 px-4 py-2 my-1.5 mr-1 border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container hover:text-on-surface text-[10px] font-label font-bold uppercase tracking-wider transition-colors"
+          @click="exportCsv"
         >
-          {{ store.getTeamDisplayName(team.id) }}
+          <span class="material-symbols-outlined text-sm">download</span>
+          Export CSV
         </button>
       </div>
 
