@@ -129,6 +129,82 @@ watch(assignTeamId, () => {
   assignPositionId.value = null
 })
 
+// Transfer an existing pick from one team to another
+const transferPickId = ref<number | null>(null)
+const transferToTeamId = ref<number | null>(null)
+const transferPositionId = ref<number | null>(null)
+const transferSubmitting = ref(false)
+const transferError = ref('')
+
+const openPositionsForTransferTeam = computed(() => {
+  if (!transferToTeamId.value) return []
+  return store.rosterPositions.filter((rp) => {
+    const filled = store.draftPicks.filter(
+      (p) => p.team_id === transferToTeamId.value && p.roster_position_id === rp.id,
+    ).length
+    return filled < rp.slots_per_team
+  })
+})
+
+watch(transferToTeamId, () => {
+  transferPositionId.value = null
+})
+
+async function transferPick() {
+  if (!transferPickId.value || !transferToTeamId.value) {
+    transferError.value = 'Select a pick and a destination team'
+    return
+  }
+  transferError.value = ''
+  transferSubmitting.value = true
+
+  const pick = store.draftPicks.find((p) => p.id === transferPickId.value)
+  if (!pick) {
+    transferError.value = 'Pick not found'
+    transferSubmitting.value = false
+    return
+  }
+
+  // Refund the bid amount to the original team, charge the new team
+  const [origTeam, destTeam] = [
+    store.teams.find((t) => t.id === pick.team_id),
+    store.teams.find((t) => t.id === transferToTeamId.value),
+  ]
+
+  const { error: pickErr } = await supabase
+    .from('draft_picks')
+    .update({
+      team_id: transferToTeamId.value,
+      roster_position_id: transferPositionId.value ?? null,
+    })
+    .eq('id', transferPickId.value)
+
+  if (pickErr) {
+    transferError.value = pickErr.message
+    transferSubmitting.value = false
+    return
+  }
+
+  // Adjust budgets: refund original team, deduct from new team
+  if (origTeam && pick.winning_bid) {
+    await supabase
+      .from('teams')
+      .update({ remaining_budget: origTeam.remaining_budget + (pick.winning_bid ?? 0) })
+      .eq('id', origTeam.id)
+  }
+  if (destTeam && pick.winning_bid) {
+    await supabase
+      .from('teams')
+      .update({ remaining_budget: destTeam.remaining_budget - (pick.winning_bid ?? 0) })
+      .eq('id', destTeam.id)
+  }
+
+  transferPickId.value = null
+  transferToTeamId.value = null
+  transferPositionId.value = null
+  transferSubmitting.value = false
+}
+
 async function directAssign() {
   if (!assignSchoolId.value || !assignTeamId.value || !assignPositionId.value) {
     assignError.value = 'Select a school, team, and position'
@@ -652,142 +728,240 @@ function bidderNameFor(bid: (typeof store.bidHistory)[0]) {
         </div>
 
         <!-- Admin: post-draft assignment panel -->
-        <div v-if="isAdmin" class="col-span-7 p-8 space-y-6">
-          <div>
-            <div
-              class="font-headline font-black uppercase text-on-surface text-xl tracking-tighter"
-            >
-              Finalize Roster Assignments
-            </div>
-            <div class="text-[10px] font-label text-outline uppercase tracking-widest mt-1">
-              Assign remaining schools to teams with open slots
-            </div>
-          </div>
-
-          <!-- All done -->
-          <div
-            v-if="teamsWithOpenSlots.length === 0 || store.availableSchools.length === 0"
-            class="flex items-center gap-3 p-4 bg-surface-container border border-outline-variant/20"
-          >
-            <span
-              class="material-symbols-outlined text-tertiary"
-              style="font-variation-settings: 'FILL' 1"
-              >check_circle</span
-            >
-            <span class="text-sm font-label text-outline uppercase">
-              {{
-                store.availableSchools.length === 0
-                  ? 'No schools remaining'
-                  : 'All teams have full rosters'
-              }}
-            </span>
-          </div>
-
-          <!-- Assignment form -->
-          <template v-else>
-            <!-- Teams with open slots summary -->
-            <div class="space-y-2">
-              <div class="text-[10px] font-label text-outline uppercase tracking-widest">
-                Teams with open slots
+        <div v-if="isAdmin" class="col-span-7 p-8 space-y-8 overflow-y-auto">
+          <!-- ── Assign new school ── -->
+          <div class="space-y-4">
+            <div>
+              <div
+                class="font-headline font-black uppercase text-on-surface text-xl tracking-tighter"
+              >
+                Finalize Roster Assignments
               </div>
-              <div class="flex flex-wrap gap-2">
-                <div
-                  v-for="team in teamsWithOpenSlots"
-                  :key="team.id"
-                  class="px-3 py-1.5 border text-[10px] font-label font-bold uppercase cursor-pointer transition-colors"
-                  :class="
-                    assignTeamId === team.id
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-outline-variant/30 bg-surface-container text-on-surface-variant hover:border-primary/40'
-                  "
-                  @click="assignTeamId = team.id"
-                >
-                  {{ store.getTeamDisplayName(team.id) }} · {{ team.openSlots }} open
+              <div class="text-[10px] font-label text-outline uppercase tracking-widest mt-1">
+                Assign remaining schools to teams with open slots
+              </div>
+            </div>
+
+            <!-- All done -->
+            <div
+              v-if="teamsWithOpenSlots.length === 0 || store.availableSchools.length === 0"
+              class="flex items-center gap-3 p-4 bg-surface-container border border-outline-variant/20"
+            >
+              <span
+                class="material-symbols-outlined text-tertiary"
+                style="font-variation-settings: 'FILL' 1"
+                >check_circle</span
+              >
+              <span class="text-sm font-label text-outline uppercase">
+                {{
+                  store.availableSchools.length === 0
+                    ? 'No schools remaining'
+                    : 'All teams have full rosters'
+                }}
+              </span>
+            </div>
+
+            <!-- Assignment form -->
+            <template v-else>
+              <!-- Teams with open slots summary -->
+              <div class="space-y-2">
+                <div class="text-[10px] font-label text-outline uppercase tracking-widest">
+                  Teams with open slots
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <div
+                    v-for="team in teamsWithOpenSlots"
+                    :key="team.id"
+                    class="px-3 py-1.5 border text-[10px] font-label font-bold uppercase cursor-pointer transition-colors"
+                    :class="
+                      assignTeamId === team.id
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-outline-variant/30 bg-surface-container text-on-surface-variant hover:border-primary/40'
+                    "
+                    @click="assignTeamId = team.id"
+                  >
+                    {{ store.getTeamDisplayName(team.id) }} · {{ team.openSlots }} open
+                  </div>
                 </div>
               </div>
+
+              <!-- Form fields -->
+              <div class="grid grid-cols-2 gap-4">
+                <!-- School -->
+                <div class="space-y-1">
+                  <div class="text-[10px] font-label text-outline uppercase tracking-widest">
+                    School
+                  </div>
+                  <select
+                    v-model="assignSchoolId"
+                    class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label px-3 py-2.5 focus:outline-none focus:border-primary"
+                  >
+                    <option :value="null">— Select school —</option>
+                    <option v-for="s in store.availableSchools" :key="s.id" :value="s.id">
+                      {{ s.school?.name ?? s.id }} ({{ s.conference }})
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Team -->
+                <div class="space-y-1">
+                  <div class="text-[10px] font-label text-outline uppercase tracking-widest">
+                    Team
+                  </div>
+                  <select
+                    v-model="assignTeamId"
+                    class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label px-3 py-2.5 focus:outline-none focus:border-primary"
+                  >
+                    <option :value="null">— Select team —</option>
+                    <option v-for="team in teamsWithOpenSlots" :key="team.id" :value="team.id">
+                      {{ store.getTeamDisplayName(team.id) }} ({{ team.openSlots }} open)
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Position -->
+                <div class="space-y-1">
+                  <div class="text-[10px] font-label text-outline uppercase tracking-widest">
+                    Position
+                  </div>
+                  <select
+                    v-model="assignPositionId"
+                    :disabled="!assignTeamId"
+                    class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label px-3 py-2.5 focus:outline-none focus:border-primary disabled:opacity-40"
+                  >
+                    <option :value="null">— Select position —</option>
+                    <option v-for="rp in openPositionsForAssignTeam" :key="rp.id" :value="rp.id">
+                      {{ rp.position_name }}{{ rp.is_flex ? ' (FLEX)' : '' }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Price -->
+                <div class="space-y-1">
+                  <div class="text-[10px] font-label text-outline uppercase tracking-widest">
+                    Price ($0 = uncontested)
+                  </div>
+                  <div class="relative">
+                    <span
+                      class="absolute left-3 top-1/2 -translate-y-1/2 font-headline font-black text-outline"
+                      >$</span
+                    >
+                    <input
+                      v-model="assignPrice"
+                      type="number"
+                      min="0"
+                      class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label pl-7 pr-3 py-2.5 focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <p v-if="assignError" class="text-xs text-error font-label">{{ assignError }}</p>
+
+              <button
+                :disabled="
+                  !assignSchoolId || !assignTeamId || !assignPositionId || assignSubmitting
+                "
+                class="px-8 py-3 metallic-primary text-on-primary-fixed font-headline font-black text-sm uppercase tracking-widest active:scale-[0.98] transition-transform disabled:opacity-40"
+                @click="directAssign"
+              >
+                {{ assignSubmitting ? 'ASSIGNING...' : 'ASSIGN PICK' }}
+              </button>
+            </template>
+          </div>
+
+          <!-- ── Transfer existing pick ── -->
+          <div class="space-y-4 border-t border-outline-variant/20 pt-6">
+            <div>
+              <div
+                class="font-headline font-black uppercase text-on-surface text-xl tracking-tighter"
+              >
+                Transfer Existing Pick
+              </div>
+              <div class="text-[10px] font-label text-outline uppercase tracking-widest mt-1">
+                Move a drafted school from one team to another — budgets adjust automatically
+              </div>
             </div>
 
-            <!-- Form fields -->
             <div class="grid grid-cols-2 gap-4">
-              <!-- School -->
-              <div class="space-y-1">
+              <!-- Pick to transfer -->
+              <div class="col-span-2 space-y-1">
                 <div class="text-[10px] font-label text-outline uppercase tracking-widest">
-                  School
+                  Pick to transfer
                 </div>
                 <select
-                  v-model="assignSchoolId"
+                  v-model="transferPickId"
                   class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label px-3 py-2.5 focus:outline-none focus:border-primary"
                 >
-                  <option :value="null">— Select school —</option>
-                  <option v-for="s in store.availableSchools" :key="s.id" :value="s.id">
-                    {{ s.school?.name ?? s.id }} ({{ s.conference }})
-                  </option>
+                  <option :value="null">— Select a pick —</option>
+                  <optgroup
+                    v-for="team in store.teams.filter((t) => t.is_active)"
+                    :key="team.id"
+                    :label="store.getTeamDisplayName(team.id)"
+                  >
+                    <option
+                      v-for="pick in store.draftPicks.filter((p) => p.team_id === team.id)"
+                      :key="pick.id"
+                      :value="pick.id"
+                    >
+                      {{
+                        store.schools.find((s) => s.id === pick.auction_school_id)?.school?.name ??
+                        pick.auction_school_id
+                      }}
+                      (${{ pick.winning_bid ?? 0 }})
+                    </option>
+                  </optgroup>
                 </select>
               </div>
 
-              <!-- Team -->
+              <!-- Destination team -->
               <div class="space-y-1">
                 <div class="text-[10px] font-label text-outline uppercase tracking-widest">
-                  Team
+                  Move to team
                 </div>
                 <select
-                  v-model="assignTeamId"
+                  v-model="transferToTeamId"
                   class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label px-3 py-2.5 focus:outline-none focus:border-primary"
                 >
                   <option :value="null">— Select team —</option>
-                  <option v-for="team in teamsWithOpenSlots" :key="team.id" :value="team.id">
-                    {{ store.getTeamDisplayName(team.id) }} ({{ team.openSlots }} open)
+                  <option
+                    v-for="team in store.teams.filter((t) => t.is_active)"
+                    :key="team.id"
+                    :value="team.id"
+                  >
+                    {{ store.getTeamDisplayName(team.id) }}
                   </option>
                 </select>
               </div>
 
-              <!-- Position -->
+              <!-- Position on destination team -->
               <div class="space-y-1">
                 <div class="text-[10px] font-label text-outline uppercase tracking-widest">
-                  Position
+                  Assign to position (optional)
                 </div>
                 <select
-                  v-model="assignPositionId"
-                  :disabled="!assignTeamId"
+                  v-model="transferPositionId"
+                  :disabled="!transferToTeamId"
                   class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label px-3 py-2.5 focus:outline-none focus:border-primary disabled:opacity-40"
                 >
-                  <option :value="null">— Select position —</option>
-                  <option v-for="rp in openPositionsForAssignTeam" :key="rp.id" :value="rp.id">
+                  <option :value="null">— Keep current / unassigned —</option>
+                  <option v-for="rp in openPositionsForTransferTeam" :key="rp.id" :value="rp.id">
                     {{ rp.position_name }}{{ rp.is_flex ? ' (FLEX)' : '' }}
                   </option>
                 </select>
               </div>
-
-              <!-- Price -->
-              <div class="space-y-1">
-                <div class="text-[10px] font-label text-outline uppercase tracking-widest">
-                  Price ($0 = uncontested)
-                </div>
-                <div class="relative">
-                  <span
-                    class="absolute left-3 top-1/2 -translate-y-1/2 font-headline font-black text-outline"
-                    >$</span
-                  >
-                  <input
-                    v-model="assignPrice"
-                    type="number"
-                    min="0"
-                    class="w-full bg-surface-container border border-outline-variant/30 text-on-surface text-xs font-label pl-7 pr-3 py-2.5 focus:outline-none focus:border-primary"
-                  />
-                </div>
-              </div>
             </div>
 
-            <p v-if="assignError" class="text-xs text-error font-label">{{ assignError }}</p>
+            <p v-if="transferError" class="text-xs text-error font-label">{{ transferError }}</p>
 
             <button
-              :disabled="!assignSchoolId || !assignTeamId || !assignPositionId || assignSubmitting"
-              class="px-8 py-3 metallic-primary text-on-primary-fixed font-headline font-black text-sm uppercase tracking-widest active:scale-[0.98] transition-transform disabled:opacity-40"
-              @click="directAssign"
+              :disabled="!transferPickId || !transferToTeamId || transferSubmitting"
+              class="px-8 py-3 bg-surface-container-high border border-outline-variant/30 text-on-surface font-headline font-black text-sm uppercase tracking-widest active:scale-[0.98] transition-transform disabled:opacity-40 hover:bg-surface-container-highest"
+              @click="transferPick"
             >
-              {{ assignSubmitting ? 'ASSIGNING...' : 'ASSIGN PICK' }}
+              {{ transferSubmitting ? 'TRANSFERRING...' : 'TRANSFER PICK' }}
             </button>
-          </template>
+          </div>
         </div>
       </div>
     </div>
