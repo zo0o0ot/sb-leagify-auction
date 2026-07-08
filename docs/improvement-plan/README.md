@@ -60,6 +60,16 @@ by ID.
   (`is_position_eligible`, initial schema lines 317-333), but no UI shows remaining schools
   per position vs. open roster slots league-wide. NominationGrid filters only by conference
   and search (`src/components/draft/NominationGrid.vue:24-42`).
+- **F9 — Premature sale: ineligible teams' passes count toward the pass threshold.**
+  Confirmed cause of a live-draft incident where a winner was declared while eligible teams
+  were still bidding. In `pass-bid/index.ts` the pass count (lines 50-59) includes **every**
+  pass row for the school except the current high bidder's, but the required-pass count
+  (lines 61-96) **excludes roster-full teams** (and teams without participants). Auto-pass
+  (`DraftView.vue:272-311`) makes roster-full teams pass on every new school, so each
+  roster-full team inflates the numerator by one while being absent from the denominator —
+  bidding ends one eligible team early per roster-full team. Worsens late in a draft as
+  rosters fill; typically first noticed after a coach finishes their roster and leaves.
+  Fix specified in WP1 (`fn_pass_bid`): count only passes from currently-eligible teams.
 
 ## Dependency graph
 

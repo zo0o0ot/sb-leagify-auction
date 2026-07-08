@@ -4,7 +4,7 @@
 **Dependencies:** Test specs can be written immediately (they encode WP1's acceptance
 criteria); they will fail red until WP1 merges, then must go green unmodified (or with agreed
 adjustments noted in the PR). E2E mobile checks land after WP4-B.
-**Findings addressed:** verification for F1–F5; regression protection for all WPs.
+**Findings addressed:** verification for F1–F5 and F9; regression protection for all WPs.
 **Branch:** `wp5-tests`
 
 ## Context
@@ -43,6 +43,10 @@ Required scenarios (these are WP1's acceptance criteria, encoded):
 - **Invalid amounts:** 0, negative, non-integer, ≤ current high → rejected with `ok: false`.
 - **Pass-then-bid:** team passes, later bids, is outbid; remaining teams' passes alone must
   NOT complete the sale while that team is still eligible (encodes WP1's new pass semantics).
+- **Ineligible passes don't count (F9 — reproduced in a live draft):** one team's roster is
+  full and it passes (as auto-pass does on every school); the remaining eligible teams minus
+  one also pass → sale must NOT complete; the last eligible team then passes → sale completes.
+  This encodes the premature-winner fix and must fail on pre-WP1 code.
 - **No-sale:** nobody bids, everyone passes → school cleared, no pick, school stays available
   or is skipped per WP1's implemented behavior (assert whichever WP1 documents).
 - **Nomination race:** two simultaneous nominations → exactly one school on the block.

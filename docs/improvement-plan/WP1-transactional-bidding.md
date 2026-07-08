@@ -2,7 +2,7 @@
 
 **Complexity:** Medium-Hard
 **Dependencies:** None — start immediately. WP5's integration tests run against this.
-**Findings addressed:** F1, F2, F3, F4, F5 (see [README.md](README.md))
+**Findings addressed:** F1, F2, F3, F4, F5, F9 (see [README.md](README.md))
 **Branch:** `wp1-transactional-bidding`
 
 ## Problem
@@ -26,6 +26,12 @@ do read → validate → write with a service-role Supabase client and **no tran
 - Pass semantics: a pass counts forever per (team, school) (`pass-bid/index.ts:50-59`). A team
   that passes, then bids, then is outbid still has its old pass counted, so bidding can be
   ended under a team that wants to keep bidding.
+- **Premature sale (F9, confirmed in a live draft):** the pass count includes passes from
+  **ineligible** teams (only the high bidder is excluded, `pass-bid/index.ts:50-59`), while
+  the required count excludes roster-full teams (`pass-bid/index.ts:61-96`). Auto-pass makes
+  roster-full teams pass on every school (`DraftView.vue:272-311`), so each roster-full team
+  inflates the numerator without being in the denominator — the sale completes while eligible
+  teams are still bidding.
 
 ## Approach
 
@@ -65,14 +71,23 @@ nominator remains, clear the `current_*` fields.
 
 ### `fn_pass_bid(p_auction_id, p_participant_id, p_team_id)`
 
-Lock auction row. Record the pass (idempotent: passing twice is not an error). **New pass
-semantics — a bid invalidates the team's earlier pass on that school:** when counting passes,
-only count a team's pass if it has not placed a `bid_type='bid'` row for this school _after_
-its most recent pass. Keep the existing eligibility filtering (active teams with a participant
-and a non-full roster, excluding current high bidder — `pass-bid/index.ts:61-96`). When the
-threshold is met: call `fn_complete_bid` directly (same transaction) instead of the current
-HTTP fetch to the complete-bid function (`pass-bid/index.ts:119-127`). Keep the no-sale path
-(no high bidder + all passed → clear the block without a pick).
+Lock auction row. Record the pass (idempotent: passing twice is not an error). Compute the
+**eligible set** once — active teams with a participant and a non-full roster, excluding the
+current high bidder (as in `pass-bid/index.ts:61-96`) — then apply two counting rules, both
+required:
+
+1. **Count only passes from teams in the eligible set** (fixes F9). The current code counts
+   every pass except the high bidder's, so auto-passes from roster-full teams meet the
+   threshold early and the sale completes while eligible teams are still bidding. The
+   threshold is met only when **every team in the eligible set** has a live pass — not when
+   a raw pass count reaches the eligible-set size.
+2. **A bid invalidates the team's earlier pass on that school** (fixes F5): a team's pass is
+   live only if it has not placed a `bid_type='bid'` row for this school _after_ its most
+   recent pass.
+
+When the threshold is met: call `fn_complete_bid` directly (same transaction) instead of the
+current HTTP fetch to the complete-bid function (`pass-bid/index.ts:119-127`). Keep the
+no-sale path (no high bidder + all eligible teams passed → clear the block without a pick).
 
 ### `fn_nominate_school(p_auction_id, p_participant_id, p_team_id, p_auction_school_id, p_is_admin_override)`
 
@@ -106,6 +121,9 @@ bid. Set school on block + insert nomination and $1 opening bid history rows ato
 - [ ] Bid above the max-bid rule is rejected server-side with a clear message.
 - [ ] Non-integer / zero / negative amounts rejected.
 - [ ] Team that passes then bids is no longer counted as passed for that school.
+- [ ] A roster-full team's pass does not count toward the threshold: with one roster-full
+      team auto-passing, the sale must NOT complete until every eligible team has passed
+      (regression for the live-draft premature-winner incident, F9).
 - [ ] Full happy path works in the browser against local Supabase with two windows:
       nominate → bid → passes → sting → position assignment → next nominator.
 - [ ] `supabase db reset` runs clean; existing Vitest suite passes.
